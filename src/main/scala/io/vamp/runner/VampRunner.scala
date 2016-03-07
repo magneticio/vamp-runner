@@ -2,12 +2,11 @@ package io.vamp.runner
 
 import akka.actor.ActorSystem
 import com.typesafe.scalalogging.Logger
-import io.vamp.runner.recipe.{ Recipe, VampInfo }
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future
 
-object VampRunner extends App {
+object VampRunner extends App with VampRecipes {
 
   implicit val actorSystem = ActorSystem("vamp-runner")
   implicit val executionContext = actorSystem.dispatcher
@@ -27,10 +26,6 @@ object VampRunner extends App {
     """.stripMargin)
 
   logger.info(s"Vamp API URL: ${VampApi.url}")
-
-  val recipes: Map[String, Recipe] = Map {
-    "info" -> new VampInfo
-  }
 
   val runnables = if (args.isEmpty) recipes
   else recipes.filter {
