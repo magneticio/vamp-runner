@@ -8,9 +8,6 @@ import scala.concurrent.Future
 
 object VampRunner extends App with VampRecipes {
 
-  implicit val actorSystem = ActorSystem("vamp-runner")
-  implicit val executionContext = actorSystem.dispatcher
-
   val logger = Logger(LoggerFactory.getLogger(VampRunner.getClass))
 
   logger.info(
@@ -26,6 +23,9 @@ object VampRunner extends App with VampRecipes {
     """.stripMargin)
 
   logger.info(s"Vamp API URL: ${VampApi.url}")
+
+  implicit val actorSystem = ActorSystem("vamp-runner")
+  implicit val executionContext = actorSystem.dispatcher
 
   val runnables = if (args.isEmpty) recipes
   else recipes.filter {
