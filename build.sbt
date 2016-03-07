@@ -10,6 +10,7 @@ resolvers in ThisBuild ++= Seq(
 libraryDependencies ++= {
 
   val akka = "2.4.2"
+  val json4s = "3.3.0"
   val config = "1.3.0"
   val logging = "3.1.0"
   val slf4j = "1.7.16"
@@ -17,7 +18,10 @@ libraryDependencies ++= {
 
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akka,
+    "com.typesafe.akka" %% "akka-stream" % akka,
+    "com.typesafe.akka" %% "akka-http-core" % akka,
     "com.typesafe.akka" %% "akka-slf4j" % akka,
+    "org.json4s" %% "json4s-native" % json4s,
     "com.typesafe" % "config" % config,
     "com.typesafe.scala-logging" %% "scala-logging" % logging,
     "org.slf4j" % "slf4j-api" % slf4j,
