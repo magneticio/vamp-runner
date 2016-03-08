@@ -5,10 +5,10 @@ import org.json4s._
 
 class VampInfo(implicit actorSystem: ActorSystem) extends Recipe {
 
-  def run = request("info").runForeach {
+  def run = api("info").map {
     case response ⇒
-      val version = extract[String](response \ "version")
-      val message = extract[String](response \ "message")
+      val version = <<[String](response \ "version")
+      val message = <<[String](response \ "message")
       logger.info(s"Vamp [$version]: $message")
   }
 }

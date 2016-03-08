@@ -2,13 +2,14 @@ package io.vamp.runner
 
 import com.typesafe.config.ConfigFactory
 
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 object VampApi {
 
   private val config = ConfigFactory.load().getConfig("vamp.runner")
 
-  val host = config.getString("host")
-  val port = config.getInt("port")
-  val api = config.getString("api")
+  val url = config.getString("url")
 
-  val url = s"http://$host${if (port == 80) "" else s":$port"}$api"
+  val timeout = config.getInt("timeout") seconds
 }

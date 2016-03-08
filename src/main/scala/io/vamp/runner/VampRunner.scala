@@ -1,6 +1,8 @@
 package io.vamp.runner
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -22,10 +24,14 @@ object VampRunner extends App with VampRecipes {
        |                       by magnetic.io
     """.stripMargin)
 
+  val url = ConfigFactory.load().getString("vamp.runner.url")
+
   logger.info(s"Vamp API URL: ${VampApi.url}")
 
   implicit val actorSystem = ActorSystem("vamp-runner")
   implicit val executionContext = actorSystem.dispatcher
+
+  Http(actorSystem)
 
   val runnables = if (args.isEmpty) recipes
   else recipes.filter {
@@ -48,6 +54,7 @@ object VampRunner extends App with VampRecipes {
   } onComplete {
     case _ ⇒
       logger.info("Done.")
+      Http().shutdownAllConnectionPools()
       actorSystem.terminate()
   }
 }
