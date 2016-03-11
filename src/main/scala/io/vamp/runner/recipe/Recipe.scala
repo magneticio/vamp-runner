@@ -85,8 +85,7 @@ trait HttpMethods {
       .via(Http().outgoingConnection(url.getHost, url.getPort))
       .recover {
         case failure ⇒ recoverWith(failure)
-      }
-      .mapAsync(1) {
+      }.mapAsync(1) {
         case HttpResponse(status, _, entity, _) if status.isSuccess() ⇒ entity.toStrict(Vamp.timeout).map(_.data.decodeString("UTF-8"))
         case failure ⇒ Future(recoverWith(failure))
       }.map {
@@ -99,8 +98,7 @@ trait HttpMethods {
       .via(Tcp().outgoingConnection(host, port))
       .recover {
         case failure ⇒ recoverWith(failure)
-      }
-      .map {
+      }.map {
         case response: ByteString ⇒ response.utf8String
         case failure              ⇒ recoverWith(failure)
       }.map {
@@ -115,11 +113,7 @@ trait FlowMethods {
   this: Recipe with HttpMethods ⇒
 
   def reset(): Future[Any] = {
-    waitFor(
-      request = { () ⇒ apiGet("reset") },
-      validate = { _ ⇒ },
-      recover = { () ⇒ logger.debug(s"Still waiting for reset to complete...") }
-    ) runWith Sink.headOption
+    waitFor({ () ⇒ apiGet("reset") }, { _ ⇒ }, { () ⇒ logger.debug(s"Still waiting for reset to complete...") }) runWith Sink.headOption
   }
 
   def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
