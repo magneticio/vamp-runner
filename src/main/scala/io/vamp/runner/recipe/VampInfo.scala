@@ -5,7 +5,7 @@ import org.json4s._
 
 class VampInfo(implicit actorSystem: ActorSystem) extends Recipe {
 
-  def run = api("info").map {
+  def run = apiGet("info").map {
     case response ⇒
       val version = <<[String](response \ "version")
       val message = <<[String](response \ "message")

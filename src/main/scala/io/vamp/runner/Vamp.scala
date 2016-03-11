@@ -5,11 +5,13 @@ import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-object VampApi {
+object Vamp {
 
   private val config = ConfigFactory.load().getConfig("vamp.runner")
 
-  val url = config.getString("url")
+  val apiUrl = config.getString("api-url")
 
   val timeout = config.getInt("timeout") seconds
+
+  val vgaHost = config.getString("vamp-gateway-agent-host")
 }
