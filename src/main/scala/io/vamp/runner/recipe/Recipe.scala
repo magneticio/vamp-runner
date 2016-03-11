@@ -113,25 +113,40 @@ trait FlowMethods {
   this: Recipe with HttpMethods ⇒
 
   def reset(): Future[Any] = {
-    waitFor({ () ⇒ apiGet("reset") }, { _ ⇒ }, { () ⇒ logger.debug(s"Still waiting for reset to complete...") }) runWith Sink.headOption
+    apiGet("reset") flatMap { _ ⇒
+      waitFor({ () ⇒ apiGet("deployments") }, {
+        case JArray(Nil) ⇒ true
+        case _           ⇒ false
+      }, {
+        () ⇒ logger.debug(s"Still waiting for reset to complete...")
+      }) runWith Sink.headOption
+    }
   }
 
   def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
-    waitFor({ () ⇒ vgaGet(port, path) }, validate, { () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}") }) runWith Sink.headOption
+    waitFor({ () ⇒ vgaGet(port, path) }, {
+      json ⇒ validate(json); true
+    }, {
+      () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}")
+    }) runWith Sink.headOption
   }
 
   def waitForTcp(port: Int, send: String, validate: JValue ⇒ Unit): Future[Any] = {
-    waitFor({ () ⇒ tcp(Vamp.vgaHost, port, "*") }, validate, { () ⇒ logger.debug(s"Still waiting for :$port") }) runWith Sink.headOption
+    waitFor({ () ⇒ tcp(Vamp.vgaHost, port, "*") }, {
+      json ⇒ validate(json); true
+    }, {
+      () ⇒ logger.debug(s"Still waiting for :$port")
+    }) runWith Sink.headOption
   }
 
-  def waitFor(request: () ⇒ Future[JValue], validate: JValue ⇒ Unit, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
+  def waitFor(request: () ⇒ Future[JValue], successful: JValue ⇒ Boolean, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
     Source.tick(initialDelay = 0 seconds, interval = Recipe.interval, None).mapAsync[Boolean](1) { _ ⇒
       request().map {
         case JNothing ⇒
           recover(); false
         case json ⇒
           try {
-            validate(json); true
+            successful(json)
           } catch {
             case e: Exception ⇒ logger.error(e.getMessage, e); false
           }
