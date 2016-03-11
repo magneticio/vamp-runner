@@ -1,0 +1,20 @@
+name: runner
+
+gateways:
+  9050/tcp: runner/port
+
+clusters:
+  runner:
+    services:
+      breed:
+        name: http:1.0.0
+        deployable: magneticio/sava_runner:1.0.0
+        ports:
+          port: 8091/tcp
+        environment_variables:
+          SAVA_RUNNER_ID: 1.0.0
+
+      scale:
+        cpu: 0.2       
+        memory: 64MB
+        instances: 1

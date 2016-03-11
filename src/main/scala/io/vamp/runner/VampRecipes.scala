@@ -1,9 +1,7 @@
 package io.vamp.runner
 
 import akka.actor.ActorSystem
-import io.vamp.runner.recipe.{ VampHttp, VampHttpFlipFlop, Recipe, VampInfo }
-
-import scala.collection.immutable.ListMap
+import io.vamp.runner.recipe._
 
 trait VampRecipes {
 
@@ -12,6 +10,7 @@ trait VampRecipes {
   lazy val recipes: List[(String, Recipe)] = List(
     "info" -> new VampInfo,
     "http" -> new VampHttp,
-    "http-flip-flop" -> new VampHttpFlipFlop
+    "http-flip-flop" -> new VampHttpFlipFlop,
+    "tcp" -> new VampTcp
   )
 }

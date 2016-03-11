@@ -41,7 +41,7 @@ class VampHttpFlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
 
   private def deploy() = {
     apiPut(deployment, resource("httpFlipFlop/blueprint_1.0.yml")).flatMap { _ ⇒
-      waitForSink(9051, "", { json ⇒
+      waitFor(9051, "", { json ⇒
         current = <<[String](json \ "id")
         if (current != "1.0" && current != "1.1") throw new RuntimeException(s"Expected '1.0' but not id: $current")
       })

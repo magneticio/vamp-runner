@@ -10,7 +10,8 @@ import akka.http.scaladsl.model.MediaTypes._
 import akka.http.scaladsl.model.headers.Accept
 import akka.http.scaladsl.model.{ HttpRequest, _ }
 import akka.stream._
-import akka.stream.scaladsl.{ Sink, Source }
+import akka.stream.scaladsl.{ Sink, Source, Tcp }
+import akka.util.ByteString
 import com.typesafe.scalalogging.Logger
 import io.vamp.runner.Vamp
 import org.json4s._
@@ -47,7 +48,7 @@ trait HttpMethods {
   implicit val formats = DefaultFormats
 
   def vgaGet(port: Int, path: String = "", recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
-    request(GET, s"http://${Vamp.vgaHost}:$port/$path", None, recoverWith)
+    http(GET, s"http://${Vamp.vgaHost}:$port/$path", None, recoverWith)
   }
 
   def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, recoverWith)
@@ -65,10 +66,10 @@ trait HttpMethods {
   }
 
   def api(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
-    request(method, s"${Vamp.apiUrl}/$path", body, recoverWith)
+    http(method, s"${Vamp.apiUrl}/$path", body, recoverWith)
   }
 
-  private def request(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+  def http(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
 
     val url = new java.net.URL(uri)
 
@@ -93,6 +94,20 @@ trait HttpMethods {
       } runWith Sink.head
   }
 
+  def tcp(host: String, port: Int, send: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+    Source.single(ByteString(send))
+      .via(Tcp().outgoingConnection(host, port))
+      .recover {
+        case failure ⇒ recoverWith(failure)
+      }
+      .map {
+        case response: ByteString ⇒ response.utf8String
+        case failure              ⇒ recoverWith(failure)
+      }.map {
+        parse(_)
+      } runWith Sink.head
+  }
+
   def <<[T](jv: JValue)(implicit mf: scala.reflect.Manifest[T]) = jv.extract[T]
 }
 
@@ -107,15 +122,15 @@ trait FlowMethods {
     ) runWith Sink.headOption
   }
 
-  def waitForFlow(port: Int, path: String, validate: JValue ⇒ Unit): Source[Boolean, Cancellable] = {
-    waitFor({ () ⇒ vgaGet(port, path) }, validate, { () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}") })
+  def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
+    waitFor({ () ⇒ vgaGet(port, path) }, validate, { () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}") }) runWith Sink.headOption
   }
 
-  def waitForSink(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
-    waitForFlow(port, path, validate) runWith Sink.headOption
+  def waitForTcp(port: Int, send: String, validate: JValue ⇒ Unit): Future[Any] = {
+    waitFor({ () ⇒ tcp(Vamp.vgaHost, port, "*") }, validate, { () ⇒ logger.debug(s"Still waiting for :$port") }) runWith Sink.headOption
   }
 
-  private def waitFor(request: () ⇒ Future[JValue], validate: JValue ⇒ Unit, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
+  def waitFor(request: () ⇒ Future[JValue], validate: JValue ⇒ Unit, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
     Source.tick(initialDelay = 0 seconds, interval = Recipe.interval, None).mapAsync[Boolean](1) { _ ⇒
       request().map {
         case JNothing ⇒
