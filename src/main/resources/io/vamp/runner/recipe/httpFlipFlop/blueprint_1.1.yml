@@ -1,0 +1,20 @@
+name: runner
+
+clusters:
+  runner:
+    services:
+      breed:
+        name: http-flip-flop:1.1
+        deployable: magneticio/sava_runner:1.0.0
+        ports:
+          port: 8081/http
+        environment_variables:
+          SAVA_RUNNER_ID: 1.0
+
+      environment_variables:
+        SAVA_RUNNER_ID: 1.1
+
+      scale:
+        cpu: 0.2       
+        memory: 64MB
+        instances: 1

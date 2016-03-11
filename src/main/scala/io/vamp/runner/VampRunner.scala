@@ -30,8 +30,6 @@ object VampRunner extends App with VampRecipes {
   implicit val actorSystem = ActorSystem("vamp-runner")
   implicit val executionContext = actorSystem.dispatcher
 
-  Http(actorSystem)
-
   val runnables: List[(String, Recipe)] = if (args.isEmpty) recipes
   else args.map {
     case name ⇒ recipes.find(_._1 == name).getOrElse({
@@ -52,7 +50,8 @@ object VampRunner extends App with VampRecipes {
   } onComplete {
     case _ ⇒
       logger.info("Done.")
-      Http().shutdownAllConnectionPools()
-      actorSystem.terminate()
+      Http().shutdownAllConnectionPools() onComplete {
+        case _ ⇒ actorSystem.terminate()
+      }
   }
 }

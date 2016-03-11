@@ -46,29 +46,29 @@ trait HttpMethods {
 
   implicit val formats = DefaultFormats
 
-  def vgaGet(port: Int, path: String): Future[JValue] = {
-    request(GET, s"http://${Vamp.vgaHost}:$port/$path")
+  def vgaGet(port: Int, path: String = "", recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+    request(GET, s"http://${Vamp.vgaHost}:$port/$path", None, recoverWith)
   }
 
-  def apiGet(path: String): Future[JValue] = api(GET, path)
+  def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, recoverWith)
 
-  def apiPut(path: String, input: InputStream): Future[JValue] = {
-    api(PUT, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray))
+  def apiPut(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+    api(PUT, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def apiPost(path: String, input: InputStream): Future[JValue] = {
-    api(POST, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray))
+  def apiPost(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+    api(POST, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def apiDelete(path: String, input: InputStream): Future[JValue] = {
-    api(DELETE, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray))
+  def apiDelete(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+    api(DELETE, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def api(method: HttpMethod, path: String, body: Option[Array[Byte]] = None): Future[JValue] = {
-    request(method, s"${Vamp.apiUrl}/$path", body)
+  def api(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+    request(method, s"${Vamp.apiUrl}/$path", body, recoverWith)
   }
 
-  private def request(method: HttpMethod, uri: String, body: Option[Array[Byte]] = None): Future[JValue] = {
+  private def request(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
 
     val url = new java.net.URL(uri)
 
@@ -82,9 +82,12 @@ trait HttpMethods {
 
     Source.single(httpRequestWithBody)
       .via(Http().outgoingConnection(url.getHost, url.getPort))
+      .recover {
+        case failure ⇒ recoverWith(failure)
+      }
       .mapAsync(1) {
         case HttpResponse(status, _, entity, _) if status.isSuccess() ⇒ entity.toStrict(Vamp.timeout).map(_.data.decodeString("UTF-8"))
-        case _ ⇒ Future.successful("")
+        case failure ⇒ Future(recoverWith(failure))
       }.map {
         parse(_)
       } runWith Sink.head
@@ -105,7 +108,7 @@ trait FlowMethods {
   }
 
   def waitForFlow(port: Int, path: String, validate: JValue ⇒ Unit): Source[Boolean, Cancellable] = {
-    waitFor({ () ⇒ vgaGet(port, path) }, validate, { () ⇒ logger.debug(s"Still waiting for :$port/$path") })
+    waitFor({ () ⇒ vgaGet(port, path) }, validate, { () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}") })
   }
 
   def waitForSink(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
@@ -121,7 +124,7 @@ trait FlowMethods {
           try {
             validate(json); true
           } catch {
-            case e: Exception ⇒ logger.info(e.getMessage); false
+            case e: Exception ⇒ logger.error(e.getMessage, e); false
           }
       } recover {
         case _ ⇒ recover(); false
