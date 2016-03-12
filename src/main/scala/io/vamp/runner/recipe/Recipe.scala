@@ -113,12 +113,13 @@ trait FlowMethods {
   this: Recipe with HttpMethods ⇒
 
   def reset(): Future[Any] = {
+    logger.info(s"Performing reset...")
     apiGet("reset") flatMap { _ ⇒
       waitFor({ () ⇒ apiGet("deployments") }, {
         case JArray(Nil) ⇒ true
-        case _           ⇒ false
+        case _           ⇒ logger.debug(s"Waiting for reset to complete..."); false
       }, {
-        () ⇒ logger.debug(s"Still waiting for reset to complete...")
+        () ⇒ logger.debug(s"Waiting for reset to complete...")
       }) runWith Sink.headOption
     }
   }
@@ -127,7 +128,7 @@ trait FlowMethods {
     waitFor({ () ⇒ vgaGet(port, path) }, {
       json ⇒ validate(json); true
     }, {
-      () ⇒ logger.debug(s"Still waiting for :${if (path.isEmpty) port else s"$port/$path"}")
+      () ⇒ logger.debug(s"Waiting for :${if (path.isEmpty) port else s"$port/$path"}")
     }) runWith Sink.headOption
   }
 
@@ -135,7 +136,7 @@ trait FlowMethods {
     waitFor({ () ⇒ tcp(Vamp.vgaHost, port, "*") }, {
       json ⇒ validate(json); true
     }, {
-      () ⇒ logger.debug(s"Still waiting for :$port")
+      () ⇒ logger.debug(s"Waiting for :$port")
     }) runWith Sink.headOption
   }
 

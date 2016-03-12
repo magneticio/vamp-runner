@@ -1,7 +1,7 @@
 name: runner
 
 gateways:
-  9050/tcp: runner/port
+  9052/tcp: runner/port
 
 clusters:
   runner:

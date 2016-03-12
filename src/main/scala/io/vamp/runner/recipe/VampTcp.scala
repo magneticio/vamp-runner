@@ -11,7 +11,7 @@ class VampTcp(implicit actorSystem: ActorSystem) extends Recipe {
 
     logger.info(s"Waiting for deployment...")
 
-    waitForTcp(9050, "*", { json ⇒
+    waitForTcp(9052, "*", { json ⇒
 
       logger.info("Response has been received:")
 

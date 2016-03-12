@@ -1,7 +1,7 @@
 name: runner
 
 gateways:
-  9050: frontend/port
+  9053: frontend/port
 
 clusters:
   frontend:

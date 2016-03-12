@@ -9,7 +9,7 @@ class VampHttpDependency(implicit actorSystem: ActorSystem) extends Recipe {
 
     logger.info(s"Waiting for deployment...")
 
-    waitFor(9050, "***", { json ⇒
+    waitFor(9053, "***", { json ⇒
 
       logger.info("Response has been received:")
 
