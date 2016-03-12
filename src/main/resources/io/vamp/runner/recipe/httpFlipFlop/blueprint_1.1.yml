@@ -9,7 +9,7 @@ clusters:
         ports:
           port: 8081/http
         environment_variables:
-          SAVA_RUNNER_ID: 1.0
+          SAVA_RUNNER_ID: 1
 
       environment_variables:
         SAVA_RUNNER_ID: 1.1

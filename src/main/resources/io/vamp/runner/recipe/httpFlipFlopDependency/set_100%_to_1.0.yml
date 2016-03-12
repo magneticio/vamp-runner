@@ -1,0 +1,14 @@
+name: runner
+
+clusters:
+  frontend:
+    services:
+    - breed: frontend1
+    - breed: frontend2
+    routing:
+      port:
+        routes:
+          frontend1:
+            weight: 100%
+          frontend2:
+            weight: 0%

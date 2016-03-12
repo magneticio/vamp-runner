@@ -1,0 +1,43 @@
+name: runner
+
+gateways:
+  9055: frontend/port
+
+clusters:
+  frontend:
+    services:
+      breed:
+        name: frontend1
+        deployable: magneticio/sava_runner:1.0.0
+        ports:
+          port: 8081/http
+        environment_variables:
+          SAVA_RUNNER_ID: frontend
+          SAVA_RUNNER_HTTP_DEPENDENCY_URL1: http://$backend.host:$backend.ports.port
+        dependencies:
+          backend: backend1
+
+      environment_variables:
+        SAVA_RUNNER_ID: 1.0
+        SAVA_RUNNER_HTTP_DEPENDENCY_URL1: http://$backend.host:$backend.ports.port
+
+      scale:
+        cpu: 0.2       
+        memory: 64MB
+        instances: 1
+
+  backend1:
+    services:
+      breed:
+        name: backend1
+        deployable: magneticio/sava_runner:1.0.0
+        ports:
+          port: 8085/http
+        environment_variables:
+          SAVA_RUNNER_ID: 1.0
+          SAVA_RUNNER_HTTP_PORT1: 8085
+
+      scale:
+        cpu: 0.2
+        memory: 64MB
+        instances: 1
