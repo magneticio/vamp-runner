@@ -12,6 +12,7 @@ trait VampRecipes {
     "http" -> new VampHttp,
     "http-flip-flop" -> new VampHttpFlipFlop,
     "tcp" -> new VampTcp,
-    "http-dependency" -> new VampHttpDependency
+    "http-dependency" -> new VampHttpDependency,
+    "tcp-dependency" -> new VampTcpDependency
   )
 }

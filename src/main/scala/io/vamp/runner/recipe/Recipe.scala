@@ -133,7 +133,7 @@ trait FlowMethods {
   }
 
   def waitForTcp(port: Int, send: String, validate: JValue ⇒ Unit): Future[Any] = {
-    waitFor({ () ⇒ tcp(Vamp.vgaHost, port, "*") }, {
+    waitFor({ () ⇒ tcp(Vamp.vgaHost, port, send) }, {
       json ⇒ validate(json); true
     }, {
       () ⇒ logger.debug(s"Waiting for :$port")
