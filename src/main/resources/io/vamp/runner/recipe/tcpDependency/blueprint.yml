@@ -7,15 +7,15 @@ clusters:
   frontend:
     services:
       breed:
-        name: frontend
+        name: frontend:runner
         deployable: magneticio/sava_runner:1.0.0
         ports:
           port: 8091/tcp
         environment_variables:
           SAVA_RUNNER_ID: frontend
-          SAVA_RUNNER_TCP_DEPENDENCY_URL1: $backend.host:$backend.ports.port
+          SAVA_RUNNER_TCP_DEPENDENCY_URL1: $be.host:$be.ports.port
         dependencies:
-          backend: backend
+          be: backend:runner
 
       scale:
         cpu: 0.2       
@@ -25,7 +25,7 @@ clusters:
   backend:
     services:
       breed:
-        name: backend
+        name: backend:runner
         deployable: magneticio/sava_runner:1.0.0
         ports:
           port: 8095/tcp

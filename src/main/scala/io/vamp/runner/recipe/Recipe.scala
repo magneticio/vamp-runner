@@ -31,15 +31,19 @@ object Recipe {
 
 abstract class Recipe(implicit system: ActorSystem) extends HttpMethods with FlowMethods {
 
+  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
   implicit val actorSystem = system
   implicit val executionContext = actorSystem.dispatcher
   implicit val materializer = ActorMaterializer()(actorSystem)
 
-  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  protected lazy val cleanUp = true
 
   def run: Future[Any]
 
   protected def resource(path: String) = getClass.getResourceAsStream(path)
+
+  override def reset() = if (cleanUp) super.reset() else Future.successful(false)
 }
 
 trait HttpMethods {

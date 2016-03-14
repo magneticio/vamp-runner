@@ -7,8 +7,8 @@ class VampInfo(implicit actorSystem: ActorSystem) extends Recipe {
 
   def run = apiGet("info").map {
     case response ⇒
-      val version = <<[String](response \ "version")
+      val version = Option(<<[String](response \ "version"))
       val message = <<[String](response \ "message")
-      logger.info(s"Vamp [$version]: $message")
+      logger.info(s"Vamp${if(version.isDefined) s" [${version.get}]" else ""}: $message")
   }
 }
