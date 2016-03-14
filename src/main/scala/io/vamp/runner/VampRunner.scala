@@ -54,19 +54,22 @@ object VampRunner extends App with VampRecipes {
 
   logger.info("Running recipes...")
 
+  var failures: List[(String, String)] = Nil
+
   runnables.foldLeft(Future.successful[Any]({}))({
     case (f, recipe) ⇒
       f flatMap { _ ⇒
         logger.info(s"Running recipe: ${recipe.name}")
-        recipe.execute
+        recipe.execute recover {
+          case failure ⇒
+            failures = failures :+ (recipe.name -> failure.getMessage)
+            logger.error(s"Failure: ${failure.getMessage}")
+        }
       }
-  }) recover {
-    case failure ⇒ logger.error(s"Failure: ${failure.getMessage}")
-  } onComplete {
+  }) onComplete {
     case _ ⇒
+      failures.foreach { case (name, failure) ⇒ logger.error(s"Failed [$name]: $failure") }
       logger.info("Done.")
-      Http().shutdownAllConnectionPools() onComplete {
-        case _ ⇒ actorSystem.terminate()
-      }
+      Http().shutdownAllConnectionPools() onComplete { case _ ⇒ actorSystem.terminate() }
   }
 }
