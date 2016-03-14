@@ -1,13 +1,13 @@
 package io.vamp.runner.recipe
 
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.Sink
-import io.vamp.runner.Vamp
 import org.json4s._
 
 class VampTcp(implicit actorSystem: ActorSystem) extends Recipe {
 
-  def run = apiPut("deployments/tcp", resource("tcp/blueprint.yml")).flatMap { _ ⇒
+  def name = "tcp"
+
+  protected def run = apiPut(s"deployments/$name", resource("tcp/blueprint.yml")).flatMap { _ ⇒
 
     logger.info(s"Waiting for deployment...")
 
@@ -29,7 +29,5 @@ class VampTcp(implicit actorSystem: ActorSystem) extends Recipe {
       if (port != 8091) throw new RuntimeException(s"Expected '8081' but not port: $port")
       if (request != "*") throw new RuntimeException(s"Expected '*' but not path: $request")
     })
-  } flatMap { _ ⇒
-    reset()
   }
 }

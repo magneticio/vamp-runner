@@ -3,11 +3,26 @@ package io.vamp.runner
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import com.typesafe.scalalogging.Logger
-import io.vamp.runner.recipe.Recipe
+import io.vamp.runner.recipe._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future
 import scala.language.postfixOps
+
+trait VampRecipes {
+
+  implicit def actorSystem: ActorSystem
+
+  lazy val recipes: List[Recipe] = List(
+    new VampInfo,
+    new VampHttp,
+    new VampHttpFlipFlop,
+    new VampTcp,
+    new VampHttpDependency,
+    new VampTcpDependency,
+    new VampHttpFlipFlopDependency
+  )
+}
 
 object VampRunner extends App with VampRecipes {
 
@@ -30,9 +45,9 @@ object VampRunner extends App with VampRecipes {
   implicit val actorSystem = ActorSystem("vamp-runner")
   implicit val executionContext = actorSystem.dispatcher
 
-  val runnables: List[(String, Recipe)] = if (args.isEmpty) recipes
+  val runnables: List[Recipe] = if (args.isEmpty) recipes
   else args.map {
-    case name ⇒ recipes.find(_._1 == name).getOrElse({
+    case name ⇒ recipes.find(_.name == name).getOrElse({
       throw new RuntimeException(s"No recipe: $name")
     })
   } toList
@@ -40,10 +55,10 @@ object VampRunner extends App with VampRecipes {
   logger.info("Running recipes...")
 
   runnables.foldLeft(Future.successful[Any]({}))({
-    case (f, (name, recipe)) ⇒
+    case (f, recipe) ⇒
       f flatMap { _ ⇒
-        logger.info(s"Running recipe: $name")
-        recipe.run
+        logger.info(s"Running recipe: ${recipe.name}")
+        recipe.execute
       }
   }) recover {
     case failure ⇒ logger.error(s"Failure: ${failure.getMessage}")

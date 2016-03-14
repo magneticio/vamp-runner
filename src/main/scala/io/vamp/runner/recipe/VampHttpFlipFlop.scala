@@ -4,9 +4,9 @@ import akka.actor.ActorSystem
 
 class VampHttpFlipFlop(implicit actorSystem: ActorSystem) extends FlipFlop {
 
-  def port: Int = 9051
+  def name = "http-flip-flop"
 
-  def resourcePath: String = "httpFlipFlop"
+  protected def port: Int = 9051
 
-  def deployment: String = "deployments/http-flip-flop"
+  protected def resourcePath: String = "httpFlipFlop"
 }

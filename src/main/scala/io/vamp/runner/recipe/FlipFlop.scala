@@ -11,23 +11,23 @@ import scala.language.postfixOps
 
 abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
 
-  private val parallelism = 1
+  private val parallelism = config.getInt("parallelism")
 
-  private val requestCount = 10
+  private val requestCount = config.getInt("request-count")
 
-  private val throttle = true
+  private val throttle = config.getBoolean("throttle")
 
-  private val delete = false
+  private val delete = config.getBoolean("delete")
 
-  def deployment: String
-  
-  def resourcePath: String
-
-  def port: Int
+  protected val deployment: String = s"deployments/$name"
 
   private var current = ""
 
-  def run = {
+  protected def port: Int
+
+  protected def resourcePath: String
+
+  protected def run = {
     logger.info(s"Parallelism  : $parallelism")
     logger.info(s"Request count: $requestCount")
     logger.info(s"Throttle     : $throttle")

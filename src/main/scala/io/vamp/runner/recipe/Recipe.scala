@@ -12,6 +12,7 @@ import akka.http.scaladsl.model.{ HttpRequest, _ }
 import akka.stream._
 import akka.stream.scaladsl.{ Sink, Source, Tcp }
 import akka.util.ByteString
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import io.vamp.runner.Vamp
 import org.json4s._
@@ -24,9 +25,11 @@ import scala.language.postfixOps
 
 object Recipe {
 
-  val interval = 3 seconds
+  private val config = ConfigFactory.load().getConfig("vamp.runner.recipes")
 
-  val timeout = 60 seconds
+  val interval = config.getInt("interval") seconds
+
+  val timeout = config.getInt("timeout") seconds
 }
 
 abstract class Recipe(implicit system: ActorSystem) extends HttpMethods with FlowMethods {
@@ -37,43 +40,51 @@ abstract class Recipe(implicit system: ActorSystem) extends HttpMethods with Flo
   implicit val executionContext = actorSystem.dispatcher
   implicit val materializer = ActorMaterializer()(actorSystem)
 
-  protected lazy val cleanUp = true
+  protected val config = ConfigFactory.load().getConfig(s"vamp.runner.recipes.$name")
 
-  def run: Future[Any]
+  protected val clean = config.getBoolean("clean")
+
+  protected val enabled = config.getBoolean("enabled")
+
+  def name: String
+
+  final def execute: Future[Any] = {
+    if (enabled) run.flatMap { case any ⇒ if (clean) reset() else Future.successful(any) } else Future.successful(false)
+  }
+
+  protected def run: Future[Any]
 
   protected def resource(path: String) = getClass.getResourceAsStream(path)
-
-  override def reset() = if (cleanUp) super.reset() else Future.successful(false)
 }
 
 trait HttpMethods {
   this: Recipe ⇒
 
-  implicit val formats = DefaultFormats
+  protected implicit val formats = DefaultFormats
 
-  def vgaGet(port: Int, path: String = "", recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+  protected def vgaGet(port: Int, path: String = "", recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     http(GET, s"http://${Vamp.vgaHost}:$port/$path", None, recoverWith)
   }
 
-  def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, recoverWith)
+  protected def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, recoverWith)
 
-  def apiPut(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+  protected def apiPut(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     api(PUT, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def apiPost(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+  protected def apiPost(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     api(POST, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def apiDelete(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+  protected def apiDelete(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     api(DELETE, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
   }
 
-  def api(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+  protected def api(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
     http(method, s"${Vamp.apiUrl}/$path", body, recoverWith)
   }
 
-  def http(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+  protected def http(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
 
     val url = new java.net.URL(uri)
 
@@ -97,7 +108,7 @@ trait HttpMethods {
       } runWith Sink.head
   }
 
-  def tcp(host: String, port: Int, send: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
+  protected def tcp(host: String, port: Int, send: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     Source.single(ByteString(send))
       .via(Tcp().outgoingConnection(host, port))
       .recover {
@@ -110,13 +121,13 @@ trait HttpMethods {
       } runWith Sink.head
   }
 
-  def <<[T](jv: JValue)(implicit mf: scala.reflect.Manifest[T]) = jv.extract[T]
+  protected def <<[T](jv: JValue)(implicit mf: scala.reflect.Manifest[T]) = jv.extract[T]
 }
 
 trait FlowMethods {
   this: Recipe with HttpMethods ⇒
 
-  def reset(): Future[Any] = {
+  protected def reset(): Future[Any] = {
     logger.info(s"Performing reset...")
     apiGet("reset") flatMap { _ ⇒
       waitFor({ () ⇒ apiGet("deployments") }, {
@@ -128,7 +139,7 @@ trait FlowMethods {
     }
   }
 
-  def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
+  protected def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
     waitFor({ () ⇒ vgaGet(port, path) }, {
       json ⇒ validate(json); true
     }, {
@@ -136,7 +147,7 @@ trait FlowMethods {
     }) runWith Sink.headOption
   }
 
-  def waitForTcp(port: Int, send: String, validate: JValue ⇒ Unit): Future[Any] = {
+  protected def waitForTcp(port: Int, send: String, validate: JValue ⇒ Unit): Future[Any] = {
     waitFor({ () ⇒ tcp(Vamp.vgaHost, port, send) }, {
       json ⇒ validate(json); true
     }, {
@@ -144,7 +155,7 @@ trait FlowMethods {
     }) runWith Sink.headOption
   }
 
-  def waitFor(request: () ⇒ Future[JValue], successful: JValue ⇒ Boolean, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
+  protected def waitFor(request: () ⇒ Future[JValue], successful: JValue ⇒ Boolean, recover: () ⇒ Unit): Source[Boolean, Cancellable] = {
     Source.tick(initialDelay = 0 seconds, interval = Recipe.interval, None).mapAsync[Boolean](1) { _ ⇒
       request().map {
         case JNothing ⇒

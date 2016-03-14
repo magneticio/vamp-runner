@@ -5,7 +5,9 @@ import org.json4s._
 
 class VampHttpDependency(implicit actorSystem: ActorSystem) extends Recipe {
 
-  def run = apiPut("deployments/http-dependency", resource("httpDependency/blueprint.yml")).flatMap { _ ⇒
+  def name = "http-dependency"
+
+  protected def run = apiPut(s"deployments/$name", resource("httpDependency/blueprint.yml")).flatMap { _ ⇒
 
     logger.info(s"Waiting for deployment...")
 
@@ -27,7 +29,5 @@ class VampHttpDependency(implicit actorSystem: ActorSystem) extends Recipe {
       if (port != 8085) throw new RuntimeException(s"Expected '8085' but not port: $port")
       if (path != "***") throw new RuntimeException(s"Expected '***' but not path: $path")
     })
-  } flatMap { _ ⇒
-    reset()
   }
 }

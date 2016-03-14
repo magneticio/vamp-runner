@@ -4,9 +4,9 @@ import akka.actor.ActorSystem
 
 class VampHttpFlipFlopDependency(implicit actorSystem: ActorSystem) extends FlipFlop {
 
-  def port: Int = 9055
+  def name = "http-flip-flop-dependency"
 
-  def resourcePath: String = "httpFlipFlopDependency"
+  protected def port: Int = 9055
 
-  def deployment: String = "deployments/http-flip-flop-dependency"
+  protected def resourcePath: String = "httpFlipFlopDependency"
 }
