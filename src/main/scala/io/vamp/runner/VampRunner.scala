@@ -16,12 +16,12 @@ trait VampRecipes {
   lazy val recipes: List[Recipe] = List(
     new VampInfo,
     new VampHttp,
-    new VampHttpFlipFlop,
-    new VampTcp,
+    new VampHttpCanary,
     new VampHttpDependency,
-    new VampTcpDependency,
+    new VampHttpFlipFlop,
     new VampHttpFlipFlopDependency,
-    new VampHttpCanary
+    new VampTcp,
+    new VampTcpDependency
   )
 }
 
