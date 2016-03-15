@@ -143,7 +143,7 @@ trait FlowMethods {
     waitFor({ () ⇒ vgaGet(port, path) }, {
       json ⇒ validate(json); true
     }, {
-      () ⇒ logger.debug(s"Waiting for :${if (path.isEmpty) port else s"$port/$path"}")
+      () ⇒ logger.debug(s"Waiting for http://${Vamp.vgaHost}:${if (path.isEmpty) port else s"$port/$path"}")
     }) runWith Sink.headOption
   }
 
@@ -151,7 +151,7 @@ trait FlowMethods {
     waitFor({ () ⇒ tcp(Vamp.vgaHost, port, send) }, {
       json ⇒ validate(json); true
     }, {
-      () ⇒ logger.debug(s"Waiting for :$port")
+      () ⇒ logger.debug(s"Waiting for ${Vamp.vgaHost}:$port")
     }) runWith Sink.headOption
   }
 
@@ -171,6 +171,24 @@ trait FlowMethods {
       }
     } completionTimeout Recipe.timeout dropWhile {
       !_
+    }
+  }
+}
+
+trait StressMethods {
+  this: Recipe ⇒
+
+  protected val parallelism = config.getInt("parallelism")
+
+  protected val requestCount = config.getInt("request-count")
+
+  protected val throttle = config.getBoolean("throttle")
+
+  protected def keepRequesting(request: Int ⇒ Future[Any]): Future[Any] = {
+    val flow = Source(1 to requestCount).mapAsync(parallelism) { index ⇒ request(index) }
+    throttle match {
+      case false ⇒ flow runWith Sink.ignore
+      case true  ⇒ flow throttle (1, 1.0 / parallelism seconds, 1, ThrottleMode.shaping) runWith Sink.ignore
     }
   }
 }

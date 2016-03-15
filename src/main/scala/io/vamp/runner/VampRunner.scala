@@ -20,7 +20,8 @@ trait VampRecipes {
     new VampTcp,
     new VampHttpDependency,
     new VampTcpDependency,
-    new VampHttpFlipFlopDependency
+    new VampHttpFlipFlopDependency,
+    new VampHttpCanary
   )
 }
 

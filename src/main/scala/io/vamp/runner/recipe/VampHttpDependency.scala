@@ -25,9 +25,9 @@ class VampHttpDependency(implicit actorSystem: ActorSystem) extends Recipe {
       logger.info(s"Port   : $port")
       logger.info(s"Path   : $path")
 
-      if (id != "backend") throw new RuntimeException(s"Expected 'backend' but not id: $id")
-      if (port != 8085) throw new RuntimeException(s"Expected '8085' but not port: $port")
-      if (path != "***") throw new RuntimeException(s"Expected '***' but not path: $path")
+      if (id != "backend") throw new RuntimeException(s"Expected id == 'backend', not: $id")
+      if (port != 8085) throw new RuntimeException(s"Expected port == '8085', not: $port")
+      if (path != "***") throw new RuntimeException(s"Expected path == '***', not: $path")
     })
   }
 }

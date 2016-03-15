@@ -1,21 +1,12 @@
 package io.vamp.runner.recipe
 
 import akka.actor.ActorSystem
-import akka.stream.ThrottleMode
-import akka.stream.scaladsl.{ Sink, Source }
 import org.json4s._
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
 import scala.language.postfixOps
 
-abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
-
-  private val parallelism = config.getInt("parallelism")
-
-  private val requestCount = config.getInt("request-count")
-
-  private val throttle = config.getBoolean("throttle")
+abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe with StressMethods {
 
   private val delete = config.getBoolean("delete")
 
@@ -28,26 +19,20 @@ abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
   protected def resourcePath: String
 
   protected def run = {
+
     logger.info(s"Parallelism  : $parallelism")
     logger.info(s"Request count: $requestCount")
     logger.info(s"Throttle     : $throttle")
     logger.info(s"Delete       : $delete")
 
-    deploy() flatMap { _ ⇒
-      throttle match {
-        case false ⇒ flipFlop() runWith Sink.ignore
-        case true  ⇒ flipFlop() throttle (1, 1.0 / parallelism seconds, 1, ThrottleMode.shaping) runWith Sink.ignore
-      }
-    } flatMap { _ ⇒
-      reset()
-    }
+    deploy() flatMap { _ ⇒ flipFlop() }
   }
 
   private def deploy() = {
     apiPut(deployment, resource(s"$resourcePath/blueprint_1.0.yml")).flatMap { _ ⇒
       waitFor(port, "", { json ⇒
         current = <<[String](json \ "id")
-        if (current != "1.0" && current != "1.1") throw new RuntimeException(s"Expected '1.0' but not id: $current")
+        if (current != "1.0" && current != "1.1") throw new RuntimeException(s"Expected id == '1.0', not: $current")
       })
     } flatMap { _ ⇒
       apiPut(deployment, resource(s"$resourcePath/blueprint_1.1.yml"))
@@ -76,7 +61,7 @@ abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
       }
     }
 
-    Source(1 to requestCount).mapAsync(parallelism) { index ⇒
+    keepRequesting({ index ⇒
       vgaGet(port, s"$index", {
         case e: Throwable ⇒
           logger.error(e.getMessage, e)
@@ -93,6 +78,6 @@ abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe {
           logger.error(failure.getMessage, failure)
           throw failure
       }
-    }
+    })
   }
 }
