@@ -1,6 +1,7 @@
 package io.vamp.runner.recipe
 
 import akka.actor.ActorSystem
+import akka.stream.scaladsl.Sink
 import org.json4s._
 
 import scala.concurrent.Future
@@ -25,42 +26,19 @@ abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe with S
     logger.info(s"Throttle     : $throttle")
     logger.info(s"Delete       : $delete")
 
-    deploy() flatMap { _ ⇒ flipFlop() }
-  }
-
-  private def deploy() = {
-    apiPut(deployment, resource(s"$resourcePath/blueprint_1.0.yml")).flatMap { _ ⇒
-      waitFor(port, "", { json ⇒
+    for {
+      _ ← deploy("1.0")
+      _ ← waitFor(port, "", { json ⇒
         current = <<[String](json \ "id")
         if (current != "1.0" && current != "1.1") throw new RuntimeException(s"Expected id == '1.0', not: $current")
       })
-    } flatMap { _ ⇒
-      apiPut(deployment, resource(s"$resourcePath/blueprint_1.1.yml"))
-    }
+      _ ← deploy("1.1")
+      _ ← flipFlop()
+
+    } yield {}
   }
 
   private def flipFlop() = {
-    def flip() = {
-      def switch(to: String) = {
-        val old = current
-        logger.info(s"$current -> $to")
-        apiPut(deployment, resource(s"$resourcePath/blueprint_$to.yml")) flatMap { _ ⇒
-          apiPut(deployment, resource(s"$resourcePath/set_100%_to_$to.yml")) flatMap { some ⇒
-            if (delete)
-              apiDelete(deployment, resource(s"$resourcePath/blueprint_$old.yml"))
-            else Future.successful(some)
-          }
-        }
-        current = to
-      }
-
-      current match {
-        case "1.0" ⇒ switch("1.1")
-        case "1.1" ⇒ switch("1.0")
-        case _     ⇒ throw new RuntimeException(s"Unknown: $current")
-      }
-    }
-
     keepRequesting({ index ⇒
       vgaGet(port, s"$index", {
         case e: Throwable ⇒
@@ -79,5 +57,45 @@ abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe with S
           throw failure
       }
     })
+  }
+
+  private def flip() = {
+    def switch(to: String) = {
+      val old = current
+      logger.info(s"$current -> $to")
+
+      for {
+        _ ← deploy(to)
+        _ ← trafficTo(to)
+        _ ← if (delete) undeploy(old) else Future.successful(true)
+
+      } yield {}
+
+      current = to
+    }
+
+    current match {
+      case "1.0" ⇒ switch("1.1")
+      case "1.1" ⇒ switch("1.0")
+      case _     ⇒ throw new RuntimeException(s"Unknown: $current")
+    }
+  }
+
+  private def deploy(id: String) = {
+    logger.info(s"Deploying $id")
+    apiPut(deployment, resource(s"$resourcePath/blueprint_$id.yml"))
+  }
+
+  private def trafficTo(id: String) = {
+    logger.info(s"Set 100% to $id")
+    for {
+      _ ← apiPut(deployment, resource(s"$resourcePath/set_100%_to_$id.yml"))
+      _ ← waitFor({ () ⇒ vgaGet(port, "") }, { json ⇒ <<[String](json \ "id") == id }, { () ⇒ }) runWith Sink.headOption
+    } yield {}
+  }
+
+  private def undeploy(id: String) = {
+    logger.info(s"Undeploying $id")
+    apiDelete(deployment, resource(s"$resourcePath/blueprint_$id.yml"))
   }
 }
