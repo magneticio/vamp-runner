@@ -27,7 +27,8 @@ trait CommandLineParser {
     var command: Option[String] = None
     values = arguments.groupBy { argument ⇒
       if (argument.startsWith("-")) {
-        command = Option(argument.dropWhile(_ == '-').mkString)
+        val cmd = argument.dropWhile(_ == '-').mkString
+        command = parsed.find(p ⇒ p.name == cmd || p.short == cmd).map(_.name)
         ""
       } else command.getOrElse("")
     } filter (_._1 != "")

@@ -23,7 +23,8 @@ object VampRunner extends App with Runner {
 
   logger.info(logo)
 
-  logger.info(s"Vamp API URL: ${Vamp.apiUrl}")
+  logger.info(s"Vamp API URL     : ${Vamp.apiUrl}")
+  logger.info(s"Vamp Gateway Host: ${Vamp.vgaHost}")
 
   parse(args)
 

@@ -7,9 +7,7 @@
         </encoder>
     </appender>
 
-    <logger name="io.vamp.runner" level="TRACE"/>
-
-    <logger name="akka" level="OFF"/>
+    <logger name="io.vamp.runner" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
