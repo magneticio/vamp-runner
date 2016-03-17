@@ -9,6 +9,8 @@
 
     <logger name="io.vamp.runner" level="TRACE"/>
 
+    <logger name="akka" level="OFF"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

@@ -66,7 +66,7 @@ trait HttpMethods {
     http(GET, s"http://${Vamp.vgaHost}:$port/$path", None, recoverWith)
   }
 
-  protected def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, recoverWith)
+  protected def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = api(GET, path, None, { _ ⇒ throw new RuntimeException("No connection.") })
 
   protected def apiPut(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
     api(PUT, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
