@@ -6,30 +6,55 @@ import com.typesafe.scalalogging.Logger
 import io.vamp.runner.recipe._
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.language.postfixOps
 
-trait VampRecipes {
+object VampRunner extends App with Runner {
 
-  implicit def actorSystem: ActorSystem
+  implicit val actorSystem = ActorSystem("vamp-runner")
+  implicit val executionContext = actorSystem.dispatcher
 
-  lazy val recipes: List[Recipe] = List(
-    new VampInfo,
-    new VampHttp,
-    new VampHttpCanary,
-    new VampHttpDependency,
-    new VampHttpFlipFlop,
-    new VampHttpFlipFlopDependency,
-    new VampTcp,
-    new VampTcpDependency
+  val availableArguments = List(
+    CommandLineArgument("h", "help", "Print this help."),
+    CommandLineArgument("l", "list", "List all recipes."),
+    CommandLineArgument("a", "all", "Run all recipes."),
+    CommandLineArgument("r", "run", "Run named recipe(s).")
   )
+
+  logger.info(logo)
+
+  logger.info(s"Vamp API URL: ${Vamp.apiUrl}")
+
+  parse(args)
+
+  def help() = {
+    logger.info("Usage:")
+    availableArguments.foreach(arg ⇒ logger.info(arg.toString))
+  }
+
+  if (hasArgument("help")) help()
+
+  if (hasArgument("list")) recipes.foreach(recipe ⇒ logger.info(recipe.name))
+
+  if (hasArgument("all"))
+    execute()
+  else (hasArgument("run"), getValues("run")) match {
+    case (true, run) if run.nonEmpty ⇒ execute(run)
+    case _ ⇒
+      if (args.isEmpty) help()
+      shutdown()
+  }
 }
 
-object VampRunner extends App with VampRecipes {
+trait Runner extends VampRecipes with CommandLineParser {
 
   val logger = Logger(LoggerFactory.getLogger(VampRunner.getClass))
 
-  logger.info(
+  implicit def actorSystem: ActorSystem
+
+  implicit def executionContext: ExecutionContext
+
+  def logo = {
     s"""
        |██╗   ██╗ █████╗ ███╗   ███╗██████╗
        |██║   ██║██╔══██╗████╗ ████║██╔══██╗
@@ -39,40 +64,40 @@ object VampRunner extends App with VampRecipes {
        |  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
        |                       runner
        |                       by magnetic.io
-    """.stripMargin)
-
-  logger.info(s"Vamp API URL: ${Vamp.apiUrl}")
-
-  implicit val actorSystem = ActorSystem("vamp-runner")
-  implicit val executionContext = actorSystem.dispatcher
-
-  val runnables: List[Recipe] = if (args.isEmpty) recipes
-  else args.map {
-    case name ⇒ recipes.find(_.name == name).getOrElse({
-      throw new RuntimeException(s"No recipe: $name")
-    })
-  } toList
-
-  logger.info("Running recipes...")
-
-  var succeeded: List[String] = Nil
-  var failed: List[(String, String)] = Nil
-
-  runnables.foldLeft(Future.successful[Any]({}))({
-    case (f, recipe) ⇒
-      f flatMap { _ ⇒
-        logger.info(s"Running recipe: ${recipe.name}")
-        recipe.execute map { _ ⇒ succeeded = succeeded :+ recipe.name } recover {
-          case failure ⇒
-            failed = failed :+ (recipe.name -> failure.getMessage)
-            logger.error(s"Failure: ${failure.getMessage}")
-        }
-      }
-  }) onComplete {
-    case _ ⇒
-      succeeded.foreach { case name ⇒ logger.info(s"Succeeded: $name") }
-      failed.foreach { case (name, failure) ⇒ logger.error(s"Failed [$name]: $failure") }
-      logger.info("Done.")
-      Http().shutdownAllConnectionPools() onComplete { case _ ⇒ actorSystem.terminate() }
+    """.stripMargin
   }
+
+  def execute(args: List[String] = Nil) = {
+    val runnables: List[Recipe] = if (args.isEmpty) recipes
+    else args.map {
+      case name ⇒ recipes.find(_.name == name).getOrElse({
+        throw new RuntimeException(s"No recipe: $name")
+      })
+    }
+
+    logger.info("Running recipes...")
+
+    var succeeded: List[String] = Nil
+    var failed: List[(String, String)] = Nil
+
+    runnables.foldLeft(Future.successful[Any]({}))({
+      case (f, recipe) ⇒
+        f flatMap { _ ⇒
+          logger.info(s"Running recipe: ${recipe.name}")
+          recipe.execute map { _ ⇒ succeeded = succeeded :+ recipe.name } recover {
+            case failure ⇒
+              failed = failed :+ (recipe.name -> failure.getMessage)
+              logger.error(s"Failure: ${failure.getMessage}")
+          }
+        }
+    }) onComplete {
+      case _ ⇒
+        succeeded.foreach { case name ⇒ logger.info(s"Succeeded: $name") }
+        failed.foreach { case (name, failure) ⇒ logger.error(s"Failed [$name]: $failure") }
+        logger.info("Done.")
+        shutdown()
+    }
+  }
+
+  def shutdown() = Http().shutdownAllConnectionPools() onComplete { case _ ⇒ actorSystem.terminate() }
 }
