@@ -42,14 +42,16 @@ abstract class Recipe(implicit system: ActorSystem) extends HttpMethods with Flo
 
   protected val config = ConfigFactory.load().getConfig(s"vamp.runner.recipes.$name")
 
-  protected val clean = config.getBoolean("clean")
+  protected val resetAfter = config.getBoolean("reset-after")
 
   protected val enabled = config.getBoolean("enabled")
+
+  val description = config.getString("description")
 
   def name: String
 
   final def execute: Future[Any] = {
-    if (enabled) run.flatMap { case any ⇒ if (clean) reset() else Future.successful(any) } else Future.successful(false)
+    if (enabled) run.flatMap { case any ⇒ if (resetAfter) reset() else Future.successful(any) } else Future.successful(false)
   }
 
   protected def run: Future[Any]

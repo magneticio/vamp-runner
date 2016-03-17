@@ -34,7 +34,7 @@ object VampRunner extends App with Runner {
 
   if (hasArgument("help")) help()
 
-  if (hasArgument("list")) recipes.foreach(recipe ⇒ logger.info(recipe.name))
+  if (hasArgument("list")) recipes.foreach(recipe ⇒ logger.info(s"${recipe.name.padTo(30, " ").mkString} - ${recipe.description}"))
 
   if (hasArgument("all"))
     execute()
