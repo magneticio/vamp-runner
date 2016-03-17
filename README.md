@@ -7,9 +7,9 @@ Example:
   java -jar \
        -Dlogback.configurationFile=/PATH_TO/logback.xml \
        -Dconfig.file=/PATH_TO/application.conf \
-       /vamp/vamp-runner.jar \
-       --help`
+       /vamp/vamp-runner.jar --help`
 
+```
 ```
 Usage:
   -h     --help       Print this help.
