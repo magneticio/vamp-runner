@@ -31,8 +31,7 @@ By default it's assumed that Vamp and VGA run on localhost, if that is not the c
 Providing custom application ([application.conf](https://github.com/magneticio/vamp-runner/blob/master/src/main/resources/reference.conf)) and log ([logback.xml](https://github.com/magneticio/vamp-runner/blob/master/conf/logback.xml)) configuration:
 
 ```
-  docker run -v /ABS_PATH_TO_CONFIGURATION_DIR/conf:/vamp/conf \
-             magneticio/vamp-docker:runner <params>
+  docker run -v /ABS_PATH_TO/conf:/vamp/conf magneticio/vamp-docker:runner <params>
 ```
 
 Minimal `application.conf` in case of Vamp/VGA hosts:
