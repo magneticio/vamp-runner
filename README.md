@@ -10,12 +10,13 @@ Example:
        /vamp/vamp-runner.jar --help`
 
 ```
+
 ```
-Usage:
-  -h     --help       Print this help.
-  -l     --list       List all recipes.
-  -a     --all        Run all recipes.
-  -r     --run        Run named recipe(s).
+  Usage:
+    -h     --help       Print this help.
+    -l     --list       List all recipes.
+    -a     --all        Run all recipes.
+    -r     --run        Run named recipe(s).
 ```
 
 Building Docker image: `./docker.sh`
@@ -31,7 +32,8 @@ Providing custom application ([application.conf](https://github.com/magneticio/v
 
 ```
   docker run -v /ABS_PATH_TO_CONFIGURATION_DIR/conf:/vamp/conf \
-             magneticio/vamp-docker:runner <params>`
+             magneticio/vamp-docker:runner <params>
+```
 
 Minimal `application.conf` in case of Vamp/VGA hosts:
 ```
