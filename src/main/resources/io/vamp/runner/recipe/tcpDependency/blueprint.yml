@@ -8,7 +8,7 @@ clusters:
     services:
       breed:
         name: frontend:runner
-        deployable: magneticio/sava_runner:1.0.0
+        deployable: magneticio/sava:runner_1.0
         ports:
           port: 8091/tcp
         environment_variables:
@@ -26,7 +26,7 @@ clusters:
     services:
       breed:
         name: backend:runner
-        deployable: magneticio/sava_runner:1.0.0
+        deployable: magneticio/sava:runner_1.0
         ports:
           port: 8095/tcp
         environment_variables:
