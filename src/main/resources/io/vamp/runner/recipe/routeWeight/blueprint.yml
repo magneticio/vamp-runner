@@ -4,18 +4,18 @@ clusters:
   runner:
     services:
 
-      - breed: weight:1
+      - breed: runner:1
         scale: small
 
-      - breed: weight:2
+      - breed: runner:2
         scale: small
 
     routing:
       routes:
-        weight:1:
+        runner:1:
           weight: 80%
 
-        weight:2:
+        runner:2:
           weight: 20%
 
 

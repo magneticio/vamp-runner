@@ -1,0 +1,9 @@
+name: runner:1
+
+gateways:
+  9058: runner/port
+
+clusters:
+  runner:
+    services:
+      breed: runner:1
