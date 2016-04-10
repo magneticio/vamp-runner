@@ -14,11 +14,11 @@ class VampHttpCanary(implicit actorSystem: ActorSystem) extends Recipe with Stre
   protected def run = for {
 
     _ ← deploy("blueprint1")
-    _ ← waitFor("1.0", force = true, extended = false)
+    _ ← waitForService("1.0", force = true, extended = false)
     _ ← deploy("blueprint2")
-    _ ← waitFor("1.1")
+    _ ← waitForService("1.1")
     _ ← undeploy("blueprint1")
-    _ ← waitFor("1.1")
+    _ ← waitForService("1.1")
 
   } yield {}
 
@@ -32,7 +32,7 @@ class VampHttpCanary(implicit actorSystem: ActorSystem) extends Recipe with Stre
     apiDelete(s"deployments/$name", resource(s"httpCanary/$blueprint.yml"))
   }
 
-  private def waitFor(id: String, force: Boolean = false, extended: Boolean = true): Future[Any] = {
+  private def waitForService(id: String, force: Boolean = false, extended: Boolean = true): Future[Any] = {
 
     val port = 9056
 

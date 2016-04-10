@@ -15,6 +15,7 @@ trait VampRecipes {
     new VampHttpFlipFlop,
     new VampHttpFlipFlopDependency,
     new VampTcp,
-    new VampTcpDependency
+    new VampTcpDependency,
+    new VampRouteWeight
   )
 }

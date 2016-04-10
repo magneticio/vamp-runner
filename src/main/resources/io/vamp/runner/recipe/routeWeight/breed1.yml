@@ -1,0 +1,6 @@
+name: weight:1
+deployable: magneticio/sava:runner_1.0
+ports:
+  port: 8081/http
+environment_variables:
+  SAVA_RUNNER_ID: 1.0.0

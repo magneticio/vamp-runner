@@ -141,7 +141,7 @@ trait FlowMethods {
     }
   }
 
-  protected def waitFor(port: Int, path: String, validate: JValue ⇒ Unit): Future[Any] = {
+  protected def waitFor(port: Int, path: String = "", validate: JValue ⇒ Unit = { _ ⇒ }): Future[Any] = {
     waitFor({ () ⇒ vgaGet(port, path) }, {
       json ⇒ validate(json); true
     }, {
