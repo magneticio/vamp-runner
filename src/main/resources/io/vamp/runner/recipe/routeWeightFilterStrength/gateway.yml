@@ -7,4 +7,4 @@ routes:
     weight: 20%
     filter_strength: 50%
     filters:
-    - condition: "{ url_beg /2 }"
+    - url_beg

@@ -53,6 +53,7 @@ class VampRouteWeightFilterStrength(implicit actorSystem: ActorSystem) extends R
     for {
       _ ← apiPost("breeds", resource("routeWeightFilterStrength/breed1.yml"))
       _ ← apiPost("breeds", resource("routeWeightFilterStrength/breed2.yml"))
+      _ ← apiPost("filters", resource("routeWeightFilterStrength/filter.yml"))
       _ ← apiPost("gateways", resource("routeWeightFilterStrength/gateway.yml"))
       _ ← apiPut(s"deployments/$name-1", resource("routeWeightFilterStrength/blueprint1.yml"))
       _ ← apiPut(s"deployments/$name-2", resource("routeWeightFilterStrength/blueprint2.yml"))

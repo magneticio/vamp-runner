@@ -1,0 +1,2 @@
+name: url_beg
+condition: "{ url_beg /2 }"
