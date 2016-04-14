@@ -84,7 +84,8 @@ trait Runner extends VampRecipes with CommandLineParser {
     runnables.foldLeft(Future.successful[Any]({}))({
       case (f, recipe) ⇒
         f flatMap { _ ⇒
-          logger.info(s"Running recipe: ${recipe.name}")
+          logger.info(s"Recipe name       : ${recipe.name}")
+          logger.info(s"Recipe description: ${recipe.description}")
           recipe.execute map { _ ⇒ succeeded = succeeded :+ recipe.name } recover {
             case failure ⇒
               failed = failed :+ (recipe.name -> failure.getMessage)
