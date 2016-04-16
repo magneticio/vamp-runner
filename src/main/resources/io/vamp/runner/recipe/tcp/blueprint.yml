@@ -18,3 +18,9 @@ clusters:
         cpu: 0.2       
         memory: 64MB
         instances: 1
+
+    routing:
+      port:
+        routes:
+          http:1.0.0:
+            balance: source
