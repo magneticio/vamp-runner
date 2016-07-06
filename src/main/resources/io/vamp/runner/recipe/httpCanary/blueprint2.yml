@@ -36,7 +36,7 @@ clusters:
         memory: 64MB
         instances: 1
 
-    routing:
+    gateways:
       port:
         routes:
           runner:1.0:

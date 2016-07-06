@@ -5,7 +5,7 @@ clusters:
     services:
     - breed: frontend1
     - breed: frontend2
-    routing:
+    gateways:
       port:
         routes:
           frontend1:

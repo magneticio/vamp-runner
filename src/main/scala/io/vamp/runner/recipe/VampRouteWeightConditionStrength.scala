@@ -2,9 +2,9 @@ package io.vamp.runner.recipe
 
 import akka.actor.ActorSystem
 
-class VampRouteWeightFilterStrength(implicit actorSystem: ActorSystem) extends Recipe with StressMethods {
+class VampRouteWeightConditionStrength(implicit actorSystem: ActorSystem) extends Recipe with StressMethods {
 
-  def name = "route-weight-filter-strength"
+  def name = "route-weight-condition-strength"
 
   private val port = 9060
 
@@ -29,7 +29,7 @@ class VampRouteWeightFilterStrength(implicit actorSystem: ActorSystem) extends R
      *
      * service 2
      * weight 20%
-     * filter strength 50% if path "/2"
+     * condition strength 50% if path "/2"
      *
      * - any non "/2" path - 50% of all requests:
      * service 1: 80%
@@ -51,12 +51,12 @@ class VampRouteWeightFilterStrength(implicit actorSystem: ActorSystem) extends R
   private def deploy() = {
     logger.info(s"Deploying...")
     for {
-      _ ← apiPost("breeds", resource("routeWeightFilterStrength/breed1.yml"))
-      _ ← apiPost("breeds", resource("routeWeightFilterStrength/breed2.yml"))
-      _ ← apiPost("filters", resource("routeWeightFilterStrength/filter.yml"))
-      _ ← apiPost("gateways", resource("routeWeightFilterStrength/gateway.yml"))
-      _ ← apiPut(s"deployments/$name-1", resource("routeWeightFilterStrength/blueprint1.yml"))
-      _ ← apiPut(s"deployments/$name-2", resource("routeWeightFilterStrength/blueprint2.yml"))
+      _ ← apiPost("breeds", resource("routeWeightConditionStrength/breed1.yml"))
+      _ ← apiPost("breeds", resource("routeWeightConditionStrength/breed2.yml"))
+      _ ← apiPost("conditions", resource("routeWeightConditionStrength/condition.yml"))
+      _ ← apiPost("gateways", resource("routeWeightConditionStrength/gateway.yml"))
+      _ ← apiPut(s"deployments/$name-1", resource("routeWeightConditionStrength/blueprint1.yml"))
+      _ ← apiPut(s"deployments/$name-2", resource("routeWeightConditionStrength/blueprint2.yml"))
       _ ← {
         logger.info(s"Waiting for deployment 1...")
         waitFor(9058)

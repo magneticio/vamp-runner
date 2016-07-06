@@ -17,7 +17,7 @@ trait VampRecipes {
     new VampTcp,
     new VampTcpDependency,
     new VampRouteWeight,
-    new VampRouteWeightFilterStrength,
+    new VampRouteWeightConditionStrength,
     new VampScale
   )
 }

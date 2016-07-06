@@ -5,7 +5,7 @@ clusters:
     services:
     - breed: http-flip-flop:1.0
     - breed: http-flip-flop:1.1
-    routing:
+    gateways:
       port:
         routes:
           http-flip-flop:1.0:

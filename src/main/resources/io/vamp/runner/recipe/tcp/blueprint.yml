@@ -15,11 +15,11 @@ clusters:
           SAVA_RUNNER_ID: 1.0.0
 
       scale:
-        cpu: 0.2       
+        cpu: 0.2
         memory: 64MB
         instances: 1
 
-    routing:
+    gateways:
       port:
         routes:
           http:1.0.0:

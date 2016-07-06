@@ -10,7 +10,7 @@ clusters:
       - breed: runner:2
         scale: small
 
-    routing:
+    gateways:
       routes:
         runner:1:
           weight: 80%
