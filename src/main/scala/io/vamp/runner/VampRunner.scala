@@ -7,7 +7,6 @@ import io.vamp.runner.recipe._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.language.postfixOps
 
 object VampRunner extends App with Runner {
 
@@ -63,7 +62,7 @@ trait Runner extends VampRecipes with CommandLineParser {
        |╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝
        | ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║
        |  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
-       |                       runner
+       |                       runner ${Vamp.version}
        |                       by magnetic.io
     """.stripMargin
   }

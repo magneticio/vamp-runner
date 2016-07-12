@@ -5,7 +5,6 @@ import akka.stream.scaladsl.Sink
 import org.json4s._
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 abstract class FlipFlop(implicit actorSystem: ActorSystem) extends Recipe with StressMethods {
 

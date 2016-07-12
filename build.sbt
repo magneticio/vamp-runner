@@ -1,6 +1,8 @@
+import sbt.ExclusionRule
+
 import scalariform.formatter.preferences._
 
-version := "0.1.0"
+version := VersionHelper.versionByTag
 
 resolvers in ThisBuild ++= Seq(
   Resolver.typesafeRepo("releases"),
@@ -9,7 +11,7 @@ resolvers in ThisBuild ++= Seq(
 
 libraryDependencies ++= {
 
-  val akka = "2.4.2"
+  val akka = "2.4.8"
   val json4s = "3.3.0"
   val config = "1.3.0"
   val logging = "3.1.0"
@@ -18,12 +20,12 @@ libraryDependencies ++= {
 
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akka,
-    "com.typesafe.akka" %% "akka-stream" % akka,
+    "com.typesafe.akka" %% "akka-stream" % akka excludeAll ExclusionRule(organization = "com.typesafe"),
     "com.typesafe.akka" %% "akka-http-core" % akka,
-    "com.typesafe.akka" %% "akka-slf4j" % akka,
+    "com.typesafe.akka" %% "akka-slf4j" % akka excludeAll ExclusionRule(organization = "org.slf4j"),
     "org.json4s" %% "json4s-native" % json4s,
     "com.typesafe" % "config" % config,
-    "com.typesafe.scala-logging" %% "scala-logging" % logging,
+    "com.typesafe.scala-logging" %% "scala-logging" % logging excludeAll ExclusionRule(organization = "org.slf4j"),
     "org.slf4j" % "slf4j-api" % slf4j,
     "ch.qos.logback" % "logback-classic" % logback
   )
@@ -36,7 +38,7 @@ scalariformSettings ++ Seq(ScalariformKeys.preferences := ScalariformKeys.prefer
   .setPreference(PreserveDanglingCloseParenthesis, true)
   .setPreference(RewriteArrowSymbols, true))
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 scalacOptions += "-target:jvm-1.8"
 
