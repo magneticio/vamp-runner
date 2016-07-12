@@ -1,5 +1,3 @@
-import sbt.ExclusionRule
-
 import scalariform.formatter.preferences._
 
 version := VersionHelper.versionByTag
@@ -11,24 +9,20 @@ resolvers in ThisBuild ++= Seq(
 
 libraryDependencies ++= {
 
-  val akka = "2.4.8"
-  val json4s = "3.3.0"
-  val config = "1.3.0"
-  val logging = "3.1.0"
-  val slf4j = "1.7.16"
-  val logback = "1.1.5"
+  val akka = "com.typesafe.akka" %% "akka-actor" % "2.4.8" ::
+    "com.typesafe.akka" %% "akka-http-core" % "2.4.8" ::
+    "com.typesafe.akka" %% "akka-stream" % "2.4.8" ::
+    ("com.typesafe.akka" %% "akka-slf4j" % "2.4.8" exclude("org.slf4j", "slf4j-api")) :: Nil
 
-  Seq(
-    "com.typesafe.akka" %% "akka-actor" % akka,
-    "com.typesafe.akka" %% "akka-stream" % akka excludeAll ExclusionRule(organization = "com.typesafe"),
-    "com.typesafe.akka" %% "akka-http-core" % akka,
-    "com.typesafe.akka" %% "akka-slf4j" % akka excludeAll ExclusionRule(organization = "org.slf4j"),
-    "org.json4s" %% "json4s-native" % json4s,
-    "com.typesafe" % "config" % config,
-    "com.typesafe.scala-logging" %% "scala-logging" % logging excludeAll ExclusionRule(organization = "org.slf4j"),
-    "org.slf4j" % "slf4j-api" % slf4j,
-    "ch.qos.logback" % "logback-classic" % logback
-  )
+  val json = "org.json4s" %% "json4s-native" % "3.3.0" :: Nil
+
+  val config = "com.typesafe" % "config" % "1.3.0" :: Nil
+
+  val logging = "org.slf4j" % "slf4j-api" % "1.7.21" ::
+    ("ch.qos.logback" % "logback-classic" % "1.1.7" exclude("org.slf4j", "slf4j-api")) ::
+    ("com.typesafe.scala-logging" %% "scala-logging" % "3.4.0" exclude("org.slf4j", "slf4j-api")) :: Nil
+
+  akka ++ json ++ config ++ logging
 }
 
 scalariformSettings ++ Seq(ScalariformKeys.preferences := ScalariformKeys.preferences.value
