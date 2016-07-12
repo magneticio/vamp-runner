@@ -2,6 +2,15 @@ sudo: false
 language: scala
 scala: 2.11.8
 jdk: oraclejdk8
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
 cache:
   directories:
   - "$HOME/.m2/repository"
@@ -21,7 +30,7 @@ before_script: |
   curl -L -o $HOME/.sbt/launchers/0.13.9/sbt-launch.jar http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.9/sbt-launch.jar
 script: |
   cd $TRAVIS_BUILD_DIR/ui
-  npm install -g gulp gulp-cli
+  npm install -g gulp gulp-cli bower
   npm install
   bower install
   gulp build
