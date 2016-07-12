@@ -1,1 +1,5 @@
-/conf/application.conf
+conf/application.conf
+node_modules
+bower_components
+release
+.tmp

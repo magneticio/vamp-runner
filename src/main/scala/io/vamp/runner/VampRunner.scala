@@ -2,59 +2,34 @@ package io.vamp.runner
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.server.Directives._
+import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.Logger
-import io.vamp.runner.recipe._
+import io.vamp.runner.util.Config
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.sys.process._
+import scala.util.Try
 
-object VampRunner extends App with Runner {
+object VampRunner extends App {
 
-  implicit val actorSystem = ActorSystem("vamp-runner")
-  implicit val executionContext = actorSystem.dispatcher
-
-  val availableArguments = List(
-    CommandLineArgument("h", "help", "Print this help."),
-    CommandLineArgument("l", "list", "List all recipes."),
-    CommandLineArgument("a", "all", "Run all recipes."),
-    CommandLineArgument("r", "run", "Run named recipe(s).")
-  )
-
-  logger.info(logo)
-
-  logger.info(s"Vamp API URL     : ${Vamp.apiUrl}")
-  logger.info(s"Vamp Gateway Host: ${Vamp.vgaHost}")
-
-  parse(args)
-
-  def help() = {
-    logger.info("Usage:")
-    availableArguments.foreach(arg ⇒ logger.info(arg.toString))
-  }
-
-  if (hasArgument("help")) help()
-
-  if (hasArgument("list")) recipes.foreach(recipe ⇒ logger.info(s"${recipe.name.padTo(30, " ").mkString} - ${recipe.description}"))
-
-  if (hasArgument("all"))
-    execute()
-  else (hasArgument("run"), getValues("run")) match {
-    case (true, run) if run.nonEmpty ⇒ execute(run)
-    case _ ⇒
-      if (args.isEmpty) help()
-      shutdown()
-  }
-}
-
-trait Runner extends VampRecipes with CommandLineParser {
+  implicit val system = ActorSystem("vamp-runner")
+  implicit val materializer = ActorMaterializer()
+  implicit val executionContext = system.dispatcher
 
   val logger = Logger(LoggerFactory.getLogger(VampRunner.getClass))
 
-  implicit def actorSystem: ActorSystem
+  val version = Option(getClass.getPackage.getImplementationVersion).orElse {
+    Try(Option("git describe --tags".!!.stripLineEnd)).getOrElse(None)
+  } getOrElse ""
 
-  implicit def executionContext: ExecutionContext
+  val config = Config.config("vamp.runner")
 
-  def logo = {
+  val index = config.string("ui.index")
+  val directory = config.string("ui.directory")
+
+  logger.info(
     s"""
        |██╗   ██╗ █████╗ ███╗   ███╗██████╗
        |██║   ██║██╔══██╗████╗ ████║██╔══██╗
@@ -62,43 +37,33 @@ trait Runner extends VampRecipes with CommandLineParser {
        |╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝
        | ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║
        |  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
-       |                       runner ${Vamp.version}
+       |                       runner $version
        |                       by magnetic.io
-    """.stripMargin
-  }
+    """.stripMargin)
 
-  def execute(args: List[String] = Nil) = {
-    val runnables: List[Recipe] = if (args.isEmpty) recipes
-    else args.map {
-      case name ⇒ recipes.find(_.name == name).getOrElse({
-        throw new RuntimeException(s"No recipe: $name")
-      })
-    }
-
-    logger.info("Running recipes...")
-
-    var succeeded: List[String] = Nil
-    var failed: List[(String, String)] = Nil
-
-    runnables.foldLeft(Future.successful[Any]({}))({
-      case (f, recipe) ⇒
-        f flatMap { _ ⇒
-          logger.info(s"Recipe name       : ${recipe.name}")
-          logger.info(s"Recipe description: ${recipe.description}")
-          recipe.execute map { _ ⇒ succeeded = succeeded :+ recipe.name } recover {
-            case failure ⇒
-              failed = failed :+ (recipe.name -> failure.getMessage)
-              logger.error(s"Failure: ${failure.getMessage}")
-          }
-        }
-    }) onComplete {
-      case _ ⇒
-        succeeded.foreach { case name ⇒ logger.info(s"Succeeded: $name") }
-        failed.foreach { case (name, failure) ⇒ logger.error(s"Failed [$name]: $failure") }
-        logger.info("Done.")
-        shutdown()
+  private val ui = {
+    get {
+      pathEnd {
+        redirect("./", MovedPermanently)
+      } ~ pathSingleSlash {
+        if (index.isEmpty) reject else getFromFile(index)
+      } ~ pathPrefix("") {
+        if (directory.isEmpty) reject else getFromDirectory(directory)
+      }
     }
   }
 
-  def shutdown() = Http().shutdownAllConnectionPools() onComplete { case _ ⇒ actorSystem.terminate() }
+  val route = {
+    withRequestTimeout(config.duration("timeout")) {
+      encodeResponse {
+        ui
+      }
+    }
+  }
+
+  val http = Http().bindAndHandle(route, config.string("interface"), config.int("port"))
+
+  sys.addShutdownHook {
+    http.map(_.unbind()).onComplete(_ ⇒ system.terminate())
+  }
 }
