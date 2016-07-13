@@ -1,4 +1,11 @@
 <div class="page-top clearfix" scroll-position="scrolled" max-height="50" ng-class="{'scrolled': scrolled}">
-  <a href="#/all" class="al-logo clearfix"><span>Vamp</span>Runner</a>
+  <a href="#/runner" class="al-logo clearfix"><span>Vamp</span>Runner</a>
   <a href class="collapse-menu-link ion-navicon" ba-sidebar-toggle-menu></a>
+
+  <div class="info-section">
+    <span class="green">VAMP</span>
+    <span class="yellow">CPU</span> {{ load.cpu }}%
+    <span class="yellow">HEAP</span> {{ 100 * load.heap.current / load.heap.max | number : 2 }}% <span class="gray"> [ {{ load.heap.current }}/{{ load.heap.max }}MB ]</span>
+  </div>
+
 </div>

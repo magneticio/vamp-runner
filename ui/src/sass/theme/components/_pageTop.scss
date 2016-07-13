@@ -28,6 +28,27 @@ a.al-logo {
   }
 }
 
+.info-section {
+  position: absolute;
+  right: 50px;
+  top: 0;
+  height: 66px;
+  line-height: 66px;
+  color: #fff;
+  font-weight: bold;
+
+  span.green{
+    color: $primary;
+  }
+  span.yellow {
+    padding-left: 10px;
+    color: #dfb81c;
+  }
+  span.gray {
+    color: #999999;
+  }
+}
+
 .user-profile {
   float: right;
   min-width: 230px;

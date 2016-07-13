@@ -1,16 +1,16 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.all', [])
+  angular.module('VampRunner.pages.runner', [])
       .config(routeConfig);
 
   /** @ngInject */
   function routeConfig($stateProvider) {
     $stateProvider
-        .state('all', {
-          url: '/all',
-          templateUrl: 'app/pages/all/all.html',
-          title: 'All',
+        .state('runner', {
+          url: '/runner',
+          templateUrl: 'app/pages/runner/runner.html',
+          title: 'Runner',
           sidebarMeta: {
             icon: 'ion-play',
             order: 10

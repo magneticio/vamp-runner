@@ -5,7 +5,7 @@
     'ui.router',
 
     'VampRunner.pages.vamp',
-    'VampRunner.pages.all',
+    'VampRunner.pages.runner',
     'VampRunner.pages.configuration',
     'VampRunner.pages.log'
   ])

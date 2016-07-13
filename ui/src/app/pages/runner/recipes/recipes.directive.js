@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.all')
+  angular.module('VampRunner.pages.runner')
       .directive('recipes', recipes);
 
   /** @ngInject */
@@ -9,7 +9,7 @@
     return {
       restrict: 'EA',
       controller: 'RecipesCtrl',
-      templateUrl: 'app/pages/all/recipes/recipes.html'
+      templateUrl: 'app/pages/runner/recipes/recipes.html'
     };
   }
 })();

@@ -12,6 +12,7 @@
   function pageTop() {
     return {
       restrict: 'E',
+      controller: 'PageTopCtrl',
       templateUrl: 'app/theme/components/pageTop/pageTop.html'
     };
   }
