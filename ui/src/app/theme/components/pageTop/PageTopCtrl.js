@@ -5,14 +5,22 @@
       .controller('PageTopCtrl', PageTopCtrl);
 
   /** @ngInject */
-  function PageTopCtrl($scope) {
+  function PageTopCtrl($rootScope, $scope) {
+
+    $scope.connected = false;
 
     $scope.load = {
-      'cpu': 57.5,
-      'heap': {
-        'current': 635,
-        'max': 1024
+      cpu: 0,
+      heap: {
+        max: 0,
+        used: 0,
+        percentage: 0
       }
     };
+
+    $rootScope.$on('vamp:load', function (event, data) {
+      if (!$scope.connected) $scope.connected = true;
+      $scope.load = data;
+    });
   }
 })();

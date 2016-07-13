@@ -5,27 +5,44 @@
     .controller('LoadCtrl', LoadCtrl);
 
   /** @ngInject */
-  function LoadCtrl($scope) {
-    $scope.labels =["-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "-0"];
+  function LoadCtrl($rootScope, $scope, $filter, vamp) {
+
+    $scope.labels =[];
     $scope.data = [
-      [65, 59, 90, 81, 56, 55, 40, 56, 55, 40, 65, 59, 90, 81, 56, 55, 40, 56, 55, 40],
-      [28, 48, 40, 19, 88, 27, 45, 88, 27, 45, 65, 59, 90, 81, 56, 55, 40, 56, 55, 40]
+      [],
+      []
     ];
     $scope.series = ['CPU', 'HEAP'];
-
-    $scope.changeData = function () {
-      $scope.data[0] = shuffle($scope.data[0]);
-      $scope.data[1] = shuffle($scope.data[1]);
-    };
 
     $scope.options = {
       'bezierCurve': false
     };
 
-    function shuffle(o){
-      for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x){}
-      return o;
+    var length = 30;
+
+    function tail(array, value, padding) {
+      array.push(value);
+      if (array.length > length) array.shift();
+      while (array.length < length) array.unshift(padding);
     }
+
+    function onLoad(load) {
+      tail($scope.labels, $filter('date')(new Date(), 'HH:mm:ss'), ".");
+      tail($scope.data[0], load.cpu, 0);
+      tail($scope.data[1], load.heap.percentage, 0);
+    }
+
+    tail($scope.labels, ".", ".");
+    tail($scope.data[0], 0, 0);
+    tail($scope.data[1], 0, 0);
+
+    vamp.loads.forEach(function(load) {
+      onLoad(load);
+    });
+
+    $rootScope.$on('vamp:load', function (event, load) {
+      onLoad(load);
+    });
   }
 
 })();

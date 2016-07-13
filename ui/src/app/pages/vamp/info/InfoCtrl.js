@@ -5,39 +5,45 @@
       .controller('InfoCtrl', InfoCtrl);
 
   /** @ngInject */
-  function InfoCtrl($scope) {
+  function InfoCtrl($rootScope, $scope, vamp) {
 
-    $scope.items = [
-      {
-        'name': 'version',
-        'value': '0.8.5-132-g3668da6',
-        'order': 1
-      },
-      {
-        'name': 'persistence',
-        'value': 'elasticsearch',
-        'order': 2
-      },
-      {
-        'name': 'key-value store',
-        'value': 'zookeeper',
-        'order': 3
-      },
-      {
-        'name': 'gateway driver',
-        'value': 'haproxy 1.6.x',
-        'order': 4
-      },
-      {
-        'name': 'container driver',
-        'value': 'marathon',
-        'order': 5
-      },
-      {
-        'name': 'workflow driver',
-        'value': 'marathon,chronos',
-        'order': 6
+    function refresh() {
+      function get(obj) {
+        return obj ? obj : '...............';
       }
-    ];
+      $scope.items = [
+        {
+          'name': 'version',
+          'value': get(vamp.info.version)
+        },
+        {
+          'name': 'persistence',
+          'value': get(vamp.info.persistence)
+        },
+        {
+          'name': 'key-value store',
+          'value': get(vamp.info.key_value_store)
+        },
+        {
+          'name': 'gateway driver',
+          'value': get(vamp.info.gateway_driver)
+        },
+        {
+          'name': 'container driver',
+          'value': get(vamp.info.container_driver)
+        },
+        {
+          'name': 'workflow driver',
+          'value': get(vamp.info.workflow_driver)
+        }
+      ];
+    }
+
+    var cancel = $rootScope.$on('vamp:info', function () {
+      refresh();
+      cancel();
+    });
+
+    refresh();
   }
 })();
