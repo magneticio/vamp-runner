@@ -9,6 +9,8 @@
 
     $scope.transparent = baConfig.theme.blur;
 
+    $scope.action = 'stop';
+
     $scope.recipes = [
       { 
         title: 'HTTP Deployment', state: 'success'
@@ -32,14 +34,18 @@
         title: 'TCP with Dependencies', state: 'success'
       },
       {
-        title: 'Route Weights'
+        title: 'Route Weights', state: 'running'
       },
       {
-        title: 'Route Weights with Condition Strength'
+        title: 'Route Weights with Condition Strength', state: 'ready'
       },
       {
-        title: 'Scaling In/Out'
+        title: 'Scaling In/Out', state: 'ready'
       }
     ];
+
+    $scope.executeAction = function(){
+      $scope.action = ($scope.action == 'ready' ? 'stop' : 'ready');
+    };
   }
 })();

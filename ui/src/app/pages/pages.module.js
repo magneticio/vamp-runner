@@ -4,6 +4,7 @@
   angular.module('VampRunner.pages', [
     'ui.router',
 
+    'VampRunner.pages.vamp',
     'VampRunner.pages.all',
     'VampRunner.pages.configuration',
     'VampRunner.pages.log'
@@ -12,7 +13,7 @@
 
   /** @ngInject */
   function routeConfig($urlRouterProvider) {
-    $urlRouterProvider.otherwise('/all');
+    $urlRouterProvider.otherwise('/vamp');
   }
 
 })();

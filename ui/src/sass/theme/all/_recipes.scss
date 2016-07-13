@@ -26,10 +26,16 @@ ul.recipes {
       line-height: 42px;
     }
     i.success {
-      color: rgba($success-light, 0.8);
+      color: #0e8174;
     }
     i.failure {
-      color: rgba($danger-light, 0.8);
+      color: #ff6384;
+    }
+    i.running {
+      color: #ffce56;
+    }
+    i.ready {
+      color: #36a2eb;
     }
 
     &.checked {
@@ -124,14 +130,6 @@ label.recipe-checkbox {
           height: 100%;
           background: linear-gradient(to right, rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%);
           -webkit-filter: blur(3px);
-        }
-      }
-      i.remove-recipe {
-        color: white;
-        opacity: 0.4;
-        &:hover {
-          color: white;
-          opacity: 0.95;
         }
       }
       i.mark {

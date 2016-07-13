@@ -1,6 +1,9 @@
-<div class="recipes-container" ng-class="{'transparent': transparent}">
+<div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="RecipesCtrl">
   <div class="text-right">
-    <button type="button" class="btn btn-primary btn-icon btn-lg" ng-click=""><i class="ion-play"></i></button>
+    <button type="button" class="btn btn-icon btn-lg" ng-class="action == 'ready' ? 'btn-primary' : 'btn-danger'" ng-click="executeAction()" title="Execute Selected">
+      <i class="ion-play" ng-show="action == 'ready'"></i>
+      <i class="ion-stop" ng-show="action == 'stop'"></i>
+    </button>
   </div>
   <ul class="recipes" ui-sortable ng-model="recipes">
     <li ng-repeat="item in recipes" ng-init="activeItem=false"
@@ -11,9 +14,10 @@
         <input type="checkbox" ng-model="checked" ng-init="checked=true">
         <span class="cut-with-dots">{{ item.title }}</span>
       </label>
-      <i class="recipe success ion-checkmark-circled" ng-show="item.state == 'success'"></i>
-      <i class="recipe failure ion-close-circled" ng-show="item.state == 'failure'"></i>
-      <i class="recipe ion-ios-circle-outline" ng-show="item.state != 'success' && item.state != 'failure'"></i>
+      <i class="recipe success ion-record" ng-show="item.state == 'success'"></i>
+      <i class="recipe failure ion-record" ng-show="item.state == 'failure'"></i>
+      <i class="recipe running ion-record" ng-show="item.state == 'running'"></i>
+      <i class="recipe ready ion-record" ng-show="item.state == 'ready'"></i>
     </li>
   </ul>
 </div>

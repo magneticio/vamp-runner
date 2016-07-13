@@ -1,0 +1,8 @@
+<form class="form-horizontal">
+  <div class="form-group" ng-repeat="item in items | orderBy:'order'">
+    <label for="label{{item.name}}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">{{item.name}}</label>
+    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+      <label id="label{{item.name}}">{{ item.value }}</label>
+    </div>
+  </div>
+</form>

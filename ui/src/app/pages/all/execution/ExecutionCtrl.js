@@ -11,39 +11,39 @@
     var allColors = baConfig.colors.all;
     $scope.doughnutData = [
       {
-        value: 2000,
+        value: 5,
         color: allColors.green,
         highlight: colorHelper.shade(allColors.green, 15),
         label: 'Passed',
-        percentage: 87,
+        percentage: 50,
         order: 0
       }, {
-        value: 1500,
+        value: 2,
         color: allColors.red,
         highlight: colorHelper.shade(allColors.red, 15),
         label: 'Failed',
-        percentage: 22,
+        percentage: 20,
         order: 1
       }, {
-        value: 1000,
+        value: 1,
         color: allColors.yellow,
         highlight: colorHelper.shade(allColors.yellow, 15),
         label: 'Running',
-        percentage: 70,
+        percentage: 10,
         order: 2
       }, {
-        value: 1200,
+        value: 2,
         color: allColors.blue,
         highlight: colorHelper.shade(allColors.blue, 15),
-        label: 'Remaining',
-        percentage: 38,
+        label: 'Ready',
+        percentage: 30,
         order: 3
       }
     ];
 
-    var ctx = document.getElementById('chart-area').getContext('2d');
-    window.myDoughnut = new Chart(ctx).Doughnut($scope.doughnutData, {
-      segmentShowStroke: false,
+    var ctx = document.getElementById('execution-chart-area').getContext('2d');
+    window.executionDoughnut = new Chart(ctx).Doughnut($scope.doughnutData, {
+      segmentShowStroke: true,
       percentageInnerCutout : 64,
       responsive: true
     });

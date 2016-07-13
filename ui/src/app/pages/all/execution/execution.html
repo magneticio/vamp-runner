@@ -2,7 +2,7 @@
   <div class="chart-bg"></div>
   <div class="execution-chart" id="execution">
     <div class="canvas-holder">
-      <canvas id="chart-area" width="300" height="300"></canvas>
+      <canvas id="execution-chart-area" width="300" height="300"></canvas>
       <div class="execution-text">
         <span>10</span>
       </div>
@@ -13,7 +13,7 @@
     <div>
       <div class="execution-info-item" ng-repeat="item in doughnutData | orderBy:'order'">
         <div class="legend-color" style="background-color: {{::item.color}}"></div>
-        <p>{{::item.label}}<span class="channel-number">+{{item.percentage}}%</span></p>
+        <p>{{::item.label}}<span class="channel-number">{{item.percentage}}%</span></p>
         <div class="progress progress-sm channel-progress">
           <div class="progress-bar" role="progressbar"
                aria-valuenow="{{item.percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.percentage}}%">

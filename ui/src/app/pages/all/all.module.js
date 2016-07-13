@@ -10,10 +10,10 @@
         .state('all', {
           url: '/all',
           templateUrl: 'app/pages/all/all.html',
-          title: 'Execute All',
+          title: 'All',
           sidebarMeta: {
-            icon: 'ion-ios-star',
-            order: 0
+            icon: 'ion-play',
+            order: 10
           }
         });
   }

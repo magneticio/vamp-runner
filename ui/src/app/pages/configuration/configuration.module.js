@@ -13,7 +13,7 @@
           title: 'Configuration',
           sidebarMeta: {
             icon: 'ion-ios-gear',
-            order: 0
+            order: 20
           }
         });
   }

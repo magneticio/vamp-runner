@@ -13,8 +13,8 @@
           title: 'Log',
           sidebarMeta: {
             icon: 'ion-ios-infinite',
-            order: 0,
-          },
+            order: 30
+          }
         });
   }
 
