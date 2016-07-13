@@ -1,8 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.vamp', [
-  ]).config(routeConfig);
+  angular.module('VampRunner.pages.vamp', []).config(routeConfig);
 
   /** @ngInject */
   function routeConfig($stateProvider) {

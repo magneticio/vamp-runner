@@ -105,8 +105,14 @@ label.recipe-checkbox {
     color: white;
     opacity: 0.9;
   }
-  button {
+  button.execute-button {
     width: 44px;
+    float: right;
+  }
+  label.select-all-label {
+    padding-left: 13px;
+    padding-top: 10px;
+    height: 40px;
   }
   ul.recipes {
     li {

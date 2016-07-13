@@ -7,6 +7,7 @@
 
   angular.module('VampRunner.theme', [
       'toastr',
+      'chart.js',
       'textAngular',
       'VampRunner.theme.components'
   ]);
