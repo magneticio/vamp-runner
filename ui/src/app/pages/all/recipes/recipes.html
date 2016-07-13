@@ -1,0 +1,19 @@
+<div class="recipes-container" ng-class="{'transparent': transparent}">
+  <div class="text-right">
+    <button type="button" class="btn btn-primary btn-icon btn-lg" ng-click=""><i class="ion-play"></i></button>
+  </div>
+  <ul class="recipes" ui-sortable ng-model="recipes">
+    <li ng-repeat="item in recipes" ng-init="activeItem=false"
+        ng-class="{checked: checked, active: activeItem}"
+        ng-mouseenter="activeItem=true" ng-mouseleave="activeItem=false">
+      <div class="blur-container"><div class="blur-box"></div></div>
+      <label class="recipe-checkbox custom-checkbox custom-input-success">
+        <input type="checkbox" ng-model="checked" ng-init="checked=true">
+        <span class="cut-with-dots">{{ item.title }}</span>
+      </label>
+      <i class="recipe success ion-checkmark-circled" ng-show="item.state == 'success'"></i>
+      <i class="recipe failure ion-close-circled" ng-show="item.state == 'failure'"></i>
+      <i class="recipe ion-ios-circle-outline" ng-show="item.state != 'success' && item.state != 'failure'"></i>
+    </li>
+  </ul>
+</div>

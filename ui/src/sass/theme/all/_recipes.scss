@@ -1,8 +1,8 @@
-input.task-todo {
+input.recipes {
   margin-bottom: 8px;
 }
 
-ul.todo-list {
+ul.recipes {
   margin: 0;
   padding: 0;
   .placeholder, .ui-sortable-placeholder {
@@ -15,28 +15,25 @@ ul.todo-list {
     border: 1px solid $input-border;
     cursor: grab;
     height: 42px;
-    i.remove-todo {
+    i.recipe {
       position: absolute;
-      cursor: pointer;
+      cursor: grab;
       top: 0px;
       right: 12px;
-      font-size: 32px;
+      font-size: 18px;
       transition: color 0.2s;
-      color: rgba($input-border, 0.5);
-      visibility: hidden;
+      visibility: visible;
       line-height: 42px;
-      &:hover {
-        color: $input-border;
-      }
     }
-    &:hover {
-      i.remove-todo {
-        visibility: visible;
-      }
+    i.success {
+      color: rgba($success-light, 0.8);
+    }
+    i.failure {
+      color: rgba($danger-light, 0.8);
     }
 
     &.checked {
-      .todo-text {
+      .recipe-text {
         color: $default-text;
       }
       &:before {
@@ -60,7 +57,7 @@ ul.todo-list {
       i.mark {
         min-width: 40px;
       }
-      label.todo-checkbox > span {
+      label.recipe-checkbox > span {
         &:before {
           color: white;
           content: '\f10c';
@@ -70,14 +67,14 @@ ul.todo-list {
           float: none;
         }
       }
-      label.todo-checkbox > input:checked + span:before {
+      label.recipe-checkbox > input:checked + span:before {
         content: '\f00c';
       }
     }
   }
 }
 
-label.todo-checkbox {
+label.recipe-checkbox {
   width: 100%;
   padding-right: 25px;
   min-height: 16px;
@@ -97,34 +94,15 @@ label.todo-checkbox {
   display: none;
 }
 
-.task-todo-container.transparent {
-  .todo-panel.panel {
+.recipes-container.transparent {
+  .recipe-panel.panel {
     color: white;
     opacity: 0.9;
   }
-  input.task-todo {
-    color: white;
-    width: calc(100% - 25px);
-    border-radius: 0;
-    border: none;
-    background: transparent;
-    &:focus {
-      outline: none;
-      background-color: transparent;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.12);
-    }
+  button {
+    width: 44px;
   }
-  .add-item-icon {
-    display: block;
-    float: right;
-    margin-top: -45px;
-    margin-right: 5px;
-    font-size: 25px;
-    cursor: pointer;
-  }
-
-  ul.todo-list {
+  ul.recipes {
     li {
       margin: 0;
       border: none;
@@ -148,7 +126,7 @@ label.todo-checkbox {
           -webkit-filter: blur(3px);
         }
       }
-      i.remove-todo {
+      i.remove-recipe {
         color: white;
         opacity: 0.4;
         &:hover {
@@ -160,7 +138,7 @@ label.todo-checkbox {
         min-width: 40px;
         display: none;
       }
-      label.todo-checkbox > span {
+      label.recipe-checkbox > span {
         &:before {
           position: absolute;
           color: $default-text;
@@ -171,7 +149,7 @@ label.todo-checkbox {
         }
       }
       &.checked {
-        label.todo-checkbox > span {
+        label.recipe-checkbox > span {
           &:before {
             content: '\f00c';
           }

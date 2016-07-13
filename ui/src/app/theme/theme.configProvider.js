@@ -9,7 +9,7 @@
     default: '#ffffff',
     defaultText: '#666666',
     border: '#dddddd',
-    borderDark: '#aaaaaa',
+    borderDark: '#aaaaaa'
   };
 
   // main functional color scheme
@@ -18,16 +18,15 @@
     info: '#2dacd1',
     success: '#90b900',
     warning: '#dfb81c',
-    danger: '#e85656',
+    danger: '#e85656'
   };
 
-  // dashboard colors for charts
-  var dashboardColors = {
-    blueStone: '#005562',
-    surfieGreen: '#0e8174',
-    silverTree: '#6eba8c',
-    gossip: '#b9f2a1',
-    white: '#10c4b5',
+  // all colors for charts
+  var allColors = {
+    red: '#ff6384',
+    green: '#0e8174',
+    yellow: '#ffce56',
+    blue: '#36a2eb'
   };
 
   angular.module('VampRunner.theme')
@@ -37,7 +36,7 @@
   function configProvider(colorHelper) {
     var conf = {
       theme: {
-        blur: false,
+        blur: false
       },
       colors: {
         default: basic.default,
@@ -63,13 +62,12 @@
         warningDark: colorHelper.shade(colorScheme.warning, 15),
         dangerDark: colorHelper.shade(colorScheme.danger, 15),
 
-        dashboard: {
-          blueStone: dashboardColors.blueStone,
-          surfieGreen: dashboardColors.surfieGreen,
-          silverTree: dashboardColors.silverTree,
-          gossip: dashboardColors.gossip,
-          white: dashboardColors.white,
-        },
+        all: {
+          yellow: allColors.yellow,
+          green: allColors.green,
+          red: allColors.red,
+          blue: allColors.blue
+        }
       }
     };
 
