@@ -4,7 +4,7 @@
 
   <div class="info-section">
     <span class="green">VAMP</span>
-    <span class="yellow">CPU</span> {{ load.cpu }}%
+    <span class="yellow">CPU</span> {{ load.cpu | number : 2 }}%
     <span class="yellow">HEAP</span> {{ 100 * load.heap.current / load.heap.max | number : 2 }}% <span class="gray"> [ {{ load.heap.current }}/{{ load.heap.max }}MB ]</span>
   </div>
 
