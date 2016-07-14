@@ -5,88 +5,39 @@
     .controller('RecipesCtrl', RecipesCtrl);
 
   /** @ngInject */
-  function RecipesCtrl($scope, baConfig) {
+  function RecipesCtrl($rootScope, $scope, baConfig, api) {
 
     $scope.transparent = baConfig.theme.blur;
 
-    $scope.action = 'stop';
+    $scope.recipes = api.recipes;
 
-    $scope.recipes = [
-      {
-        id: "1",
-        title: 'HTTP Deployment',
-        state: 'success'
-      },
-      {
-        id: "2",
-        title: 'HTTP Canary',
-        state: 'success'
-      },
-      {
-        id: "3",
-        title: 'HTTP with Dependencies',
-        state: 'failure'
-      },
-      {
-        id: "4",
-        title: 'HTTP Flip-Flop Versions',
-        state: 'success'
-      },
-      {
-        id: "5",
-        title: 'HTTP Flip-Flop Versions with Dependencies',
-        state: 'failure'
-      },
-      {
-        id: "6",
-        title: 'TCP Deployment',
-        state: 'success'
-      },
-      {
-        id: "7",
-        title: 'TCP with Dependencies',
-        state: 'failure'
-      },
-      {
-        id: "8",
-        title: 'Route Weights',
-        state: 'running'
-      },
-      {
-        id: "9",
-        title: 'Route Weights with Condition Strength',
-        state: 'ready'
-      },
-      {
-        id: "10",
-        title: 'Scaling In/Out',
-        state: 'ready'
+    var findById = function (id) {
+      for (var i = 0; i < api.recipes.length; i++) {
+        var recipe = api.recipes[i];
+        if (recipe.id === id) return recipe;
       }
-    ];
+    };
 
-    var selected = $scope.selected = ["1", "3"];
-
-    var updateSelected = function (action, id) {
-      if (action === 'add' && $scope.selected.indexOf(id) === -1) {
-        $scope.selected.push(id);
+    var updateSelected = function (action, recipe) {
+      if (action === 'add' && !recipe.selected) {
+        recipe.selected = true;
       }
-      if (action === 'remove' && $scope.selected.indexOf(id) !== -1) {
-        $scope.selected.splice($scope.selected.indexOf(id), 1);
+      if (action === 'remove' && recipe.selected) {
+        recipe.selected = false;
       }
     };
 
     $scope.updateSelection = function ($event, id) {
       var checkbox = $event.target;
       var action = (checkbox.checked ? 'add' : 'remove');
-      updateSelected(action, id);
+      updateSelected(action, findById(id));
     };
 
     $scope.selectAll = function ($event) {
       var checkbox = $event.target;
       var action = (checkbox.checked ? 'add' : 'remove');
-      for (var i = 0; i < $scope.recipes.length; i++) {
-        var recipe = $scope.recipes[i];
-        updateSelected(action, recipe.id);
+      for (var i = 0; i < api.recipes.length; i++) {
+        updateSelected(action, api.recipes[i]);
       }
     };
 
@@ -95,17 +46,43 @@
     };
 
     $scope.isSelected = function (id) {
-      return $scope.selected.indexOf(id) >= 0;
+      return findById(id).selected;
     };
 
     $scope.isSelectedAll = function () {
-      return $scope.selected.length === $scope.recipes.length;
+      var count = 0;
+      api.recipes.forEach(function (recipe) {
+        if (recipe.selected) count++;
+      });
+      return count === api.recipes.length;
     };
 
     //
 
+    $scope.action = 'ready';
+
+    function refresh() {
+      var action = 'ready';
+      for (var i = 0; i < api.recipes.length; i++) {
+        if (api.recipes[i].state === 'running') {
+          action = 'stop';
+          break;
+        }
+      }
+      $scope.action = action;
+    }
+
     $scope.executeAction = function () {
-      $scope.action = ($scope.action == 'ready' ? 'stop' : 'ready');
+      if ($scope.action == 'ready')
+        api.run();
+      else if ($scope.action == 'stop')
+        api.stop();
     };
+
+    $rootScope.$on('recipes:update', function () {
+      refresh();
+    });
+
+    refresh();
   }
 })();

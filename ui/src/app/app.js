@@ -10,6 +10,7 @@ angular.module('VampRunner', [
   'ui.slimscroll',
   'angular-progress-button-styles',
 
+  'VampRunner.api',
   'VampRunner.theme',
   'VampRunner.pages'
 ]);
