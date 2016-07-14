@@ -6,11 +6,11 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .service('fileReader', fileReader);
+    .service('fileReader', fileReader);
 
   /** @ngInject */
   function fileReader($q) {
-    var onLoad = function(reader, deferred, scope) {
+    var onLoad = function (reader, deferred, scope) {
       return function () {
         scope.$apply(function () {
           deferred.resolve(reader.result);
@@ -26,17 +26,17 @@
       };
     };
 
-    var onProgress = function(reader, scope) {
+    var onProgress = function (reader, scope) {
       return function (event) {
         scope.$broadcast('fileProgress',
-            {
-              total: event.total,
-              loaded: event.loaded
-            });
+          {
+            total: event.total,
+            loaded: event.loaded
+          });
       };
     };
 
-    var getReader = function(deferred, scope) {
+    var getReader = function (deferred, scope) {
       var reader = new FileReader();
       reader.onload = onLoad(reader, deferred, scope);
       reader.onerror = onError(reader, deferred, scope);

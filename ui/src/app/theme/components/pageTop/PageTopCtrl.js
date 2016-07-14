@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .controller('PageTopCtrl', PageTopCtrl);
+    .controller('PageTopCtrl', PageTopCtrl);
 
   /** @ngInject */
   function PageTopCtrl($rootScope, $scope) {

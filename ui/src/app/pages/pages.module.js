@@ -9,7 +9,7 @@
     //'VampRunner.pages.configuration',
     //'VampRunner.pages.log'
   ])
-      .config(routeConfig);
+    .config(routeConfig);
 
   /** @ngInject */
   function routeConfig($urlRouterProvider) {

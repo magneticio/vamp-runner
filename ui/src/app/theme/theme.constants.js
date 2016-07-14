@@ -21,10 +21,10 @@
       }
     })
     .constant('colorHelper', {
-      tint: function(color, weight) {
+      tint: function (color, weight) {
         return mix('#ffffff', color, weight);
       },
-      shade: function(color, weight) {
+      shade: function (color, weight) {
         return mix('#000000', color, weight);
       },
     });
@@ -43,13 +43,14 @@
     function d2h(d) {
       return d.toString(16);
     }
+
     // convert a hex value to decimal
     function h2d(h) {
       return parseInt(h, 16);
     }
 
     var result = "#";
-    for(var i = 1; i < 7; i += 2) {
+    for (var i = 1; i < 7; i += 2) {
       var color1Part = h2d(color1.substr(i, 2));
       var color2Part = h2d(color2.substr(i, 2));
       var resultPart = d2h(Math.floor(color2Part + (color1Part - color2Part) * (weight / 100.0)));

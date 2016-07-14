@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.vamp')
-    .service('vamp', ["$rootScope", "$interval", "$http", function($rootScope, $interval, $http) {
+    .service('vamp', ["$rootScope", "$interval", "$http", function ($rootScope, $interval, $http) {
       return new Vamp($rootScope, $interval, $http);
     }]);
 
@@ -10,11 +10,8 @@
 
     var api = 'http://192.168.99.100:8080/api/v1/info';
 
-    var loads = [];
-    this.loads = loads;
-
-    var info = {};
-    this.info = info;
+    var loads = this.loads = [];
+    var info = this.info = {};
 
     this.start = function () {
       loadPolling();
@@ -24,7 +21,7 @@
     function loadPolling() {
       function load() {
 
-        $http.get(api + '?for=jvm').success(function(data) {
+        $http.get(api + '?for=jvm').success(function (data) {
 
           var load = {
             cpu: 0,
@@ -44,7 +41,8 @@
               }
             };
             load.heap.percentage = 100 * load.heap.used / load.heap.max;
-          } catch (e) {}
+          } catch (e) {
+          }
 
           loads.push(load);
           while (loads.length > 100) loads.shift();
@@ -67,13 +65,13 @@
         info["container_driver"] = data.container_driver.type;
         info["workflow_driver"] = '';
 
-        for(var name in data.workflow_driver) {
-          info["workflow_driver"] += info["workflow_driver"] == '' ? name : ',' + name;
+        for (var name in data.workflow_driver) {
+          info["workflow_driver"] += info["workflow_driver"] === '' ? name : ',' + name;
         }
       }
 
       var promise = $interval(function () {
-        $http.get(api).success(function(data) {
+        $http.get(api).success(function (data) {
           process(data);
           $rootScope.$emit("vamp:info", data);
           $interval.cancel(promise);

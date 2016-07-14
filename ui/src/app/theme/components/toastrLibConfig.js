@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .config(toastrLibConfig);
+    .config(toastrLibConfig);
 
   /** @ngInject */
   function toastrLibConfig(toastrConfig) {

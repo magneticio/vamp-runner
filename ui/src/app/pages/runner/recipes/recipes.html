@@ -1,28 +1,36 @@
 <div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="RecipesCtrl">
 
-  <label class="select-all-label checkbox-inline custom-checkbox nowrap">
-    <input type="checkbox" id="inlineCheckbox01" value="option1">
-    <span class="select-all-label">Select All</span>
-  </label>
-  <button type="button" class="btn btn-icon btn-lg execute-button" ng-class="action == 'ready' ? 'btn-primary' : 'btn-danger'" ng-click="executeAction()" title="Execute Selected">
-    <i class="ion-play" ng-show="action == 'ready'"></i>
-    <i class="ion-stop" ng-show="action == 'stop'"></i>
-  </button>
-  <div class="box-shadow-border"></div>
+    <label class="select-all-label checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox"
+               ng-click="selectAll($event)"
+               ng-checked="isSelectedAll()">
+        <span class="select-all-label">Select All</span>
+    </label>
+    <button type="button" class="btn btn-icon btn-lg execute-button"
+            ng-class="action == 'ready' ? 'btn-primary' : 'btn-danger'" ng-click="executeAction()"
+            title="Execute Selected">
+        <i class="ion-play" ng-show="action == 'ready'"></i>
+        <i class="ion-stop" ng-show="action == 'stop'"></i>
+    </button>
+    <div class="box-shadow-border"></div>
 
-  <ul class="recipes" ui-sortable ng-model="recipes">
-    <li ng-repeat="item in recipes" ng-init="activeItem=false"
-        ng-class="{checked: checked, active: activeItem}"
-        ng-mouseenter="activeItem=true" ng-mouseleave="activeItem=false">
-      <div class="blur-container"><div class="blur-box"></div></div>
-      <label class="recipe-checkbox custom-checkbox custom-input-success">
-        <input type="checkbox" ng-model="checked" ng-init="checked=true">
-        <span class="cut-with-dots">{{ item.title }}</span>
-      </label>
-      <i class="recipe success ion-record" ng-show="item.state == 'success'"></i>
-      <i class="recipe failure ion-record" ng-show="item.state == 'failure'"></i>
-      <i class="recipe running ion-record" ng-show="item.state == 'running'"></i>
-      <i class="recipe ready ion-record" ng-show="item.state == 'ready'"></i>
-    </li>
-  </ul>
+    <ul class="recipes" ng-model="recipes">
+        <li ng-repeat="item in recipes" ng-init="activeItem=false"
+            ng-class="{checked: isSelected(item.id), active: activeItem}"
+            ng-mouseenter="activeItem=true" ng-mouseleave="activeItem=false">
+            <div class="blur-container">
+                <div class="blur-box"></div>
+            </div>
+            <label class="recipe-checkbox custom-checkbox custom-input-success">
+                <input type="checkbox" name="selected"
+                       ng-checked="isSelected(item.id)"
+                       ng-click="updateSelection($event, item.id)">
+                <span class="cut-with-dots">{{ item.title }}</span>
+            </label>
+            <i class="recipe success ion-record" ng-show="item.state == 'success'"></i>
+            <i class="recipe failure ion-record" ng-show="item.state == 'failure'"></i>
+            <i class="recipe running ion-record" ng-show="item.state == 'running'"></i>
+            <i class="recipe ready ion-record" ng-show="item.state == 'ready'"></i>
+        </li>
+    </ul>
 </div>

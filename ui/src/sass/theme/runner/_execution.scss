@@ -4,13 +4,13 @@
 }
 
 .execution-block.transparent {
-  .execution-chart canvas{
-    border: 10px solid rgba(0,0,0,0.35);
+  .execution-chart canvas {
+    border: 10px solid rgba(0, 0, 0, 0.35);
     box-shadow: 0 0 5px 0 rgb(0, 0, 0) inset;
     border-radius: 150px;
   }
   .chart-bg {
-    background-color: rgba(0,0,0,0.35);
+    background-color: rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -30,6 +30,7 @@
   margin-left: 70px;
   margin-top: -20px;
 }
+
 .small-container {
   .execution-info {
     display: none;
@@ -42,7 +43,7 @@
     font-size: 18px;
     opacity: 0.9;
   }
-  .channel-number{
+  .channel-number {
     display: inline-block;
     float: right;
   }
@@ -119,17 +120,17 @@
   margin-bottom: 0;
   background-color: $progress-background;
   box-shadow: none;
-  .progress-bar{
+  .progress-bar {
     height: 4px;
     background-color: $progress-default;
     box-shadow: none;
   }
 }
 
-.legend-color{
+.legend-color {
   width: 30px;
   height: 30px;
-  box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.25);
   position: relative;
   top: 27px;
   border-radius: 15px;
@@ -137,44 +138,44 @@
 }
 
 @media (max-width: $resM) {
-  div.execution-info{
+  div.execution-info {
     display: block;
     width: calc(100% - 88px);
     margin-top: -65px;
     margin-bottom: 10px;
   }
-  .panel.medium-panel.execution-panel{
+  .panel.medium-panel.execution-panel {
     height: auto;
   }
-  .execution-chart{
+  .execution-chart {
     position: inherit;
     float: none;
     margin: 0 auto;
   }
-  .chart-bg{
+  .chart-bg {
     left: calc(50% - 90px);
   }
 }
 
-@media (max-width: 1465px) and (min-width: 1199px){
-  .execution-info{
+@media (max-width: 1465px) and (min-width: 1199px) {
+  .execution-info {
     display: none;
   }
-  .execution-chart{
+  .execution-chart {
     position: inherit;
     float: none;
     margin: 0 auto;
   }
-  .chart-bg{
+  .chart-bg {
     left: calc(50% - 90px);
   }
 }
 
-@media (max-width: 380px){
-  .execution-chart{
+@media (max-width: 380px) {
+  .execution-chart {
     width: 240px;
   }
-  .canvas-holder{
+  .canvas-holder {
     width: 240px;
     height: 240px;
   }
@@ -182,7 +183,8 @@
     top: 30px;
   }
 }
-@media (max-width: 320px){
+
+@media (max-width: 320px) {
   .chart-bg {
     left: 50px;
     top: 50px;

@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-      .directive('recipes', recipes);
+    .directive('recipes', recipes);
 
   /** @ngInject */
   function recipes() {

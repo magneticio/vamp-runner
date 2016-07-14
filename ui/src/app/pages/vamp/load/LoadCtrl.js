@@ -7,7 +7,7 @@
   /** @ngInject */
   function LoadCtrl($rootScope, $scope, $filter, vamp) {
 
-    $scope.labels =[];
+    $scope.labels = [];
     $scope.data = [
       [],
       []
@@ -36,7 +36,7 @@
     tail($scope.data[0], 0, 0);
     tail($scope.data[1], 0, 0);
 
-    vamp.loads.forEach(function(load) {
+    vamp.loads.forEach(function (load) {
       onLoad(load);
     });
 

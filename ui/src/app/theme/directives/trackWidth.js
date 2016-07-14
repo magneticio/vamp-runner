@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('trackWidth', trackWidth);
+    .directive('trackWidth', trackWidth);
 
   /** @ngInject */
   function trackWidth() {
@@ -15,10 +15,10 @@
         scope.trackWidth = $(element).width() < scope.minWidth;
         scope.prevTrackWidth = scope.trackWidth;
 
-        $(window).resize(function() {
+        $(window).resize(function () {
           var trackWidth = $(element).width() < scope.minWidth;
           if (trackWidth !== scope.prevTrackWidth) {
-            scope.$apply(function() {
+            scope.$apply(function () {
               scope.trackWidth = trackWidth;
             });
           }

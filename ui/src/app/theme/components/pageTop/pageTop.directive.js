@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .directive('pageTop', pageTop);
+    .directive('pageTop', pageTop);
 
   /** @ngInject */
   function pageTop() {

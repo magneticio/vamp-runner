@@ -15,7 +15,7 @@
         var d = $q.defer();
         var img = new Image();
         img.src = src;
-        img.onload = function(){
+        img.onload = function () {
           d.resolve();
         };
         return d.promise;

@@ -37,7 +37,7 @@ a.al-logo {
   color: #fff;
   font-weight: bold;
 
-  span.green{
+  span.green {
     color: $primary;
   }
   span.yellow {
@@ -47,7 +47,7 @@ a.al-logo {
   span.gray {
     color: #999999;
   }
-  span.red{
+  span.red {
     color: $danger;
   }
 }
@@ -176,7 +176,7 @@ a.collapse-menu-link {
 }
 
 @media (max-width: $resXXS) {
-  .user-profile{
+  .user-profile {
     min-width: 136px;
   }
   a.refresh-data {
@@ -191,6 +191,6 @@ a.collapse-menu-link {
   }
 }
 
-.profile-toggle-link{
+.profile-toggle-link {
   cursor: pointer;
 }

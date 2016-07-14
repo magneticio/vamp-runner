@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('autoFocus', autoFocus);
+    .directive('autoFocus', autoFocus);
 
   /** @ngInject */
   function autoFocus($timeout, $parse) {

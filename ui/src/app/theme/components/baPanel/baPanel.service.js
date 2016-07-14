@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .factory('baPanel', baPanel);
+    .factory('baPanel', baPanel);
 
   /** @ngInject */
   function baPanel() {
@@ -15,7 +15,7 @@
     return {
       restrict: 'A',
       transclude: true,
-      template: function(elem, attrs) {
+      template: function (elem, attrs) {
         var res = '<div class="panel-body" ng-transclude></div>';
         if (attrs.baPanelTitle) {
           var titleTpl = '<div class="panel-heading clearfix"><h3 class="panel-title">' + attrs.baPanelTitle + '</h3></div>';

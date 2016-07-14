@@ -6,11 +6,11 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .filter('profilePicture', profilePicture);
+    .filter('profilePicture', profilePicture);
 
   /** @ngInject */
   function profilePicture(layoutPaths) {
-    return function(input, ext) {
+    return function (input, ext) {
       ext = ext || 'png';
       return layoutPaths.images.profile + input + '.' + ext;
     };

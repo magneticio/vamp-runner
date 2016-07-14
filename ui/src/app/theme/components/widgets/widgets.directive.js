@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .directive('widgets', widgets);
+    .directive('widgets', widgets);
 
   /** @ngInject */
   function widgets() {

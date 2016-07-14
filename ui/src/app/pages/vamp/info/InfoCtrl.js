@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.vamp')
-      .controller('InfoCtrl', InfoCtrl);
+    .controller('InfoCtrl', InfoCtrl);
 
   /** @ngInject */
   function InfoCtrl($rootScope, $scope, vamp) {
@@ -11,6 +11,7 @@
       function get(obj) {
         return obj ? obj : '...............';
       }
+
       $scope.items = [
         {
           'name': 'version',

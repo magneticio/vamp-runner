@@ -5,7 +5,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('animatedChange', animatedChange);
+    .directive('animatedChange', animatedChange);
 
   /** @ngInject */
   function animatedChange($timeout) {

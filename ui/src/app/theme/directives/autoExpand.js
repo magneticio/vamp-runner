@@ -5,7 +5,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('autoExpand', autoExpand);
+    .directive('autoExpand', autoExpand);
 
   /** @ngInject */
   function autoExpand() {

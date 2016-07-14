@@ -6,24 +6,24 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('baPanelBlur', baPanelBlur);
+    .directive('baPanelBlur', baPanelBlur);
 
   /** @ngInject */
   function baPanelBlur(baPanelBlurHelper, $window, $rootScope) {
     var bodyBgSize;
 
-    baPanelBlurHelper.bodyBgLoad().then(function() {
+    baPanelBlurHelper.bodyBgLoad().then(function () {
       bodyBgSize = baPanelBlurHelper.getBodyBgImageSizes();
     });
 
-    $window.addEventListener('resize', function() {
+    $window.addEventListener('resize', function () {
       bodyBgSize = baPanelBlurHelper.getBodyBgImageSizes();
     });
 
     return {
       restrict: 'A',
-      link: function($scope, elem) {
-        if(!$rootScope.$isMobile) {
+      link: function ($scope, elem) {
+        if (!$rootScope.$isMobile) {
           baPanelBlurHelper.bodyBgLoad().then(function () {
             setTimeout(recalculatePanelStyle);
           });

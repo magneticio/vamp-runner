@@ -6,11 +6,11 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .filter('appImage', appImage);
+    .filter('appImage', appImage);
 
   /** @ngInject */
   function appImage(layoutPaths) {
-    return function(input) {
+    return function (input) {
       return layoutPaths.images.root + input;
     };
   }

@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-      .controller('ExecutionCtrl', ExecutionCtrl);
+    .controller('ExecutionCtrl', ExecutionCtrl);
 
   /** @ngInject */
   function ExecutionCtrl($scope, baConfig, colorHelper) {
@@ -14,7 +14,7 @@
         value: 5,
         color: allColors.green,
         highlight: colorHelper.shade(allColors.green, 15),
-        label: 'Passed',
+        label: 'Completed',
         percentage: 50,
         order: 0
       }, {
@@ -44,7 +44,7 @@
     var ctx = document.getElementById('execution-chart-area').getContext('2d');
     window.executionDoughnut = new Chart(ctx).Doughnut($scope.doughnutData, {
       segmentShowStroke: true,
-      percentageInnerCutout : 64,
+      percentageInnerCutout: 64,
       responsive: true
     });
   }

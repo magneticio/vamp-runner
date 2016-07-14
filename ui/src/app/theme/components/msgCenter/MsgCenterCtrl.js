@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .controller('MsgCenterCtrl', MsgCenterCtrl);
+    .controller('MsgCenterCtrl', MsgCenterCtrl);
 
   /** @ngInject */
   function MsgCenterCtrl($scope, $sce) {
@@ -101,7 +101,7 @@
       }
     ];
 
-    $scope.getMessage = function(msg) {
+    $scope.getMessage = function (msg) {
       var text = msg.template;
       if (msg.userId || msg.userId === 0) {
         text = text.replace('&name', '<strong>' + $scope.users[msg.userId].name + '</strong>');

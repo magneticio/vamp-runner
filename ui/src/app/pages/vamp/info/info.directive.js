@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.vamp')
-      .directive('info', info);
+    .directive('info', info);
 
   /** @ngInject */
   function info() {

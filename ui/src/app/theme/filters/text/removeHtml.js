@@ -10,8 +10,8 @@
 
   /** @ngInject */
   function plainText() {
-    return function(text) {
-      return  text ? String(text).replace(/<[^>]+>/gm, '') : '';
+    return function (text) {
+      return text ? String(text).replace(/<[^>]+>/gm, '') : '';
     };
   }
 

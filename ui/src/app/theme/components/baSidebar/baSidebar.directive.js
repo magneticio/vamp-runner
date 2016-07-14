@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .directive('baSidebar', baSidebar);
+    .directive('baSidebar', baSidebar);
 
   /** @ngInject */
   function baSidebar($timeout, baSidebarService, baUtil, layoutSizes) {
@@ -15,22 +15,20 @@
       restrict: 'E',
       templateUrl: 'app/theme/components/baSidebar/ba-sidebar.html',
       controller: 'BaSidebarCtrl',
-      link: function(scope, el) {
+      link: function (scope, el) {
 
         scope.menuHeight = el[0].childNodes[0].clientHeight - 84;
         jqWindow.on('click', _onWindowClick);
         jqWindow.on('resize', _onWindowResize);
 
-        scope.$on('$destroy', function() {
+        scope.$on('$destroy', function () {
           jqWindow.off('click', _onWindowClick);
           jqWindow.off('resize', _onWindowResize);
         });
 
         function _onWindowClick($evt) {
-          if (!baUtil.isDescendant(el[0], $evt.target) &&
-              !$evt.originalEvent.$sidebarEventProcessed &&
-              !baSidebarService.isMenuCollapsed() &&
-              baSidebarService.canSidebarBeHidden()) {
+          if (!baUtil.isDescendant(el[0], $evt.target) && !$evt.originalEvent.$sidebarEventProcessed && !baSidebarService.isMenuCollapsed() &&
+            baSidebarService.canSidebarBeHidden()) {
             $evt.originalEvent.$sidebarEventProcessed = true;
             $timeout(function () {
               baSidebarService.setMenuCollapsed(true);

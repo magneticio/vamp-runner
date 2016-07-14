@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.vamp')
-      .directive('load', load);
+    .directive('load', load);
 
   /** @ngInject */
   function load() {

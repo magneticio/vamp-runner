@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme.components')
-      .directive('backTop', backTop);
+    .directive('backTop', backTop);
 
   /** @ngInject */
   function backTop() {

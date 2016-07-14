@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-      .directive('execution', execution);
+    .directive('execution', execution);
 
   /** @ngInject */
   function execution() {

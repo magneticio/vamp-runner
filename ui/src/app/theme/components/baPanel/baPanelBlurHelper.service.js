@@ -6,7 +6,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .service('baPanelBlurHelper', baPanelBlurHelper);
+    .service('baPanelBlurHelper', baPanelBlurHelper);
 
   /** @ngInject */
   function baPanelBlurHelper($q) {
@@ -14,21 +14,21 @@
     var computedStyle = getComputedStyle(document.body, ':before');
     var image = new Image();
     image.src = computedStyle.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
-    image.onerror = function() {
+    image.onerror = function () {
       res.reject();
     };
-    image.onload = function() {
+    image.onload = function () {
       res.resolve();
     };
 
-    this.bodyBgLoad = function() {
+    this.bodyBgLoad = function () {
       return res.promise;
     };
 
-    this.getBodyBgImageSizes = function() {
+    this.getBodyBgImageSizes = function () {
       var elemW = document.documentElement.clientWidth;
       var elemH = document.documentElement.clientHeight;
-      if(elemW <= 640) return;
+      if (elemW <= 640) return;
       var imgRatio = (image.height / image.width);       // original img ratio
       var containerRatio = (elemH / elemW);     // container ratio
 
@@ -40,7 +40,12 @@
         finalWidth = elemW;
         finalHeight = (elemW * imgRatio);
       }
-      return { width: finalWidth, height: finalHeight, positionX: (elemW - finalWidth)/2, positionY: (elemH - finalHeight)/2};
+      return {
+        width: finalWidth,
+        height: finalHeight,
+        positionX: (elemW - finalWidth) / 2,
+        positionY: (elemH - finalHeight) / 2
+      };
     };
   }
 

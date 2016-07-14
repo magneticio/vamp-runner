@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('scrollPosition', scrollPosition);
+    .directive('scrollPosition', scrollPosition);
 
   /** @ngInject */
   function scrollPosition() {
@@ -12,10 +12,10 @@
         maxHeight: '='
       },
       link: function (scope) {
-        $(window).on('scroll', function() {
+        $(window).on('scroll', function () {
           var scrollTop = $(window).scrollTop() > scope.maxHeight;
           if (scrollTop !== scope.prevScrollTop) {
-            scope.$apply(function() {
+            scope.$apply(function () {
               scope.scrollPosition = scrollTop;
             });
           }

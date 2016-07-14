@@ -5,7 +5,7 @@
   'use strict';
 
   angular.module('VampRunner.theme')
-      .directive('zoomIn', zoomIn);
+    .directive('zoomIn', zoomIn);
 
   /** @ngInject */
   function zoomIn($timeout, $rootScope) {
