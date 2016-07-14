@@ -5,9 +5,9 @@
     'ui.router',
 
     'VampRunner.pages.vamp',
-    'VampRunner.pages.runner'//,
+    'VampRunner.pages.runner',
     //'VampRunner.pages.configuration',
-    //'VampRunner.pages.log'
+    'VampRunner.pages.log'
   ])
     .config(routeConfig);
 

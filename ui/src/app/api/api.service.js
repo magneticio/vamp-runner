@@ -44,7 +44,7 @@
           loads.push(load);
           while (loads.length > 100) loads.shift();
 
-          $rootScope.$emit("vamp:load", load);
+          $rootScope.$emit('vamp:load', load);
         });
       }
 
@@ -70,7 +70,7 @@
       var promise = $interval(function () {
         $http.get(endpoint).success(function (data) {
           process(data);
-          $rootScope.$emit("vamp:info", data);
+          $rootScope.$emit('vamp:info', data);
           $interval.cancel(promise);
         });
       }, 3000);
@@ -147,6 +147,8 @@
 
     this.run = function () {
 
+      $rootScope.$emit('recipes:run', recipes);
+
       var index = 0;
 
       for (var i = index; i < recipes.length; i++) {
@@ -156,17 +158,20 @@
       function step() {
         for (var i = index; i < recipes.length; i++) {
           index = i + 1;
-          if (recipes[i].selected) {
-            if (recipes[i].state === 'running') {
-              recipes[i].state = (Math.random() > 0.5 ? 'success' : 'failure');
+          var recipe = recipes[i];
+          if (recipe.selected) {
+            if (recipe.state === 'running') {
+              recipe.state = (Math.random() > 0.5 ? 'success' : 'failure');
+              $rootScope.$emit('recipes:' + recipe.state, recipe);
             } else {
               recipes[i].state = 'running';
+              $rootScope.$emit('recipes:running', recipe);
               index = i;
               break;
             }
           }
         }
-        $rootScope.$emit("recipes:update", recipes);
+        $rootScope.$emit('recipes:update', '');
       }
 
       runner = $interval(function () {
@@ -177,11 +182,18 @@
     };
 
     this.stop = function () {
+
+      $rootScope.$emit('recipes:stop', '');
+
       $interval.cancel(runner);
       for (var i = 0; i < recipes.length; i++) {
-        if (recipes[i].state === 'running') recipes[i].state = (Math.random() > 0.5 ? 'success' : 'failure');
+        var recipe = recipes[i];
+        if (recipe.state === 'running') {
+          recipe.state = (Math.random() > 0.5 ? 'success' : 'failure');
+          $rootScope.$emit('recipes:' + recipe.state, recipe);
+        }
       }
-      $rootScope.$emit("recipes:update", recipes);
+      $rootScope.$emit('recipes:update', '');
     };
 
     // start

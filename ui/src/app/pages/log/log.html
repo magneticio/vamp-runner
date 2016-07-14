@@ -1,1 +1,20 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div ba-panel>
+            <section id="cd-timeline" class="cd-container cssanimations" ng-controller="LogCtrl" ng-model="entries">
+                <div class="cd-timeline-block" ng-repeat="entry in entries">
+                    <div class="cd-timeline-img">
+                        <div class="kameleon-icon with-round-bg" ng-class="image(entry)"><img
+                                ng-src="{{::( source(entry) | kameleonImg )}}"></div>
+                    </div>
 
+                    <div class="cd-timeline-content" ng-class="class(entry)">
+                        <h5>{{ :: title(entry) | uppercase }}</h5>
+                        <p>{{ :: entry.message }}</p>
+                        <span class="cd-date">{{ :: entry.timestamp | date : 'yyyy-MM-dd HH:mm:ss Z'}}</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
