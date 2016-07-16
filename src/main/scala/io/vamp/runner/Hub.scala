@@ -3,7 +3,6 @@ package io.vamp.runner
 import java.util.UUID
 
 import akka.actor._
-import akka.pattern.{ ask, pipe }
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
 import akka.util.Timeout
@@ -72,10 +71,9 @@ trait Hub {
 
       case Broadcast(message)                 ⇒ broadcast(message)
 
-      case Forward(child, request, recipient) ⇒ context.child(child).foreach(from ⇒ pipe(from ? request) to recipient)
+      case Forward(child, request, recipient) ⇒ context.child(child).foreach(from ⇒ from.tell(request, recipient))
 
-      case any ⇒
-        println(s" !!! $any")
+      case _                                  ⇒
     }
 
     @scala.throws[Exception](classOf[Exception])

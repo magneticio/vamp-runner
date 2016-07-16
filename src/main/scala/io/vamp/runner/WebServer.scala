@@ -40,7 +40,7 @@ trait WebServer extends JsonSerializer {
       handleWebSocketMessages {
         Flow[Message].collect {
           case TextMessage.Strict(message) ⇒ message
-        } via messenger.channel map (message ⇒ TextMessage.Strict(writeJson(message)))
+        } via messenger.channel map (message ⇒ TextMessage.Strict(write(message)))
       }
     }
   }, config.string("interface"), config.int("port"))

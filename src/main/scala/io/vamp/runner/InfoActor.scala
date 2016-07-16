@@ -1,8 +1,8 @@
 package io.vamp.runner
 
 import akka.actor.{ Actor, ActorLogging, ActorSystem, Props }
-import akka.stream.ActorMaterializer
 import akka.agent.Agent
+import akka.stream.ActorMaterializer
 import io.vamp.runner.Hub.Broadcast
 import org.json4s.JsonAST.JValue
 
@@ -17,19 +17,12 @@ object InfoActor {
 
   object ProvideInfo
 
-  trait Response {
-    def `type`: String
-  }
+  case class Info(uuid: String, version: String, persistence: String, keyValueStore: String, gatewayDriver: String, containerDriver: String, workflowDriver: String) extends Response
 
-  case class Info(uuid: String, version: String, persistence: String, keyValueStore: String, gatewayDriver: String, containerDriver: String, workflowDriver: String) extends Response {
-    val `type`: String = "info"
-  }
-
-  case class Load(uuid: String, cpu: Double, heap: Heap) extends Response {
-    val `type`: String = "load"
-  }
+  case class Load(uuid: String, cpu: Double, heap: Heap) extends Response
 
   case class Heap(max: Double, used: Double)
+
 }
 
 class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with ActorLogging with VampApiClient {

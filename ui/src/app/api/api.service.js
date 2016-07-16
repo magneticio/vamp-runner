@@ -2,139 +2,19 @@
   'use strict';
 
   angular.module('VampRunner.api')
-    .service('api', ["$rootScope", "$interval", "$websocket", "$timeout", function ($rootScope, $interval, $websocket, $timeout) {
-      return new Api($rootScope, $interval, $websocket, $timeout);
+    .service('api', ["$rootScope", "$websocket", "$timeout", function ($rootScope, $websocket, $timeout) {
+      return new Api($rootScope, $websocket, $timeout);
     }]);
 
-  function Api($rootScope, $interval, $websocket, $timeout) {
+  function Api($rootScope, $websocket, $timeout) {
 
     var info = this.info = {};
     var loads = this.loads = [];
+    var recipes = this.recipes = [];
 
-    // recipes
-
-    var recipes = this.recipes = [
-      {
-        id: "1",
-        title: 'HTTP Deployment',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "2",
-        title: 'HTTP Canary',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "3",
-        title: 'HTTP with Dependencies',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "4",
-        title: 'HTTP Flip-Flop Versions',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "5",
-        title: 'HTTP Flip-Flop Versions with Dependencies',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "6",
-        title: 'TCP Deployment',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "7",
-        title: 'TCP with Dependencies',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "8",
-        title: 'Route Weights',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "9",
-        title: 'Route Weights with Condition Strength',
-        state: 'idle',
-        selected: true
-      },
-      {
-        id: "10",
-        title: 'Scaling In/Out',
-        state: 'idle',
-        selected: true
-      }
-    ];
-
-    // running recipes
-
-    var runner;
-
-    this.run = function () {
-
-      $rootScope.$emit('recipes:run', recipes);
-
-      var index = 0;
-
-      for (var i = index; i < recipes.length; i++) {
-        if (recipes[i].selected) recipes[i].state = 'idle';
-      }
-
-      function step() {
-        for (var i = index; i < recipes.length; i++) {
-          index = i + 1;
-          var recipe = recipes[i];
-          if (recipe.selected) {
-            if (recipe.state === 'running') {
-              recipe.state = (Math.random() > 0.5 ? 'success' : 'failure');
-              $rootScope.$emit('recipes:' + recipe.state, recipe);
-            } else {
-              recipes[i].state = 'running';
-              $rootScope.$emit('recipes:running', recipe);
-              index = i;
-              break;
-            }
-          }
-        }
-        $rootScope.$emit('recipes:update', '');
-      }
-
-      runner = $interval(function () {
-        if (index === recipes.length) $interval.cancel(runner); else step();
-      }, 2000);
-
-      step();
-    };
-
-    this.stop = function () {
-
-      $rootScope.$emit('recipes:stop', '');
-
-      $interval.cancel(runner);
-      for (var i = 0; i < recipes.length; i++) {
-        var recipe = recipes[i];
-        if (recipe.state === 'running') {
-          recipe.state = (Math.random() > 0.5 ? 'success' : 'failure');
-          $rootScope.$emit('recipes:' + recipe.state, recipe);
-        }
-      }
-      $rootScope.$emit('recipes:update', '');
-    };
-
-    // start
+    var dataStream;
 
     var process = function (message) {
-      console.log(message);
 
       var data = JSON.parse(message);
 
@@ -163,20 +43,77 @@
         while (loads.length > 100) loads.shift();
 
         $rootScope.$emit('vamp:load', load);
+
+      } else if (data['type'] === 'recipes') {
+
+        var select = recipes.length === 0;
+
+        var old = recipes.slice(0);
+
+        recipes.length = 0;
+
+        for (var i = 0; i < data['recipes'].length; i++) {
+          var recipe = data['recipes'][i];
+
+          recipe.state = recipe.state.toLowerCase();
+
+          if (select) {
+            recipe.selected = true;
+          } else {
+            for (var j = 0; j < old.length; j++) {
+              if (old[j].id === recipe['id']) {
+                recipe.selected = old[j].selected;
+                if(old[j].state !== recipe.state) $rootScope.$emit('recipes:' + recipe.state, recipe);
+                break;
+              }
+            }
+          }
+
+          recipes.push(recipe);
+        }
+
+        $rootScope.$emit('recipes:update', '');
       }
     };
+
+    this.run = function () {
+      if (dataStream) {
+
+        var selected = [];
+
+        for (var i = 0; i < recipes.length; i++) {
+          var recipe = recipes[i];
+          if (recipe.selected) selected.push(recipe.id);
+        }
+
+        if (selected.length > 0) {
+          dataStream.send('run:' + selected.join(','));
+          $rootScope.$emit('recipes:run');
+        }
+      }
+    };
+
+    this.stop = function () {
+      if (dataStream) {
+        dataStream.send('stop');
+        $rootScope.$emit('recipes:stop');
+      }
+    };
+
 
     this.init = function () {
 
       var channel = function () {
-        var dataStream = $websocket('ws://localhost:8080/channel');
+
+        dataStream = $websocket('ws://localhost:8080/channel');
 
         dataStream.onOpen(function () {
-          dataStream.send("info")
+          dataStream.send('info');
+          dataStream.send('recipes');
         });
 
         dataStream.onClose(function () {
-          console.log("closed, will try to reconnect in 5 seconds...");
+          console.log('closed, will try to reconnect in 5 seconds...');
           $timeout(channel, 5000);
         });
 

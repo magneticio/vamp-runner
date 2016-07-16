@@ -27,10 +27,10 @@
                        ng-click="updateSelection($event, item.id)">
                 <span class="cut-with-dots">{{ item.title }}</span>
             </label>
-            <i class="recipe success ion-record" ng-show="item.state == 'success'"></i>
-            <i class="recipe failure ion-record" ng-show="item.state == 'failure'"></i>
-            <i class="recipe running ion-record" ng-show="item.state == 'running'"></i>
-            <i class="recipe ready ion-record" ng-show="item.state == 'idle'"></i>
+            <i class="recipe success ion-record" ng-show="item.state === 'success'"></i>
+            <i class="recipe failure ion-record" ng-show="item.state === 'failure'"></i>
+            <i class="recipe running ion-record" ng-show="item.state === 'running'"></i>
+            <i class="recipe ready ion-record" ng-show="item.state === 'idle'"></i>
         </li>
     </ul>
 </div>
