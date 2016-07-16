@@ -2,11 +2,11 @@
   'use strict';
 
   angular.module('VampRunner.pages.log')
-    .service('log', ["$rootScope", "api", function ($rootScope, api) {
-      return new Log($rootScope, api);
+    .service('log', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
+      return new Log($rootScope, api, toastr);
     }]);
 
-  function Log($rootScope, api) {
+  function Log($rootScope, api, toastr) {
 
     var entries = this.entries = [];
 
@@ -19,6 +19,12 @@
       };
       entries.unshift(log);
       while (entries.length > 100) entries.pop();
+
+      if (level === 'info')
+        toastr.success(message, level.toUpperCase());
+      else if (level === 'error')
+        toastr.error(message, level.toUpperCase());
+
       $rootScope.$emit('log', log);
     };
 

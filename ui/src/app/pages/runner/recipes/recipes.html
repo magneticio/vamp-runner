@@ -10,9 +10,21 @@
 
     <div class="action-buttons">
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary btn-with-icon" ng-click="run()" ng-disabled="isRunning()"><i class="ion-play"></i>run</button>
-            <button type="button" class="btn btn-warning btn-with-icon" ng-click="stop()" ng-disabled="!isRunning()"><i class="ion-stop"></i>stop</button>
-            <button type="button" class="btn btn-danger btn-with-icon"  ng-click="purge()" ng-disabled="isRunning()"><i class="ion-scissors"></i>purge</button>
+            <button type="button"
+                    class="btn btn-primary btn-with-icon"
+                    ng-click="run()"
+                    ng-disabled="isRunning()"
+                    title="Run all selected recipes"><i class="ion-play"></i>run</button>
+            <button type="button"
+                    class="btn btn-primary btn-with-icon"
+                    ng-click="stop()"
+                    ng-disabled="!isRunning()"
+                    title="Stop all"><i class="ion-stop"></i>stop</button>
+            <button type="button"
+                    class="btn btn-primary btn-with-icon"
+                    ng-click="purge()"
+                    ng-disabled="isRunning()"
+                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>purge</button>
         </div>
     </div>
 

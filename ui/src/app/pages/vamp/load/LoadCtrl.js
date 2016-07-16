@@ -21,7 +21,7 @@
     var length = 30;
 
     function tail(array, value, padding) {
-      array.push(value);
+      array.push($filter('number')(value, 2));
       if (array.length > length) array.shift();
       while (array.length < length) array.unshift(padding);
     }
