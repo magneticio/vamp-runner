@@ -14,13 +14,11 @@
     ];
     $scope.series = ['CPU', 'HEAP'];
 
-    $scope.colors = ['#45b7cd', '#ff6384', '#ff8e72'];
-
     var length = 30;
 
     function tail(array, value, padding) {
       array.push(value);
-      if (array.length > length) array.shift();
+      while (array.length > length) array.shift();
       while (array.length < length) array.unshift(padding);
     }
 
