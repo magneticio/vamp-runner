@@ -14,6 +14,16 @@
 
     var dataStream;
 
+    var command = function (cmd, args, emit) {
+      if (!dataStream) return;
+
+      dataStream.send({
+        command: cmd,
+        arguments: args
+      });
+      $rootScope.$emit(emit);
+    };
+
     var process = function (message) {
 
       var data = JSON.parse(message);
@@ -63,7 +73,7 @@
             for (var j = 0; j < old.length; j++) {
               if (old[j].id === recipe['id']) {
                 recipe.selected = old[j].selected;
-                if(old[j].state !== recipe.state) $rootScope.$emit('recipes:' + recipe.state, recipe);
+                if (old[j].state !== recipe.state) $rootScope.$emit('recipes:' + recipe.state, recipe);
                 break;
               }
             }
@@ -76,35 +86,29 @@
       }
     };
 
-    this.run = function () {
-      if (dataStream) {
+    var selected = function () {
+      var result = [];
 
-        var selected = [];
-
-        for (var i = 0; i < recipes.length; i++) {
-          var recipe = recipes[i];
-          if (recipe.selected) selected.push(recipe.id);
-        }
-
-        if (selected.length > 0) {
-          dataStream.send('run:' + selected.join(','));
-          $rootScope.$emit('recipes:run');
-        }
+      for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        if (recipe.selected) result.push(recipe.id);
       }
+
+      return result;
+    };
+
+    this.run = function () {
+      var recipes = selected();
+      if (recipes.length > 0) command('run', recipes, 'recipes:run');
     };
 
     this.stop = function () {
-      if (dataStream) {
-        dataStream.send('stop');
-        $rootScope.$emit('recipes:stop');
-      }
+      command('stop', null, 'recipes:stop');
     };
 
     this.purge = function () {
-      if (dataStream) {
-        dataStream.send('purge');
-        $rootScope.$emit('recipes:purge');
-      }
+      var recipes = selected();
+      if (recipes.length > 0) command('purge', recipes, 'recipes:purge');
     };
 
     this.init = function () {
@@ -114,12 +118,13 @@
         dataStream = $websocket('ws://localhost:8080/channel');
 
         dataStream.onOpen(function () {
-          dataStream.send('info');
-          dataStream.send('recipes');
+          command('info');
+          command('recipes');
         });
 
         dataStream.onClose(function () {
           console.log('closed, will try to reconnect in 5 seconds...');
+          dataStream = null;
           $timeout(channel, 5000);
         });
 

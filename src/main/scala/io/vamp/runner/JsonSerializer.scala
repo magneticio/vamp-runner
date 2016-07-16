@@ -5,7 +5,7 @@ import org.json4s.{ DefaultFormats, FieldSerializer }
 
 trait JsonSerializer {
 
-  implicit private val formats = new DefaultFormats {
+  implicit val formats = new DefaultFormats {
     override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = (classOf[AnyRef], new FieldSerializer[AnyRef](
       {
         case (name, value) ⇒ Option((underscore(name), value))

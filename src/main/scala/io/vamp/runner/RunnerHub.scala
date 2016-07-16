@@ -4,6 +4,7 @@ import akka.actor.{ ActorRef, ActorSystem, Props }
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import com.typesafe.scalalogging.Logger
+import io.vamp.runner.Hub.Command
 import org.slf4j.LoggerFactory
 
 class RunnerHub(implicit val system: ActorSystem, val materializer: ActorMaterializer) extends Hub {
@@ -18,10 +19,11 @@ class RunnerHub(implicit val system: ActorSystem, val materializer: ActorMateria
   override def children: Map[String, Props] = Map("info" -> InfoActor.props, "runner" -> RunnerActor.props)
 
   protected def onReceive(sender: ActorRef) = {
-    case "info"                                ⇒ forward("info", ProvideInfo, sender)
-    case "recipes"                             ⇒ forward("runner", ProvideRecipes, sender)
-    case "stop"                                ⇒ forward("runner", StopExecution, sender)
-    case cmd: String if cmd.startsWith("run:") ⇒ forward("runner", StartExecution(cmd.substring("run:".length).split(',').toList), sender)
-    case other                                 ⇒ logger.info(s"Unknown action: $other")
+    case Command("info", _)             ⇒ forward("info", ProvideInfo, sender)
+    case Command("recipes", _)          ⇒ forward("runner", ProvideRecipes, sender)
+    case Command("stop", _)             ⇒ forward("runner", StopExecutions, sender)
+    case Command("run", ids: List[_])   ⇒ forward("runner", StartExecutions(ids.asInstanceOf[List[String]]), sender)
+    case Command("purge", ids: List[_]) ⇒ forward("runner", PurgeExecutions(ids.asInstanceOf[List[String]]), sender)
+    case other                          ⇒ logger.info(s"Unknown command: $other")
   }
 }

@@ -12,9 +12,11 @@ object RunnerActor {
 
   object ProvideRecipes
 
-  object StopExecution
+  object StopExecutions
 
-  case class StartExecution(ids: List[String])
+  case class StartExecutions(ids: List[String])
+
+  case class PurgeExecutions(ids: List[String])
 
   case class Recipes(recipes: List[Recipe]) extends Response
 
@@ -40,11 +42,12 @@ class RunnerActor extends Actor with ActorLogging {
   ).map(recipe ⇒ recipe.id -> recipe): _*)
 
   def receive: Receive = {
-    case ProvideRecipes      ⇒ sender() ! Recipes(recipes.values.toList)
-    case StartExecution(ids) ⇒ start(ids)
-    case StopExecution       ⇒ stop()
-    case MockExecutionResult ⇒ mock()
-    case _                   ⇒
+    case ProvideRecipes       ⇒ sender() ! Recipes(recipes.values.toList)
+    case StartExecutions(ids) ⇒ start(ids)
+    case PurgeExecutions(ids) ⇒ purge(ids)
+    case StopExecutions       ⇒ stop()
+    case MockExecutionResult  ⇒ mock()
+    case _                    ⇒
   }
 
   private def start(ids: List[String]) = {
@@ -56,6 +59,8 @@ class RunnerActor extends Actor with ActorLogging {
 
     context.parent ! Broadcast(Recipes(recipes.values.toList))
   }
+
+  private def purge(ids: List[String]) = {}
 
   private def stop() = {
     recipes.values.foreach { recipe ⇒

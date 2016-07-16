@@ -6,6 +6,7 @@ import akka.actor._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
 import akka.util.Timeout
+import org.json4s.native.Serialization.read
 
 import scala.collection.mutable
 
@@ -17,15 +18,17 @@ object Hub {
 
   case class SessionClosed(id: UUID) extends SessionEvent
 
-  case class Request(id: UUID, request: AnyRef) extends SessionEvent
+  case class Request(id: UUID, request: Command) extends SessionEvent
 
   case class Broadcast(message: AnyRef) extends SessionEvent
 
   case class Forward(child: String, request: AnyRef, recipient: ActorRef)
 
+  case class Command(command: String, arguments: AnyRef)
+
 }
 
-trait Hub {
+trait Hub extends JsonSerializer {
 
   import Hub._
 
@@ -37,11 +40,18 @@ trait Hub {
 
   protected val sessions = mutable.Map[UUID, ActorRef]()
 
-  def channel: Flow[String, AnyRef, Any] = {
+  def channel: Flow[String, String, Any] = {
     val id = UUID.randomUUID()
-    val in = Flow[String].map(Request(id, _)).to(Sink.actorRef[SessionEvent](actor, SessionClosed(id)))
-    val out = Source.actorRef[AnyRef](10, OverflowStrategy.dropHead)
-      .mapMaterializedValue(actor ! SessionOpened(id, _))
+
+    val in =
+      Flow[String]
+        .map(message ⇒ Request(id, read[Command](message)))
+        .to(Sink.actorRef[SessionEvent](actor, SessionClosed(id)))
+
+    val out =
+      Source.actorRef[AnyRef](10, OverflowStrategy.dropHead)
+        .mapMaterializedValue(actor ! SessionOpened(id, _)).map(write)
+
     Flow.fromSinkAndSource(in, out)
   }
 
@@ -67,7 +77,7 @@ trait Hub {
 
       case Terminated(subscriber)             ⇒ terminated(subscriber)
 
-      case Request(id, action)                ⇒ requestMessage(id, action)
+      case Request(id, command)               ⇒ requestMessage(id, command)
 
       case Broadcast(message)                 ⇒ broadcast(message)
 
@@ -102,9 +112,9 @@ trait Hub {
       onClose(subscriber)
     }
 
-    private def requestMessage(id: UUID, request: AnyRef) = {
-      log.info(s"Request: $request")
-      sessions.get(id).foreach(onReceive(_)(request))
+    private def requestMessage(id: UUID, command: Command) = {
+      log.info(s"Request command: $command")
+      sessions.get(id).foreach(onReceive(_)(command))
     }
 
     private def broadcast(message: AnyRef): Unit = {
