@@ -1,4 +1,4 @@
-package io.vamp.runner.util
+package io.vamp.runner
 
 import akka.util.Timeout
 import com.typesafe.config.{ ConfigFactory, Config => TypesafeConfig }

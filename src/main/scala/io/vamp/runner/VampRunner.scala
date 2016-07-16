@@ -10,9 +10,11 @@ object VampRunner extends App with WebServer with Banner {
 
   banner()
 
-  val http = httpServe()
+  val messenger = new RunnerHub
+
+  val binding = server
 
   sys.addShutdownHook {
-    http.map(_.unbind()).onComplete(_ ⇒ system.terminate())
+    binding.map(_.unbind()).onComplete(_ ⇒ system.terminate())
   }
 }

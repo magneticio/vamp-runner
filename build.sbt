@@ -15,6 +15,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-experimental" % "2.4.8" ::
     ("com.typesafe.akka" %% "akka-slf4j" % "2.4.8" exclude("org.slf4j", "slf4j-api")) :: Nil
 
+  val json = "org.json4s" %% "json4s-native" % "3.4.0" :: Nil
+
   val config = "com.typesafe" % "config" % "1.3.0" :: Nil
 
   val logging =
@@ -22,7 +24,7 @@ libraryDependencies ++= {
     ("ch.qos.logback" % "logback-classic" % "1.1.7" exclude("org.slf4j", "slf4j-api")) ::
     ("com.typesafe.scala-logging" %% "scala-logging" % "3.4.0" exclude("org.slf4j", "slf4j-api")) :: Nil
 
-  akka ++ config ++ logging
+  akka ++ json ++ config ++ logging
 }
 
 scalariformSettings ++ Seq(ScalariformKeys.preferences := ScalariformKeys.preferences.value
