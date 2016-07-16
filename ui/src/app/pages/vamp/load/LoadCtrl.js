@@ -14,22 +14,20 @@
     ];
     $scope.series = ['CPU', 'HEAP'];
 
-    $scope.options = {
-      'bezierCurve': false
-    };
+    $scope.colors = ['#45b7cd', '#ff6384', '#ff8e72'];
 
     var length = 30;
 
     function tail(array, value, padding) {
-      array.push($filter('number')(value, 2));
+      array.push(value);
       if (array.length > length) array.shift();
       while (array.length < length) array.unshift(padding);
     }
 
     function onLoad(load) {
-      tail($scope.labels, $filter('date')(new Date(), 'HH:mm:ss'), ".");
-      tail($scope.data[0], load.cpu, 0);
-      tail($scope.data[1], load.heap.percentage, 0);
+      tail($scope.labels, $filter('date')(Date.now(), 'HH:mm:ss'), ".");
+      tail($scope.data[0], $filter('number')(load.cpu, 2), 0);
+      tail($scope.data[1], $filter('number')(load.heap.percentage, 2), 0);
     }
 
     tail($scope.labels, ".", ".");
