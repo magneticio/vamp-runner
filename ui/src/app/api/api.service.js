@@ -100,6 +100,12 @@
       }
     };
 
+    this.purge = function () {
+      if (dataStream) {
+        dataStream.send('purge');
+        $rootScope.$emit('recipes:purge');
+      }
+    };
 
     this.init = function () {
 

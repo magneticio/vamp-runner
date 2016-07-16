@@ -3,28 +3,36 @@
     <label class="select-all-label checkbox-inline custom-checkbox nowrap">
         <input type="checkbox"
                ng-click="selectAll($event)"
-               ng-checked="isSelectedAll()">
+               ng-checked="isSelectedAll()"
+               ng-disabled="isRunning()">
         <span class="select-all-label">Select All</span>
     </label>
-    <button type="button" class="btn btn-icon btn-lg execute-button"
-            ng-class="action == 'ready' ? 'btn-primary' : 'btn-danger'" ng-click="executeAction()"
-            title="Execute Selected">
-        <i class="ion-play" ng-show="action == 'ready'"></i>
-        <i class="ion-stop" ng-show="action == 'stop'"></i>
-    </button>
+
+    <div class="action-buttons">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary btn-with-icon" ng-click="run()" ng-disabled="isRunning()"><i class="ion-play"></i>run</button>
+            <button type="button" class="btn btn-warning btn-with-icon" ng-click="stop()" ng-disabled="!isRunning()"><i class="ion-stop"></i>stop</button>
+            <button type="button" class="btn btn-danger btn-with-icon"  ng-click="purge()" ng-disabled="isRunning()"><i class="ion-scissors"></i>purge</button>
+        </div>
+    </div>
+
     <div class="box-shadow-border"></div>
 
     <ul class="recipes" ng-model="recipes">
-        <li ng-repeat="item in recipes" ng-init="activeItem=false"
+        <li ng-repeat="item in recipes"
+            ng-init="activeItem=false"
             ng-class="{checked: isSelected(item.id), active: activeItem}"
-            ng-mouseenter="activeItem=true" ng-mouseleave="activeItem=false">
+            ng-mouseenter="activeItem=true"
+            ng-mouseleave="activeItem=false"
+            ng-disabled="isRunning()">
             <div class="blur-container">
                 <div class="blur-box"></div>
             </div>
             <label class="recipe-checkbox custom-checkbox custom-input-success">
                 <input type="checkbox" name="selected"
                        ng-checked="isSelected(item.id)"
-                       ng-click="updateSelection($event, item.id)">
+                       ng-click="updateSelection($event, item.id)"
+                       ng-disabled="isRunning()">
                 <span class="cut-with-dots">{{ item.title }}</span>
             </label>
             <i class="recipe success ion-record" ng-show="item.state === 'success'"></i>

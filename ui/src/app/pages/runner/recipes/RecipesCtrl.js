@@ -59,30 +59,25 @@
 
     //
 
-    $scope.action = 'ready';
-
-    function refresh() {
-      var action = 'ready';
+    $scope.isRunning = function () {
       for (var i = 0; i < api.recipes.length; i++) {
         if (api.recipes[i].state === 'running') {
-          action = 'stop';
-          break;
+          return true;
         }
       }
-      $scope.action = action;
-    }
-
-    $scope.executeAction = function () {
-      if ($scope.action == 'ready')
-        api.run();
-      else if ($scope.action == 'stop')
-        api.stop();
+      return false;
     };
 
-    $rootScope.$on('recipes:update', function () {
-      refresh();
-    });
+    $scope.run = function () {
+      api.run();
+    };
 
-    refresh();
+    $scope.stop = function () {
+      api.stop();
+    };
+
+    $scope.purge = function () {
+      api.purge();
+    };
   }
 })();
