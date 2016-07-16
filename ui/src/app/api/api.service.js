@@ -2,79 +2,14 @@
   'use strict';
 
   angular.module('VampRunner.api')
-    .service('api', ["$rootScope", "$interval", "$http", function ($rootScope, $interval, $http) {
-      return new Api($rootScope, $interval, $http);
+    .service('api', ["$rootScope", "$interval", "$websocket", "$timeout", function ($rootScope, $interval, $websocket, $timeout) {
+      return new Api($rootScope, $interval, $websocket, $timeout);
     }]);
 
-  function Api($rootScope, $interval, $http) {
+  function Api($rootScope, $interval, $websocket, $timeout) {
 
-    var endpoint = 'http://192.168.99.100:8080/api/v1/info';
-
-    // Vamp info
-
-    var loads = this.loads = [];
     var info = this.info = {};
-
-    function loadPolling() {
-      function load() {
-
-        $http.get(endpoint + '?for=jvm').success(function (data) {
-
-          var load = {
-            cpu: 0,
-            heap: {
-              max: 0,
-              used: 0,
-              percentage: 0
-            }
-          };
-
-          try {
-            load = {
-              cpu: data.jvm.operating_system.system_load_average,
-              heap: {
-                max: data.jvm.memory.heap.max / (1024 * 1024),
-                used: data.jvm.memory.heap.used / (1024 * 1024)
-              }
-            };
-            load.heap.percentage = 100 * load.heap.used / load.heap.max;
-          } catch (e) {
-          }
-
-          loads.push(load);
-          while (loads.length > 100) loads.shift();
-
-          $rootScope.$emit('vamp:load', load);
-        });
-      }
-
-      $interval(load, 3000, 1);
-      $interval(load, 10000);
-    }
-
-    function infoPolling() {
-
-      function process(data) {
-        info["version"] = data.version;
-        info["persistence"] = data.persistence.database.type;
-        info["key_value_store"] = data.key_value.type;
-        info["gateway_driver"] = 'haproxy ' + data.gateway_driver.marshaller.haproxy;
-        info["container_driver"] = data.container_driver.type;
-        info["workflow_driver"] = '';
-
-        for (var name in data.workflow_driver) {
-          info["workflow_driver"] += info["workflow_driver"] === '' ? name : ',' + name;
-        }
-      }
-
-      var promise = $interval(function () {
-        $http.get(endpoint).success(function (data) {
-          process(data);
-          $rootScope.$emit('vamp:info', data);
-          $interval.cancel(promise);
-        });
-      }, 3000);
-    }
+    var loads = this.loads = [];
 
     // recipes
 
@@ -198,9 +133,59 @@
 
     // start
 
+    var process = function (message) {
+      console.log(message);
+
+      var data = JSON.parse(message);
+
+      if (data['type'] === 'info') {
+
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            info[key] = data[key];
+          }
+        }
+
+        $rootScope.$emit('vamp:info', info);
+
+      } else if (data['type'] === 'load') {
+
+        var load = {
+          cpu: data['cpu'],
+          heap: {
+            max: data['heap']['max'] / (1024 * 1024),
+            used: data['heap']['used'] / (1024 * 1024)
+          }
+        };
+        load.heap.percentage = 100 * load.heap.used / load.heap.max;
+
+        loads.push(load);
+        while (loads.length > 100) loads.shift();
+
+        $rootScope.$emit('vamp:load', load);
+      }
+    };
+
     this.init = function () {
-      loadPolling();
-      infoPolling();
+
+      var channel = function () {
+        var dataStream = $websocket('ws://localhost:8080/channel');
+
+        dataStream.onOpen(function () {
+          dataStream.send("info")
+        });
+
+        dataStream.onClose(function () {
+          console.log("closed, will try to reconnect in 5 seconds...");
+          $timeout(channel, 5000);
+        });
+
+        dataStream.onMessage(function (message) {
+          process(message.data);
+        });
+      };
+
+      channel();
     };
   }
 

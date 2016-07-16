@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('VampRunner', [
+  'ngWebSocket',
   'ngAnimate',
   'ui.bootstrap',
   'ui.sortable',

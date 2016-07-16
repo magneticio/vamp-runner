@@ -43,7 +43,8 @@
     "angular-animate": "~1.4.8",
     "textAngular": "~1.4.6",
     "angular-xeditable": "~0.1.9",
-    "Chart.js": "^1.0.2"
+    "Chart.js": "^1.0.2",
+    "angular-websocket": "^2.0.0"
   },
   "overrides": {
     "bootstrap": {

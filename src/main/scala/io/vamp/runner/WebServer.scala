@@ -7,10 +7,8 @@ import akka.http.scaladsl.model.ws.{ Message, TextMessage }
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
-import org.json4s.DefaultFormats
-import org.json4s.native.Serialization.write
 
-trait WebServer {
+trait WebServer extends JsonSerializer {
 
   implicit def system: ActorSystem
 
@@ -18,15 +16,15 @@ trait WebServer {
 
   implicit def executionContext = system.dispatcher
 
-  def messenger: MessageHub
+  def messenger: Hub
 
-  val config = Config.config("vamp.runner")
+  val config = Config.config("vamp.runner.http")
 
   val index = config.string("ui.index")
   val directory = config.string("ui.directory")
 
   def server = Http().bindAndHandle({
-    withRequestTimeout(config.duration("timeout")) {
+    withRequestTimeout(Config.duration("vamp.runner.timeout")) {
       encodeResponse {
         get {
           pathEnd {
@@ -42,7 +40,7 @@ trait WebServer {
       handleWebSocketMessages {
         Flow[Message].collect {
           case TextMessage.Strict(message) ⇒ message
-        } via messenger.channel map (message ⇒ TextMessage.Strict(write(message)(DefaultFormats)))
+        } via messenger.channel map (message ⇒ TextMessage.Strict(writeJson(message)))
       }
     }
   }, config.string("interface"), config.int("port"))

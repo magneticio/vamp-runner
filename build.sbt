@@ -11,6 +11,7 @@ libraryDependencies ++= {
 
   val akka =
     "com.typesafe.akka" %% "akka-actor" % "2.4.8" ::
+      "com.typesafe.akka" %% "akka-agent" % "2.4.8" ::
     "com.typesafe.akka" %% "akka-http-core" % "2.4.8" ::
     "com.typesafe.akka" %% "akka-http-experimental" % "2.4.8" ::
     ("com.typesafe.akka" %% "akka-slf4j" % "2.4.8" exclude("org.slf4j", "slf4j-api")) :: Nil
