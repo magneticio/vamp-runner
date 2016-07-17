@@ -11,7 +11,7 @@
         title: 'Vamp',
         templateUrl: 'app/pages/vamp/vamp.html',
         sidebarMeta: {
-          icon: 'ion-information-circled',
+          icon: 'ion-ios-information',
           order: 0
         }
       });

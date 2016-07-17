@@ -40,10 +40,10 @@
 .execution-info-item {
   p {
     margin-bottom: 9px;
-    font-size: 18px;
+    font-size: 16px;
     opacity: 0.9;
   }
-  .channel-number {
+  .execution-number {
     display: inline-block;
     float: right;
   }
@@ -113,7 +113,7 @@
   margin-bottom: 12px;
 }
 
-.channel-progress {
+.execution-progress {
   height: 4px;
   border-radius: 0;
   width: 100%;

@@ -15,46 +15,6 @@ h3.with-line {
   }
 }
 
-.profile-block {
-  background: $default;
-
-  .nav-tabs > li {
-    & > a {
-      border-radius: 0;
-      transition: background, 0s, ease !important;
-    }
-  }
-
-  .progress {
-    border-radius: 0;
-    margin-bottom: 6px;
-  }
-
-  .progress-info {
-    margin-bottom: 8px;
-    margin-top: -2px;
-  }
-
-  .tab-content {
-    padding: 15px 15px 25px;
-  }
-
-  .progress-bar-primary {
-    background-color: $primary-light;
-  }
-
-  .form-group {
-    margin-bottom: 14px;
-    label {
-      text-align: right;
-    }
-  }
-
-  .form-control {
-    font-size: 13px;
-  }
-}
-
 .notification {
   .form-group {
     label {

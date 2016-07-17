@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.runner')
+  angular.module('VampRunner.pages.recipes')
     .controller('ExecutionCtrl', ExecutionCtrl);
 
   /** @ngInject */

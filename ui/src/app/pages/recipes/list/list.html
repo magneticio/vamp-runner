@@ -14,17 +14,20 @@
                     class="btn btn-primary btn-with-icon"
                     ng-click="run()"
                     ng-disabled="isRunning()"
-                    title="Run all selected recipes"><i class="ion-play"></i>run</button>
+                    title="Run all selected recipes"><i class="ion-play"></i>run
+            </button>
             <button type="button"
                     class="btn btn-primary btn-with-icon"
                     ng-click="stop()"
                     ng-disabled="!isRunning()"
-                    title="Stop all"><i class="ion-stop"></i>stop</button>
+                    title="Stop all"><i class="ion-stop"></i>stop
+            </button>
             <button type="button"
                     class="btn btn-primary btn-with-icon"
                     ng-click="purge()"
                     ng-disabled="isRunning()"
-                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>purge</button>
+                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>purge
+            </button>
         </div>
     </div>
 
@@ -51,6 +54,11 @@
             <i class="recipe failure ion-record" ng-show="item.state === 'failure'"></i>
             <i class="recipe running ion-record" ng-show="item.state === 'running'"></i>
             <i class="recipe ready ion-record" ng-show="item.state === 'idle'"></i>
+
+            <a href="javascript: void(0);" ng-click="details(item)" ng-show="!isRunning()">
+                <i class="recipe-details ion-arrow-expand"></i>
+            </a>
+            <i class="recipe-details ion-ios-clock" ng-show="isRunning()"></i>
         </li>
     </ul>
 </div>

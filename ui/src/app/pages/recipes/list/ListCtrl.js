@@ -1,11 +1,11 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.runner')
+  angular.module('VampRunner.pages.recipes')
     .controller('RecipesCtrl', RecipesCtrl);
 
   /** @ngInject */
-  function RecipesCtrl($rootScope, $scope, baConfig, api) {
+  function RecipesCtrl($scope, baConfig, api, toastr) {
 
     $scope.transparent = baConfig.theme.blur;
 
@@ -78,6 +78,10 @@
 
     $scope.purge = function () {
       api.purge();
+    };
+
+    $scope.details = function (recipe) {
+      toastr.info('', recipe.title);
     };
   }
 })();

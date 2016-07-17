@@ -13,10 +13,11 @@
         <div>
             <div class="execution-info-item" ng-repeat="item in doughnutData | orderBy:'order'">
                 <div class="legend-color" style="background-color: {{::item.color}}"></div>
-                <p>{{::item.label}}<span class="channel-number">{{ item.percentage | number : 0 }}%</span></p>
-                <div class="progress progress-sm channel-progress">
+                <p>{{::item.label}}<span class="execution-number">{{ item.percentage | number : 0 }}%</span></p>
+                <div class="progress execution-progress">
                     <div class="progress-bar" role="progressbar"
-                         aria-valuenow="{{ item.percentage | number : 0 }}" aria-valuemin="0" aria-valuemax="100"
+                         aria-valuenow="{{ item.percentage | number : 0 }}" aria-valuemin="0"
+                         aria-valuemax="100"
                          style="width: {{item.percentage}}%">
                     </div>
                 </div>
@@ -24,4 +25,3 @@
         </div>
     </div>
 </div>
-

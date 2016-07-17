@@ -19,6 +19,19 @@ ul.recipes {
       position: absolute;
       cursor: grab;
       top: 0px;
+      right: 52px;
+      font-size: 18px;
+      transition: color 0.2s;
+      visibility: visible;
+      line-height: 42px;
+    }
+    a {
+      color: $default-text;
+    }
+    i.recipe-details {
+      position: absolute;
+      cursor: pointer;
+      top: 0px;
       right: 12px;
       font-size: 18px;
       transition: color 0.2s;

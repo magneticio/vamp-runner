@@ -12,7 +12,7 @@
         templateUrl: 'app/pages/log/log.html',
         title: 'Log',
         sidebarMeta: {
-          icon: 'ion-ios-infinite',
+          icon: 'ion-ios-list',
           order: 30
         }
       });
