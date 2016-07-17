@@ -2,10 +2,10 @@
   'use strict';
 
   angular.module('VampRunner.pages.recipes')
-    .controller('ExecutionCtrl', ExecutionCtrl);
+    .controller('TotalCtrl', TotalCtrl);
 
   /** @ngInject */
-  function ExecutionCtrl($rootScope, $scope, baConfig, colorHelper, api) {
+  function TotalCtrl($rootScope, $scope, baConfig, colorHelper, api) {
 
     $scope.transparent = baConfig.theme.blur;
 
@@ -15,6 +15,7 @@
       var completed = 0;
       var failed = 0;
       var running = 0;
+      var aborted = 0;
       var idle = 0;
 
       for (var i = 0; i < api.recipes.length; i++) {
@@ -25,6 +26,8 @@
           failed++;
         else if (recipe.state === 'running')
           running++;
+        else if (recipe.state === 'aborted')
+          aborted++;
         else if (recipe.state === 'idle')
           idle++;
       }
@@ -57,6 +60,13 @@
           percentage: percentage(running),
           order: 2
         }, {
+          value: aborted,
+          color: allColors.gray,
+          highlight: colorHelper.shade(allColors.gray, 15),
+          label: 'Aborted',
+          percentage: percentage(aborted),
+          order: 2
+        }, {
           value: idle,
           color: allColors.blue,
           highlight: colorHelper.shade(allColors.blue, 15),
@@ -66,8 +76,8 @@
         }
       ];
 
-      var ctx = document.getElementById('execution-chart-area').getContext('2d');
-      window.executionDoughnut = new Chart(ctx).Doughnut($scope.doughnutData, {
+      var ctx = document.getElementById('total-chart-area').getContext('2d');
+      window.totalDoughnut = new Chart(ctx).Doughnut($scope.doughnutData, {
         segmentShowStroke: true,
         percentageInnerCutout: 64,
         responsive: true

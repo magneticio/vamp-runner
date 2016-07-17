@@ -12,7 +12,7 @@ object RunnerActor {
 
   object ProvideRecipes
 
-  object StopExecutions
+  object AbortExecutions
 
   case class StartExecutions(ids: List[String])
 
@@ -38,14 +38,14 @@ class RunnerActor extends Actor with ActorLogging {
     Recipe("tcp-dependencies", "TCP with Dependencies", State.Idle),
     Recipe("route-weights", "Route Weights", State.Idle),
     Recipe("route-weights-condition-strength", "Route Weights with Condition Strength", State.Idle),
-    Recipe("scaling-in-out", "Scaling In/Out", State.Idle)
+    Recipe("auto-scaling", "Auto Scaling", State.Idle)
   ).map(recipe ⇒ recipe.id -> recipe): _*)
 
   def receive: Receive = {
     case ProvideRecipes       ⇒ sender() ! Recipes(recipes.values.toList)
     case StartExecutions(ids) ⇒ start(ids)
     case PurgeExecutions(ids) ⇒ purge(ids)
-    case StopExecutions       ⇒ stop()
+    case AbortExecutions      ⇒ abort()
     case MockExecutionResult  ⇒ mock()
     case _                    ⇒
   }
@@ -62,9 +62,9 @@ class RunnerActor extends Actor with ActorLogging {
 
   private def purge(ids: List[String]) = {}
 
-  private def stop() = {
+  private def abort() = {
     recipes.values.foreach { recipe ⇒
-      recipes += (recipe.id -> recipe.copy(state = State.Idle))
+      if (recipe.state == State.Running)  recipes += (recipe.id -> recipe.copy(state = State.Aborted))
     }
 
     context.parent ! Broadcast(Recipes(recipes.values.toList))

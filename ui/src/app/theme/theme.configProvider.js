@@ -26,7 +26,8 @@
     red: '#ff6384',
     green: '#0e8174',
     yellow: '#ffce56',
-    blue: '#36a2eb'
+    blue: '#36a2eb',
+    gray: '#c0c0c0'
   };
 
   angular.module('VampRunner.theme')
@@ -66,7 +67,8 @@
           yellow: allColors.yellow,
           green: allColors.green,
           red: allColors.red,
-          blue: allColors.blue
+          blue: allColors.blue,
+          gray: allColors.gray
         }
       }
     };

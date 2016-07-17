@@ -1,20 +1,20 @@
-<div class="execution-block" ng-class="{'transparent': transparent}">
+<div class="total-block" ng-class="{'transparent': transparent}">
     <div class="chart-bg"></div>
-    <div class="execution-chart" id="execution">
+    <div class="total-chart" id="total">
         <div class="canvas-holder">
-            <canvas id="execution-chart-area" width="300" height="300"></canvas>
-            <div class="execution-text">
+            <canvas id="total-chart-area" width="300" height="300"></canvas>
+            <div class="total-text">
                 <span>{{ count }}</span>
             </div>
         </div>
-        <div class="execution-legend"></div>
+        <div class="total-legend"></div>
     </div>
-    <div class="execution-info">
+    <div class="total-info">
         <div>
-            <div class="execution-info-item" ng-repeat="item in doughnutData | orderBy:'order'">
+            <div class="total-info-item" ng-repeat="item in doughnutData | orderBy:'order'">
                 <div class="legend-color" style="background-color: {{::item.color}}"></div>
-                <p>{{::item.label}}<span class="execution-number">{{ item.percentage | number : 0 }}%</span></p>
-                <div class="progress execution-progress">
+                <p>{{::item.label}}<span class="total-number">{{ item.percentage | number : 0 }}%</span></p>
+                <div class="progress total-progress">
                     <div class="progress-bar" role="progressbar"
                          aria-valuenow="{{ item.percentage | number : 0 }}" aria-valuemin="0"
                          aria-valuemax="100"

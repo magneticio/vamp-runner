@@ -73,7 +73,7 @@
             for (var j = 0; j < old.length; j++) {
               if (old[j].id === recipe['id']) {
                 recipe.selected = old[j].selected;
-                if (old[j].state !== recipe.state) $rootScope.$emit('recipes:' + recipe.state, recipe);
+                if (old[j].state !== recipe.state) $rootScope.$emit('recipe:state', recipe);
                 break;
               }
             }
@@ -102,8 +102,8 @@
       if (recipes.length > 0) command('run', recipes, 'recipes:run');
     };
 
-    this.stop = function () {
-      command('stop', null, 'recipes:stop');
+    this.abort = function () {
+      command('abort', null, 'recipes:abort');
     };
 
     this.purge = function () {

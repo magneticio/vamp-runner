@@ -87,7 +87,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
       containerDriver = <<[String](json \ "container_driver" \ "type"),
       workflowDriver =
         <<[Any](json \ "workflow_driver") match {
-          case map: Map[_, _] ⇒ map.keys.mkString(",")
+          case map: Map[_, _] ⇒ map.keys.mkString(", ")
           case _              ⇒ ""
         }
     )

@@ -57,6 +57,14 @@
       return count === api.recipes.length;
     };
 
+    $scope.isSelectedAny = function () {
+      for (var i = 0; i < api.recipes.length; i++) {
+        var recipe = api.recipes[i];
+        if (recipe.selected) return true;
+      }
+      return false;
+    };
+
     //
 
     $scope.isRunning = function () {
@@ -72,8 +80,8 @@
       api.run();
     };
 
-    $scope.stop = function () {
-      api.stop();
+    $scope.abort = function () {
+      api.abort();
     };
 
     $scope.purge = function () {

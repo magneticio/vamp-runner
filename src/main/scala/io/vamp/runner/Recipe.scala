@@ -7,7 +7,7 @@ object Recipe {
   object State extends Enumeration {
     type StateType = Value
 
-    val Idle, Success, Failure, Running = Value
+    val Idle, Success, Failure, Running, Aborted = Value
   }
 
 }

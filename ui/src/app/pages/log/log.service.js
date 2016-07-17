@@ -37,20 +37,21 @@
       push('info', 'user', 'Run recipes: ' + selected.join(', ') + '.');
     });
 
-    $rootScope.$on('recipes:stop', function () {
-      push('info', 'user', 'Running recipes has been stopped.');
+    $rootScope.$on('recipes:abort', function () {
+      push('info', 'user', 'Running recipes has been aborted.');
     });
 
     $rootScope.$on('recipes:purge', function () {
       push('info', 'user', 'Purging all artifacts.');
     });
 
-    $rootScope.$on('recipes:success', function (event, recipe) {
-      push('info', 'system', 'Running recipe succeeded: \'' + recipe.title + '\'.');
-    });
-
-    $rootScope.$on('recipes:failure', function (event, recipe) {
-      push('error', 'system', 'Running recipe failed: \'' + recipe.title + '\'.');
+    $rootScope.$on('recipe:state', function (event, recipe) {
+      if (recipe.state === 'failure')
+        push('error', 'system', 'Running recipe failed: \'' + recipe.title + '\'.');
+      else if (recipe.state === 'success')
+        push('info', 'system', 'Running recipe succeeded: \'' + recipe.title + '\'.');
+      else if (recipe.state === 'aborted')
+        push('info', 'system', 'Running recipe aborted: \'' + recipe.title + '\'.');
     });
   }
 
