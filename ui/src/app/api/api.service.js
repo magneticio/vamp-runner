@@ -115,7 +115,7 @@
 
       var channel = function () {
 
-        dataStream = $websocket('ws://localhost:8080/channel');
+        dataStream = $websocket('ws://localhost:8088/channel');
 
         dataStream.onOpen(function () {
           command('info');

@@ -89,7 +89,7 @@
     };
 
     $scope.details = function (recipe) {
-      toastr.info('', recipe.title);
+      toastr.info('', recipe.name);
     };
   }
 })();

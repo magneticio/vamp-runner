@@ -1,0 +1,44 @@
+{
+  "name": "HTTP Deployment",
+  "description": "Deploying single HTTP service.",
+  "steps": [
+    {
+      "description": "Deploy service.",
+      "execute": {
+        "method": "PUT",
+        "resource": "artifacts.yml",
+        "wait-for": [
+          "blueprints:runner",
+          "deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "artifacts.yml",
+        "wait-for": [
+          "blueprints:runner",
+          "undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Send request to service and validate response.",
+      "execute": {
+        "method": "PUT",
+        "resource": "check.yml",
+        "wait-for": [
+          "workflows:check-service",
+          "exit"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "check.yml",
+        "wait-for": [
+          "workflows:check-service",
+          "persistence:deleted"
+        ]
+      }
+    }
+  ]
+}

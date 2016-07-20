@@ -1,0 +1,63 @@
+{
+  "name": "Auto Scaling",
+  "description": "Auto scaling number of instances based on application response time.",
+  "steps": [
+    {
+      "description": "Deploy service.",
+      "execute": {
+        "method": "PUT",
+        "resource": "artifacts.yml",
+        "wait-for": [
+          "blueprints:runner",
+          "deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "artifacts.yml",
+        "wait-for": [
+          "blueprints:runner",
+          "undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Remove default metrics aggregation workflow and deploy one that will mock response data.",
+      "execute": {
+        "method": "DELETE",
+        "resource": "default-metrics.yml",
+        "wait-for": [
+          "workflows:metrics",
+          "persistence:deleted"
+        ]
+      },
+      "cleanup": {
+        "method": "PUT",
+        "resource": "mock-metrics.yml",
+        "wait-for": [
+          "workflows:metrics",
+          "persistence:created"
+        ]
+      }
+    },
+    {
+      "description": "Auto scale deployment service based on response time.",
+      "execute": {
+        "method": "PUT",
+        "resource": "auto-scale.yml",
+        "wait-for": [
+          "workflows:auto-scale",
+          "exit"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "auto-scale.yml",
+        "wait-for": [
+          "workflows:auto-scale",
+          "persistence:deleted"
+        ]
+      }
+    }
+  ]
+}

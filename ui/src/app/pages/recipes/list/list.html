@@ -48,7 +48,7 @@
                        ng-checked="isSelected(item.id)"
                        ng-click="updateSelection($event, item.id)"
                        ng-disabled="isRunning()">
-                <span class="cut-with-dots">{{ item.title }}</span>
+                <span class="cut-with-dots">{{ item.name }}</span>
             </label>
             <i class="recipe success ion-record" ng-show="item.state === 'success'"></i>
             <i class="recipe failure ion-record" ng-show="item.state === 'failure'"></i>

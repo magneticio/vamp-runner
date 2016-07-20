@@ -24,22 +24,11 @@ object RunnerActor {
 
 }
 
-class RunnerActor extends Actor with ActorLogging {
+class RunnerActor extends Actor with ActorLogging with RecipeLoader {
 
   import RunnerActor._
 
-  private val recipes = scala.collection.mutable.LinkedHashMap[String, Recipe](List(
-    Recipe("http-deployment", "HTTP Deployment", State.Idle),
-    Recipe("http-canary", "HTTP Canary", State.Idle),
-    Recipe("http-dependencies", "HTTP with Dependencies", State.Idle),
-    Recipe("http-flip-flop-versions", "HTTP Flip-Flop Versions", State.Idle),
-    Recipe("http-flip-flop-versions-dependencies", "HTTP Flip-Flop Versions with Dependencies", State.Idle),
-    Recipe("tcp-deployment", "TCP Deployment", State.Idle),
-    Recipe("tcp-dependencies", "TCP with Dependencies", State.Idle),
-    Recipe("route-weights", "Route Weights", State.Idle),
-    Recipe("route-weights-condition-strength", "Route Weights with Condition Strength", State.Idle),
-    Recipe("auto-scaling", "Auto Scaling", State.Idle)
-  ).map(recipe ⇒ recipe.id -> recipe): _*)
+  private val recipes = scala.collection.mutable.LinkedHashMap[String, Recipe](load.map(recipe ⇒ recipe.id -> recipe): _*)
 
   def receive: Receive = {
     case ProvideRecipes       ⇒ sender() ! Recipes(recipes.values.toList)
@@ -64,7 +53,7 @@ class RunnerActor extends Actor with ActorLogging {
 
   private def abort() = {
     recipes.values.foreach { recipe ⇒
-      if (recipe.state == State.Running)  recipes += (recipe.id -> recipe.copy(state = State.Aborted))
+      if (recipe.state == State.Running) recipes += (recipe.id -> recipe.copy(state = State.Aborted))
     }
 
     context.parent ! Broadcast(Recipes(recipes.values.toList))

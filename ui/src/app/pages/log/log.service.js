@@ -32,7 +32,7 @@
       var selected = [];
       for (var i = 0; i < api.recipes.length; i++) {
         var recipe = api.recipes[i];
-        if (recipe.selected) selected.push('\'' + recipe.title + '\'');
+        if (recipe.selected) selected.push('\'' + recipe.name + '\'');
       }
       push('info', 'user', 'Run recipes: ' + selected.join(', ') + '.');
     });
@@ -47,11 +47,11 @@
 
     $rootScope.$on('recipe:state', function (event, recipe) {
       if (recipe.state === 'failure')
-        push('error', 'system', 'Running recipe failed: \'' + recipe.title + '\'.');
+        push('error', 'system', 'Running recipe failed: \'' + recipe.name + '\'.');
       else if (recipe.state === 'success')
-        push('info', 'system', 'Running recipe succeeded: \'' + recipe.title + '\'.');
+        push('info', 'system', 'Running recipe succeeded: \'' + recipe.name + '\'.');
       else if (recipe.state === 'aborted')
-        push('info', 'system', 'Running recipe aborted: \'' + recipe.title + '\'.');
+        push('info', 'system', 'Running recipe aborted: \'' + recipe.name + '\'.');
     });
   }
 
