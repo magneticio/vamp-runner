@@ -7,7 +7,7 @@
       "execute": {
         "method": "PUT",
         "resource": "artifacts.yml",
-        "wait-for": [
+        "await": [
           "blueprints:runner",
           "deployed"
         ]
@@ -15,7 +15,7 @@
       "cleanup": {
         "method": "DELETE",
         "resource": "artifacts.yml",
-        "wait-for": [
+        "await": [
           "blueprints:runner",
           "undeployed"
         ]
@@ -26,7 +26,7 @@
       "execute": {
         "method": "DELETE",
         "resource": "default-metrics.yml",
-        "wait-for": [
+        "await": [
           "workflows:metrics",
           "persistence:deleted"
         ]
@@ -34,7 +34,7 @@
       "cleanup": {
         "method": "PUT",
         "resource": "mock-metrics.yml",
-        "wait-for": [
+        "await": [
           "workflows:metrics",
           "persistence:created"
         ]
@@ -45,7 +45,7 @@
       "execute": {
         "method": "PUT",
         "resource": "auto-scale.yml",
-        "wait-for": [
+        "await": [
           "workflows:auto-scale",
           "exit"
         ]
@@ -53,7 +53,7 @@
       "cleanup": {
         "method": "DELETE",
         "resource": "auto-scale.yml",
-        "wait-for": [
+        "await": [
           "workflows:auto-scale",
           "persistence:deleted"
         ]

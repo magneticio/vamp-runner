@@ -16,7 +16,7 @@ class RunnerHub(implicit val system: ActorSystem, val materializer: ActorMateria
 
   implicit val timeout: Timeout = Config.duration("vamp.runner.timeout")
 
-  override def children: Map[String, Props] = Map("info" -> InfoActor.props, "runner" -> RunnerActor.props)
+  override def children: Map[String, Props] = Map(/*"info" -> InfoActor.props, */"runner" -> RunnerActor.props)
 
   protected def onReceive(sender: ActorRef) = {
     case Command("info", _)             ⇒ forward("info", ProvideInfo, sender)

@@ -41,7 +41,7 @@ class RunnerActor extends Actor with ActorLogging with RecipeLoader {
 
   private def start(ids: List[String]) = {
     ids.flatMap(id ⇒ recipes.get(id)).foreach { recipe ⇒
-      recipes += (recipe.id -> recipe.copy(state = State.Running))
+      recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = State.Running))))
     }
 
     context.system.scheduler.scheduleOnce(5.seconds, self, MockExecutionResult)(context.dispatcher)
@@ -53,7 +53,7 @@ class RunnerActor extends Actor with ActorLogging with RecipeLoader {
 
   private def abort() = {
     recipes.values.foreach { recipe ⇒
-      if (recipe.state == State.Running) recipes += (recipe.id -> recipe.copy(state = State.Aborted))
+      if (recipe.steps.exists(_.state == State.Running)) recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = State.Aborted))))
     }
 
     context.parent ! Broadcast(Recipes(recipes.values.toList))
@@ -61,7 +61,7 @@ class RunnerActor extends Actor with ActorLogging with RecipeLoader {
 
   private def mock() = {
     recipes.values.foreach { recipe ⇒
-      if (recipe.state == State.Running) recipes += (recipe.id -> recipe.copy(state = if (Math.random() > 0.5) State.Success else State.Failure))
+      if (recipe.steps.exists(_.state == State.Running)) recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = if (Math.random() > 0.2) State.Success else State.Failure))))
     }
 
     context.parent ! Broadcast(Recipes(recipes.values.toList))
