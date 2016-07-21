@@ -6,7 +6,7 @@ import akka.actor._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
 import akka.util.Timeout
-import org.json4s.native.Serialization.read
+import org.json4s.native.Serialization.{ read, write }
 
 import scala.collection.mutable
 
@@ -28,7 +28,7 @@ object Hub {
 
 }
 
-trait Hub extends JsonSerializer {
+trait Hub {
 
   import Hub._
 
@@ -40,6 +40,8 @@ trait Hub extends JsonSerializer {
 
   protected val sessions = mutable.Map[UUID, ActorRef]()
 
+  private implicit val formats = Json.formats
+
   def channel: Flow[String, String, Any] = {
     val id = UUID.randomUUID()
 
@@ -50,7 +52,7 @@ trait Hub extends JsonSerializer {
 
     val out =
       Source.actorRef[AnyRef](10, OverflowStrategy.dropHead)
-        .mapMaterializedValue(actor ! SessionOpened(id, _)).map(write)
+        .mapMaterializedValue(actor ! SessionOpened(id, _)).map(message ⇒ write(message))
 
     Flow.fromSinkAndSource(in, out)
   }
@@ -123,3 +125,4 @@ trait Hub extends JsonSerializer {
     }
   }))
 }
+

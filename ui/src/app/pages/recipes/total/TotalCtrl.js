@@ -12,7 +12,7 @@
     var refresh = function () {
       var count = $scope.count = api.recipes.length;
 
-      var completed = 0;
+      var succeeded = 0;
       var failed = 0;
       var running = 0;
       var aborted = 0;
@@ -20,9 +20,9 @@
 
       for (var i = 0; i < api.recipes.length; i++) {
         var recipe = api.recipes[i];
-        if (recipe.state === 'success')
-          completed++;
-        else if (recipe.state === 'failure')
+        if (recipe.state === 'succeeded')
+          succeeded++;
+        else if (recipe.state === 'failed')
           failed++;
         else if (recipe.state === 'running')
           running++;
@@ -39,11 +39,11 @@
       var allColors = baConfig.colors.all;
       $scope.doughnutData = [
         {
-          value: completed,
+          value: succeeded,
           color: allColors.green,
           highlight: colorHelper.shade(allColors.green, 15),
-          label: 'Completed',
-          percentage: percentage(completed),
+          label: 'Succeeded',
+          percentage: percentage(succeeded),
           order: 0
         }, {
           value: failed,

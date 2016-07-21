@@ -65,15 +65,45 @@
         for (var i = 0; i < data['recipes'].length; i++) {
           var recipe = data['recipes'][i];
 
-          recipe.state = recipe.state.toLowerCase();
+          // state processing
+
+          var succeeded = 0;
+          var failed = 0;
+          var running = 0;
+          var aborted = 0;
+          var idle = 0;
+
+          for (var j = 0; j < recipe["steps"].length; j++) {
+            var step = recipe["steps"][j];
+            step.state = step.state.toLowerCase();
+
+            if (step.state === 'succeeded')
+              succeeded++;
+            else if (step.state === 'failed')
+              failed++;
+            else if (step.state === 'running')
+              running++;
+            else if (step.state === 'aborted')
+              aborted++;
+            else if (step.state === 'idle')
+              idle++;
+          }
+
+          if (failed > 0) recipe.state = 'failed';
+          else if (aborted > 0) recipe.state = 'aborted';
+          else if (running > 0) recipe.state = 'running';
+          else if (succeeded == recipe["steps"].length) recipe.state = 'succeeded';
+          else if (idle == recipe["steps"].length) recipe.state = 'idle';
+
+          //
 
           if (select) {
             recipe.selected = true;
           } else {
-            for (var j = 0; j < old.length; j++) {
-              if (old[j].id === recipe['id']) {
-                recipe.selected = old[j].selected;
-                if (old[j].state !== recipe.state) $rootScope.$emit('recipe:state', recipe);
+            for (var k = 0; k < old.length; k++) {
+              if (old[k].id === recipe['id']) {
+                recipe.selected = old[k].selected;
+                if (old[k].state !== recipe.state) $rootScope.$emit('recipe:state', recipe);
                 break;
               }
             }
@@ -106,9 +136,9 @@
       command('abort', null, 'recipes:abort');
     };
 
-    this.purge = function () {
+    this.cleanup = function () {
       var recipes = selected();
-      if (recipes.length > 0) command('purge', recipes, 'recipes:purge');
+      if (recipes.length > 0) command('cleanup', recipes, 'recipes:cleanup');
     };
 
     this.init = function () {

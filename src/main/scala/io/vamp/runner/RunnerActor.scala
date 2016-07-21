@@ -1,10 +1,8 @@
 package io.vamp.runner
 
 import akka.actor.{ Actor, ActorLogging, Props }
-import io.vamp.runner.Hub.Broadcast
-import io.vamp.runner.Recipe.State
 
-import scala.concurrent.duration._
+import scala.collection.mutable
 
 object RunnerActor {
 
@@ -12,58 +10,42 @@ object RunnerActor {
 
   object ProvideRecipes
 
-  object AbortExecutions
+  object Abort
 
-  case class StartExecutions(ids: List[String])
+  case class Run(arguments: AnyRef)
 
-  case class PurgeExecutions(ids: List[String])
+  case class Cleanup(arguments: AnyRef)
 
   case class Recipes(recipes: List[Recipe]) extends Response
 
-  private object MockExecutionResult
-
 }
 
-class RunnerActor extends Actor with ActorLogging with RecipeLoader {
+class RunnerActor extends Actor with ActorLogging with RecipeLoader with RecipeRunner {
 
   import RunnerActor._
 
-  private val recipes = scala.collection.mutable.LinkedHashMap[String, Recipe](load.map(recipe ⇒ recipe.id -> recipe): _*)
+  private val recipes = mutable.LinkedHashMap(load.map(recipe ⇒ recipe.id -> recipe): _*)
 
   def receive: Receive = {
-    case ProvideRecipes       ⇒ sender() ! Recipes(recipes.values.toList)
-    case StartExecutions(ids) ⇒ start(ids)
-    case PurgeExecutions(ids) ⇒ purge(ids)
-    case AbortExecutions      ⇒ abort()
-    case MockExecutionResult  ⇒ mock()
-    case _                    ⇒
+    case ProvideRecipes     ⇒ sender() ! Recipes(recipes.values.toList)
+    case Run(arguments)     ⇒ run()(arguments)
+    case Cleanup(arguments) ⇒ cleanup()(arguments)
+    case Abort              ⇒ abort()
+    case _                  ⇒
   }
 
-  private def start(ids: List[String]) = {
-    ids.flatMap(id ⇒ recipes.get(id)).foreach { recipe ⇒
-      recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = State.Running))))
-    }
-
-    context.system.scheduler.scheduleOnce(5.seconds, self, MockExecutionResult)(context.dispatcher)
-
-    context.parent ! Broadcast(Recipes(recipes.values.toList))
+  private def run(): PartialFunction[AnyRef, Unit] = {
+    case list: List[_] ⇒ run(ids2recipes(list))
+    case map: Map[_, _] ⇒ for {
+      recipe ← map.asInstanceOf[Map[String, _]].get("recipe").flatMap(id ⇒ recipes.get(id.toString))
+      step ← map.asInstanceOf[Map[String, _]].get("step").flatMap(id ⇒ recipe.steps.find(_.id == id))
+      indefinite ← map.asInstanceOf[Map[String, _]].get("indefinite").map(_.toString.toBoolean)
+    } yield run(recipe, step, indefinite)
   }
 
-  private def purge(ids: List[String]) = {}
-
-  private def abort() = {
-    recipes.values.foreach { recipe ⇒
-      if (recipe.steps.exists(_.state == State.Running)) recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = State.Aborted))))
-    }
-
-    context.parent ! Broadcast(Recipes(recipes.values.toList))
+  private def cleanup(): PartialFunction[AnyRef, Unit] = {
+    case list: List[_] ⇒ cleanup(ids2recipes(list))
   }
 
-  private def mock() = {
-    recipes.values.foreach { recipe ⇒
-      if (recipe.steps.exists(_.state == State.Running)) recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map(step ⇒ step.copy(state = if (Math.random() > 0.2) State.Success else State.Failure))))
-    }
-
-    context.parent ! Broadcast(Recipes(recipes.values.toList))
-  }
+  private def ids2recipes(ids: List[_]): List[Recipe] = ids.flatMap(id ⇒ recipes.get(id.toString))
 }

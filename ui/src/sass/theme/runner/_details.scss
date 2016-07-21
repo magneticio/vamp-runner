@@ -1,0 +1,23 @@
+tr.recipe-step {
+  td {
+    i.succeeded {
+      color: #0e8174;
+    }
+    i.failed {
+      color: #ff6384;
+    }
+    i.running {
+      color: #ffce56;
+    }
+    i.aborted {
+      color: #c0c0c0;
+    }
+    i.idle {
+      color: #36a2eb;
+    }
+    .recipe-step-buttons {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+  }
+}

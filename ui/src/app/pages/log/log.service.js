@@ -41,14 +41,14 @@
       push('info', 'user', 'Running recipes has been aborted.');
     });
 
-    $rootScope.$on('recipes:purge', function () {
-      push('info', 'user', 'Purging all artifacts.');
+    $rootScope.$on('recipes:cleanup', function () {
+      push('info', 'user', 'Cleaning up all artifacts.');
     });
 
     $rootScope.$on('recipe:state', function (event, recipe) {
-      if (recipe.state === 'failure')
+      if (recipe.state === 'failed')
         push('error', 'system', 'Running recipe failed: \'' + recipe.name + '\'.');
-      else if (recipe.state === 'success')
+      else if (recipe.state === 'succeeded')
         push('info', 'system', 'Running recipe succeeded: \'' + recipe.name + '\'.');
       else if (recipe.state === 'aborted')
         push('info', 'system', 'Running recipe aborted: \'' + recipe.name + '\'.');

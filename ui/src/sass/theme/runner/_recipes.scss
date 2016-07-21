@@ -38,10 +38,10 @@ ul.recipes {
       visibility: visible;
       line-height: 42px;
     }
-    i.success {
+    i.succeeded {
       color: #0e8174;
     }
-    i.failure {
+    i.failed {
       color: #ff6384;
     }
     i.running {
@@ -50,7 +50,7 @@ ul.recipes {
     i.aborted {
       color: #c0c0c0;
     }
-    i.ready {
+    i.idle {
       color: #36a2eb;
     }
 

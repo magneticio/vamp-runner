@@ -11,7 +11,7 @@ object Recipe {
   object State extends Enumeration {
     type StateType = Value
 
-    val Idle, Success, Failure, Running, Aborted = Value
+    val Idle, Succeeded, Failed, Running, Aborted = Value
   }
 
   object Method extends Enumeration {
@@ -19,14 +19,12 @@ object Recipe {
 
     val POST, PUT, DELETE = Value
   }
-
-  def apply(name: String, description: String, steps: List[RecipeStep]): Recipe = {
-    Recipe(UUID.randomUUID().toString, name, description, steps)
-  }
 }
 
-case class Recipe(id: String, name: String, description: String, steps: List[RecipeStep])
+case class Recipe(id: String = UUID.randomUUID().toString, name: String, description: String, steps: List[RecipeStep])
 
-case class RecipeStep(description: String, execute: RecipeStepAction, cleanup: RecipeStepAction, state: StateType = State.Idle)
+case class RecipeStep(id: String = UUID.randomUUID().toString, description: String, execute: RecipeStepAction, cleanup: RecipeStepAction) {
+  val state: StateType = if (Math.random() > 0.2) State.Succeeded else State.Failed
+}
 
 case class RecipeStepAction(method: MethodType, resource: String, await: Set[String])

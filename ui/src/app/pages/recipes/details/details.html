@@ -1,0 +1,32 @@
+<div class="col-lg-4 col-md-12 col-sm-12"
+     ba-panel
+     ba-panel-title="{{ recipe.name }}"
+     ba-panel-class="xmedium-panel feed-comply-panel with-scroll recipe-panel" ng-class="{'transparent': transparent}"
+     ng-controller="DetailsCtrl">
+
+    <table class="table table-hover">
+        <tr ng-repeat="step in recipe.steps" class="recipe-step">
+            <td>
+                <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
+                <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>
+                <i class="recipe running ion-record" ng-show="step.state === 'running'"></i>
+                <i class="recipe aborted ion-record" ng-show="step.state === 'aborted'"></i>
+                <i class="recipe idle ion-record" ng-show="step.state === 'idle'"></i>
+            </td>
+            <td class="default" width="50%">{{ :: step.description }}</td>
+            <td class="default">
+                <div class="recipe-step-buttons">
+                    <div class="btn-group" role="group">
+                        <button type="button"
+                                class="btn btn-default btn-with-icon"><i class="ion-play"></i>Complete
+                        </button>
+                        <button type="button"
+                                class="btn btn-default btn-with-icon"><i class="ion-ios-stopwatch"></i>Run
+                        </button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</div>

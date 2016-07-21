@@ -1,19 +1,17 @@
 package io.vamp.runner
 
-import org.json4s.ext.EnumNameSerializer
 import org.json4s.{ DefaultFormats, FieldSerializer }
+import org.json4s.ext.EnumNameSerializer
 
-trait JsonSerializer {
+object Json {
 
-  implicit val formats = new DefaultFormats {
+  val formats = new DefaultFormats {
     override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = (classOf[AnyRef], new FieldSerializer[AnyRef](
       {
         case (name, value) ⇒ Option((underscore(name), value))
       }
     )) :: Nil
-  } + new EnumNameSerializer(Recipe.State)
-
-  def write(any: AnyRef): String = org.json4s.native.Serialization.write(any)
+  } + new EnumNameSerializer(Recipe.State) + new EnumNameSerializer(Recipe.Method)
 
   private def underscore(s: String): String = {
     var lower = false

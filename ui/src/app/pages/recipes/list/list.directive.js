@@ -2,13 +2,13 @@
   'use strict';
 
   angular.module('VampRunner.pages.recipes')
-    .directive('recipes', recipes);
+    .directive('list', list);
 
   /** @ngInject */
-  function recipes() {
+  function list() {
     return {
       restrict: 'EA',
-      controller: 'RecipesCtrl',
+      controller: 'ListCtrl',
       templateUrl: 'app/pages/recipes/list/list.html'
     };
   }

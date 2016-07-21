@@ -1,4 +1,4 @@
-<div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="RecipesCtrl">
+<div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="ListCtrl">
 
     <label class="select-all-label checkbox-inline custom-checkbox nowrap">
         <input type="checkbox"
@@ -11,22 +11,22 @@
     <div class="action-buttons">
         <div class="btn-group" role="group">
             <button type="button"
-                    class="btn btn-primary btn-with-icon"
+                    class="btn btn-default btn-with-icon"
                     ng-click="run()"
                     ng-disabled="isRunning() || !isSelectedAny()"
-                    title="Run all selected recipes"><i class="ion-play"></i>run
+                    title="Run all selected recipes"><i class="ion-play"></i>Run
             </button>
             <button type="button"
-                    class="btn btn-primary btn-with-icon"
+                    class="btn btn-default btn-with-icon"
                     ng-click="abort()"
                     ng-disabled="!isRunning()"
-                    title="Abort all"><i class="ion-stop"></i>abort
+                    title="Abort all"><i class="ion-stop"></i>Abort
             </button>
             <button type="button"
-                    class="btn btn-primary btn-with-icon"
-                    ng-click="purge()"
+                    class="btn btn-default btn-with-icon"
+                    ng-click="cleanup()"
                     ng-disabled="isRunning() || !isSelectedAny()"
-                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>purge
+                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>Cleanup
             </button>
         </div>
     </div>
@@ -50,14 +50,14 @@
                        ng-disabled="isRunning()">
                 <span class="cut-with-dots">{{ item.name }}</span>
             </label>
-            <i class="recipe success ion-record" ng-show="item.state === 'success'"></i>
-            <i class="recipe failure ion-record" ng-show="item.state === 'failure'"></i>
+            <i class="recipe succeeded ion-record" ng-show="item.state === 'succeeded'"></i>
+            <i class="recipe failed ion-record" ng-show="item.state === 'failed'"></i>
             <i class="recipe running ion-record" ng-show="item.state === 'running'"></i>
             <i class="recipe aborted ion-record" ng-show="item.state === 'aborted'"></i>
-            <i class="recipe ready ion-record" ng-show="item.state === 'idle'"></i>
+            <i class="recipe idle ion-record" ng-show="item.state === 'idle'"></i>
 
             <a href="javascript: void(0);" ng-click="details(item)" ng-show="!isRunning()">
-                <i class="recipe-details ion-arrow-expand"></i>
+                <i class="recipe-details ion-arrow-right-c"></i>
             </a>
             <i class="recipe-details ion-ios-stopwatch" ng-show="isRunning()"></i>
         </li>
