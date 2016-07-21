@@ -4,7 +4,7 @@
   "steps": [
     {
       "description": "Deploy service.",
-      "execute": {
+      "run": {
         "method": "PUT",
         "resource": "artifacts.yml",
         "await": [
@@ -22,8 +22,8 @@
       }
     },
     {
-      "description": "Remove default metrics aggregation workflow and deploy one that will mock response data.",
-      "execute": {
+      "description": "Remove default metrics aggregation workflow.",
+      "run": {
         "method": "DELETE",
         "resource": "default-metrics.yml",
         "await": [
@@ -33,6 +33,25 @@
       },
       "cleanup": {
         "method": "PUT",
+        "resource": "default-metrics.yml",
+        "await": [
+          "workflows:metrics",
+          "persistence:created"
+        ]
+      }
+    },
+    {
+      "description": "Run mock metrics aggregation workflow.",
+      "run": {
+        "method": "PUT",
+        "resource": "mock-metrics.yml",
+        "await": [
+          "workflows:metrics",
+          "persistence:deleted"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
         "resource": "mock-metrics.yml",
         "await": [
           "workflows:metrics",
@@ -42,7 +61,7 @@
     },
     {
       "description": "Auto scale deployment service based on response time.",
-      "execute": {
+      "run": {
         "method": "PUT",
         "resource": "auto-scale.yml",
         "await": [

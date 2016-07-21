@@ -29,11 +29,9 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
 
   import InfoActor._
 
-  override implicit def system: ActorSystem = context.system
+  implicit def system: ActorSystem = context.system
 
-  override protected val apiUrl = Config.string("vamp.runner.api.url")
-
-  override protected val timeout = Config.duration("vamp.runner.timeout")
+  val timeout = Config.duration("vamp.runner.timeout")
 
   private val info = Agent[Option[Info]](None)
 
@@ -52,7 +50,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
     val path = info().map(_ ⇒ "info?for=jvm").getOrElse("info")
 
     apiGet(path) map {
-      json ⇒
+      case Left(json) ⇒
         info() match {
           case None ⇒
 
@@ -72,6 +70,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
 
             context.parent ! Broadcast(loadResult)
         }
+      case _ ⇒
     } recover {
       case e ⇒ log.error(e.getMessage)
     }

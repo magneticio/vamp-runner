@@ -14,14 +14,14 @@
 
     var dataStream;
 
-    var command = function (cmd, args, emit) {
+    var command = function (cmd, args, emit, event) {
       if (!dataStream) return;
 
       dataStream.send({
         command: cmd,
         arguments: args
       });
-      $rootScope.$emit(emit);
+      $rootScope.$emit(emit, event);
     };
 
     var process = function (message) {
@@ -92,8 +92,8 @@
           if (failed > 0) recipe.state = 'failed';
           else if (aborted > 0) recipe.state = 'aborted';
           else if (running > 0) recipe.state = 'running';
-          else if (succeeded == recipe["steps"].length) recipe.state = 'succeeded';
-          else if (idle == recipe["steps"].length) recipe.state = 'idle';
+          else if (succeeded > 0) recipe.state = 'succeeded';
+          else recipe.state = 'idle';
 
           //
 
@@ -139,6 +139,18 @@
     this.cleanup = function () {
       var recipes = selected();
       if (recipes.length > 0) command('cleanup', recipes, 'recipes:cleanup');
+    };
+
+    this.runRecipeStep = function (recipe, step, complete) {
+      command('run', {
+        recipe: recipe.id,
+        step: step.id,
+        complete: complete
+      }, 'recipe:run', {
+        recipe: recipe,
+        step: step,
+        complete: complete
+      });
     };
 
     this.init = function () {

@@ -1,14 +1,14 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.log')
-    .service('log', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
-      return new Log($rootScope, api, toastr);
+  angular.module('VampRunner.pages.runner')
+    .service('runner', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
+      return new Runner($rootScope, api, toastr);
     }]);
 
-  function Log($rootScope, api, toastr) {
+  function Runner($rootScope, api, toastr) {
 
-    var entries = this.entries = [];
+    var logs = this.logs = [];
 
     var push = function (level, source, message) {
       var log = {
@@ -17,8 +17,8 @@
         message: message,
         timestamp: Date.now()
       };
-      entries.unshift(log);
-      while (entries.length > 100) entries.pop();
+      logs.unshift(log);
+      while (logs.length > 100) logs.pop();
 
       if (level === 'info')
         toastr.success(message, level.toUpperCase());
@@ -35,6 +35,10 @@
         if (recipe.selected) selected.push('\'' + recipe.name + '\'');
       }
       push('info', 'user', 'Run recipes: ' + selected.join(', ') + '.');
+    });
+
+    $rootScope.$on('recipe:run', function (event, data) {
+      push('info', 'user', 'Run recipe step: [' + data.recipe.name + ' / ' + data.step.description + '] with ' + (data.complete ? '' : 'no ') + 'complete');
     });
 
     $rootScope.$on('recipes:abort', function () {

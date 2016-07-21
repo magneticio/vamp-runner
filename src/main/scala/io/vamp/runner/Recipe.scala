@@ -19,12 +19,11 @@ object Recipe {
 
     val POST, PUT, DELETE = Value
   }
+
 }
 
 case class Recipe(id: String = UUID.randomUUID().toString, name: String, description: String, steps: List[RecipeStep])
 
-case class RecipeStep(id: String = UUID.randomUUID().toString, description: String, execute: RecipeStepAction, cleanup: RecipeStepAction) {
-  val state: StateType = if (Math.random() > 0.2) State.Succeeded else State.Failed
-}
+case class RecipeStep(id: String = UUID.randomUUID().toString, description: String, run: RecipeStepAction, cleanup: RecipeStepAction, state: StateType = State.Idle)
 
 case class RecipeStepAction(method: MethodType, resource: String, await: Set[String])

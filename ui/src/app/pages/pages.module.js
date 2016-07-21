@@ -3,11 +3,9 @@
 
   angular.module('VampRunner.pages', [
     'ui.router',
-
     'VampRunner.pages.vamp',
     'VampRunner.pages.recipes',
-    //'VampRunner.pages.configuration',
-    'VampRunner.pages.log'
+    'VampRunner.pages.runner'
   ])
     .config(routeConfig);
 

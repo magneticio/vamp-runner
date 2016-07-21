@@ -56,10 +56,9 @@
             <i class="recipe aborted ion-record" ng-show="item.state === 'aborted'"></i>
             <i class="recipe idle ion-record" ng-show="item.state === 'idle'"></i>
 
-            <a href="javascript: void(0);" ng-click="details(item)" ng-show="!isRunning()">
+            <a href="javascript: void(0);" ng-click="details(item)">
                 <i class="recipe-details ion-arrow-right-c"></i>
             </a>
-            <i class="recipe-details ion-ios-stopwatch" ng-show="isRunning()"></i>
         </li>
     </ul>
 </div>

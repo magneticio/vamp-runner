@@ -16,12 +16,25 @@
             <td class="default" width="50%">{{ :: step.description }}</td>
             <td class="default">
                 <div class="recipe-step-buttons">
-                    <div class="btn-group" role="group">
+                    <div class="btn-group" role="group" ng-show="!$last">
                         <button type="button"
-                                class="btn btn-default btn-with-icon"><i class="ion-play"></i>Complete
+                                ng-disabled="isRunning()"
+                                ng-click="run(recipe, step, true)"
+                                class="btn btn-default btn-with-icon"><i class="ion-play"></i>Run
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group" ng-show="$last">
+                        <button type="button"
+                                ng-disabled="isRunning()"
+                                ng-click="run(recipe, step, true)"
+                                class="btn btn-default btn-with-icon"
+                                title="Run and clean if succeeded"><i class="ion-play"></i>Complete
                         </button>
                         <button type="button"
-                                class="btn btn-default btn-with-icon"><i class="ion-ios-stopwatch"></i>Run
+                                ng-disabled="isRunning()"
+                                ng-click="run(recipe, step, false)"
+                                class="btn btn-default btn-with-icon"
+                                title="Keep it running without cleanup"><i class="ion-ios-stopwatch"></i>Keep
                         </button>
                     </div>
                 </div>

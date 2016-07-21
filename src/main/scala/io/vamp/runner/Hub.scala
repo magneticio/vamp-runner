@@ -20,7 +20,7 @@ object Hub {
 
   case class Request(id: UUID, request: Command) extends SessionEvent
 
-  case class Broadcast(message: AnyRef) extends SessionEvent
+  case class Broadcast(message: Response) extends SessionEvent
 
   case class Forward(child: String, request: AnyRef, recipient: ActorRef)
 
@@ -40,7 +40,7 @@ trait Hub {
 
   protected val sessions = mutable.Map[UUID, ActorRef]()
 
-  private implicit val formats = Json.formats
+  private implicit val format = Json.format
 
   def channel: Flow[String, String, Any] = {
     val id = UUID.randomUUID()
@@ -119,8 +119,8 @@ trait Hub {
       sessions.get(id).foreach(onReceive(_)(command))
     }
 
-    private def broadcast(message: AnyRef): Unit = {
-      log.info(s"Broadcast: $message")
+    private def broadcast(message: Response): Unit = {
+      log.info(s"Broadcast: ${message.`type`}")
       sessions.values.foreach(_ ! message)
     }
   }))

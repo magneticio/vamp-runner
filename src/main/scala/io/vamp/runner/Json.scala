@@ -1,14 +1,15 @@
 package io.vamp.runner
 
-import org.json4s.{ DefaultFormats, FieldSerializer }
 import org.json4s.ext.EnumNameSerializer
+import org.json4s.{ DefaultFormats, FieldSerializer }
 
 object Json {
 
-  val formats = new DefaultFormats {
+  val format = new DefaultFormats {
     override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = (classOf[AnyRef], new FieldSerializer[AnyRef](
       {
-        case (name, value) ⇒ Option((underscore(name), value))
+        case (_, _: RecipeStepAction) ⇒ None
+        case (name, value)            ⇒ Option((underscore(name), value))
       }
     )) :: Nil
   } + new EnumNameSerializer(Recipe.State) + new EnumNameSerializer(Recipe.Method)

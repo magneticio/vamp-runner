@@ -1,7 +1,5 @@
 package io.vamp.runner
 
-import java.io.InputStream
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -19,35 +17,37 @@ import scala.concurrent.duration.FiniteDuration
 
 trait VampApiClient {
 
+  def timeout: FiniteDuration
+
   implicit def system: ActorSystem
 
   implicit def materializer: ActorMaterializer
 
   implicit def executionContext = system.dispatcher
 
-  protected def apiUrl: String
+  protected def apiUrl: String = Config.string("vamp.runner.api.url")
 
-  protected def timeout: FiniteDuration
-
-  protected def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = apiRequest(GET, path, None, { _ ⇒ throw new RuntimeException("No connection.") })
-
-  protected def apiPut(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
-    apiRequest(PUT, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
+  protected def apiGet(path: String, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[Either[JValue, AnyRef]] = {
+    apiRequest(GET, path, None, { _ ⇒ throw new RuntimeException("No connection.") })
   }
 
-  protected def apiPost(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
-    apiRequest(POST, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
+  protected def apiPut(path: String = "", input: String, recoverWith: AnyRef ⇒ AnyRef = { _ ⇒ "" }): Future[Either[JValue, AnyRef]] = {
+    apiRequest(PUT, path, Option(input.getBytes), recoverWith)
   }
 
-  protected def apiDelete(path: String, input: InputStream, recoverWith: AnyRef ⇒ String = { _ ⇒ "" }): Future[JValue] = {
-    apiRequest(DELETE, path, Option(scala.io.Source.fromInputStream(input).map(_.toByte).toArray), recoverWith)
+  protected def apiPost(path: String = "", input: String, recoverWith: AnyRef ⇒ AnyRef = { _ ⇒ "" }): Future[Either[JValue, AnyRef]] = {
+    apiRequest(POST, path, Option(input.getBytes), recoverWith)
   }
 
-  protected def apiRequest(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+  protected def apiDelete(path: String = "", input: String, recoverWith: AnyRef ⇒ AnyRef = { _ ⇒ "" }): Future[Either[JValue, AnyRef]] = {
+    apiRequest(DELETE, path, Option(input.getBytes), recoverWith)
+  }
+
+  protected def apiRequest(method: HttpMethod, path: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ AnyRef): Future[Either[JValue, AnyRef]] = {
     http(method, s"$apiUrl/$path", body, recoverWith)
   }
 
-  protected def http(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ String): Future[JValue] = {
+  protected def http(method: HttpMethod, uri: String, body: Option[Array[Byte]], recoverWith: AnyRef ⇒ AnyRef): Future[Either[JValue, AnyRef]] = {
 
     val url = new java.net.URL(uri)
 
@@ -62,12 +62,13 @@ trait VampApiClient {
     Source.single(httpRequestWithBody)
       .via(Http().outgoingConnection(url.getHost, url.getPort))
       .recover {
-        case failure ⇒ recoverWith(failure)
+        case failure ⇒ failure
       }.mapAsync(1) {
         case HttpResponse(status, _, entity, _) if status.isSuccess() ⇒ entity.toStrict(timeout).map(_.data.decodeString("UTF-8"))
         case failure ⇒ Future(recoverWith(failure))
       }.map {
-        parse(_)
+        case response: String ⇒ Left(parse(response))
+        case other            ⇒ Right(other)
       } runWith Sink.head
   }
 

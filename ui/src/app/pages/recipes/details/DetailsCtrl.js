@@ -11,8 +11,42 @@
 
     $scope.recipe = api.recipes[0];
 
+    var follow = false;
+
+    $scope.isRunning = function () {
+      for (var i = 0; i < api.recipes.length; i++) {
+        if (api.recipes[i].state === 'running') {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    $scope.run = function (recipe, step, complete) {
+      api.runRecipeStep(recipe, step, complete);
+    };
+
     $rootScope.$on('recipe:details', function (event, recipe) {
       $scope.recipe = recipe;
+      follow = false;
+    });
+
+    $rootScope.$on('recipes:run', function () {
+      follow = true;
+    });
+
+    $rootScope.$on('recipes:update', function () {
+      for (var i = 0; i < api.recipes.length; i++) {
+        var recipe = api.recipes[i];
+        if (recipe.state === 'running' && follow) {
+          $scope.recipe = recipe;
+          return;
+        } else {
+          if ($scope.recipe && $scope.recipe.id == recipe.id) $scope.recipe = recipe;
+        }
+      }
+
+      if (!$scope.recipe) $scope.recipe = api.recipes[0];
     });
   }
 })();

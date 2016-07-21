@@ -4,39 +4,35 @@
   "steps": [
     {
       "description": "Deploy service.",
-      "execute": {
+      "run": {
         "method": "PUT",
-        "resource": "artifacts.yml",
+        "resource": "deploy.yml",
         "await": [
-          "blueprints:runner",
-          "deployed"
+          "blueprints:sava", "archive:update"
         ]
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "artifacts.yml",
+        "resource": "undeploy.yml",
         "await": [
-          "blueprints:runner",
-          "undeployed"
+          "blueprints:sava", "archive:delete"
         ]
       }
     },
     {
       "description": "Send request to service and validate response.",
-      "execute": {
+      "run": {
         "method": "PUT",
-        "resource": "check.yml",
+        "resource": "deploy.yml",
         "await": [
-          "workflows:check-service",
-          "exit"
+          "blueprints:sava", "archive:update"
         ]
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "check.yml",
+        "resource": "undeploy.yml",
         "await": [
-          "workflows:check-service",
-          "persistence:deleted"
+          "blueprints:sava", "archive:delete"
         ]
       }
     }

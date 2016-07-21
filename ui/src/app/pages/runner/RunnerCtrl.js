@@ -1,43 +1,40 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.log')
-      .controller('LogCtrl', LogCtrl);
+  angular.module('VampRunner.pages.runner')
+      .controller('RunnerCtrl', RunnerCtrl);
 
   /** @ngInject */
-  function LogCtrl($rootScope, $scope, log) {
+  function RunnerCtrl($rootScope, $scope, runner) {
 
-    $scope.entries = log.entries;
+    $scope.logs = runner.logs;
 
-    $scope.class = function (entry) {
-      var color = entry.level === 'info' ? 'primary' : (entry.level === 'error' ? 'danger' : 'warning');
-      var align = entry.source === 'user' ? '' : ' cd-timeline-right';
+    $scope.class = function (log) {
+      var color = log.level === 'info' ? 'primary' : (log.level === 'error' ? 'danger' : 'warning');
+      var align = log.source === 'user' ? '' : ' cd-timeline-right';
       return color + align;
     };
 
-    $scope.image = function (entry) {
-      return entry.level === 'info' ? 'primary' : (entry.level === 'error' ? 'danger' : 'warning');
+    $scope.image = function (log) {
+      return log.level === 'info' ? 'primary' : (log.level === 'error' ? 'danger' : 'warning');
     };
 
-    $scope.source = function (entry) {
-      return entry.source === 'user' ? 'Programming' : 'Checklist';
+    $scope.source = function (log) {
+      return log.source === 'user' ? 'Programming' : 'Checklist';
     };
 
-    $scope.title = function (entry) {
-      return entry.level;
+    $scope.title = function (log) {
+      return log.level;
     };
 
     $rootScope.$on('log', function () {
-      $scope.entries = log.entries;
+      $scope.logs = runner.logs;
     });
 
-    var timelineBlocks = $('.cd-timeline-block'),
-        offset = 0.8;
+    var timelineBlocks = $('.cd-timeline-block'), offset = 0.8;
 
-    //hide timeline blocks which are outside the viewport
     hideBlocks(timelineBlocks, offset);
 
-    //on scolling, show/animate timeline blocks when enter the viewport
     $(window).on('scroll', function () {
       if (!window.requestAnimationFrame) {
         setTimeout(function () {
