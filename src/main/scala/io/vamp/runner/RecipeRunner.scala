@@ -23,7 +23,7 @@ trait RecipeRunner extends VampApiClient {
         Source.fromIterator[RecipeStep](() ⇒ recipe.steps.iterator).map { step ⇒
           step.copy(state = Recipe.State.Running)
         }.map(update(recipe, _)).via {
-          flow(recipe, { step ⇒ execute(step.run) })
+          runFlow(recipe)
         }
       } ~> Sink.last[AnyRef]
       ClosedShape
@@ -35,8 +35,8 @@ trait RecipeRunner extends VampApiClient {
       Source.single(step).map { step ⇒
         step.copy(state = Recipe.State.Running)
       }.map(update(recipe, _)) ~>
-        flow(recipe, { step ⇒ execute(step.run) }) ~>
-        Sink.head[RecipeStep]
+        runFlow(recipe) ~>
+        Sink.last[RecipeStep]
       ClosedShape
     }).run()
   }
@@ -44,18 +44,28 @@ trait RecipeRunner extends VampApiClient {
   protected def cleanup(recipes: List[Recipe]) = {
     RunnableGraph.fromGraph(GraphDSL.create() { implicit builder ⇒
       Source.fromIterator[Recipe](() ⇒ recipes.iterator).flatMapConcat { recipe ⇒
-        Source.fromIterator[RecipeStep](() ⇒ recipe.steps.reverseIterator).via { flow(recipe, { step ⇒ execute(step.cleanup, step.state) }) }
-      } ~> Sink.head[AnyRef]
+        Source.fromIterator[RecipeStep](() ⇒ recipe.steps.reverseIterator).via {
+          cleanupFlow(recipe)
+        }
+      } ~> Sink.last[AnyRef]
       ClosedShape
     }).run()
   }
 
-  private def flow(recipe: Recipe, action: RecipeStep ⇒ Future[Recipe.State.Value]): Flow[RecipeStep, RecipeStep, NotUsed] = {
+  private def runFlow(recipe: Recipe): Flow[RecipeStep, RecipeStep, NotUsed] = {
+    flow("Run", recipe, { step ⇒ execute(step.cleanup) }, dirty = true)
+  }
+
+  private def cleanupFlow(recipe: Recipe): Flow[RecipeStep, RecipeStep, NotUsed] = {
+    flow("Cleanup", recipe, { step ⇒ execute(step.cleanup, step.state) }, dirty = false)
+  }
+
+  private def flow(designator: String, recipe: Recipe, action: RecipeStep ⇒ Future[Recipe.State.Value], dirty: Boolean): Flow[RecipeStep, RecipeStep, NotUsed] = {
     Flow[RecipeStep].mapAsync(1) { step ⇒
       action(step).map {
         state ⇒
-          log.info(s"${state.toString}: [${recipe.name} :: ${step.description}]")
-          update(recipe, step.copy(state = state))
+          log.info(s"$designator - ${state.toString.toLowerCase}: [${recipe.name} :: ${step.description}]")
+          update(recipe, step.copy(state = state, dirty = dirty))
       }
     }.completionTimeout(recipeActionTimeout)
   }

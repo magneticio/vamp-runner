@@ -36,7 +36,7 @@ class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor wi
     case _                  ⇒
   }
 
-  protected def update(recipe: Recipe, step: RecipeStep): RecipeStep = {
+  override protected def update(recipe: Recipe, step: RecipeStep): RecipeStep = {
     recipes.get(recipe.id).map { r ⇒
       recipes += (r.id -> r.copy(steps = r.steps.map { s ⇒
         if (s.id == step.id) step else s

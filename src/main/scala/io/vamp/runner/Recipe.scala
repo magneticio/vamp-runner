@@ -23,6 +23,6 @@ object Recipe {
 
 case class Recipe(id: String = UUID.randomUUID().toString, name: String, description: String, steps: List[RecipeStep])
 
-case class RecipeStep(id: String = UUID.randomUUID().toString, description: String, run: RecipeStepAction, cleanup: RecipeStepAction, state: StateType = State.Idle)
+case class RecipeStep(id: String = UUID.randomUUID().toString, description: String, run: RecipeStepAction, dirty: Boolean = false, cleanup: RecipeStepAction, state: StateType = State.Idle)
 
 case class RecipeStepAction(method: MethodType, resource: String, await: Set[String])

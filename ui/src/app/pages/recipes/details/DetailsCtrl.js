@@ -26,6 +26,24 @@
       api.run(recipe, step);
     };
 
+    $scope.isRunnable = function (recipe, step) {
+      if (step.dirty) return true;
+
+      var runnable = true;
+
+      for (var i = 0; i < recipe.steps.length; i++) {
+        var s = recipe.steps[i];
+        if (s.id == step.id)
+          return runnable;
+        else {
+          runnable = runnable && s.dirty;
+          if (!runnable) return false;
+        }
+      }
+
+      return false;
+    };
+
     $rootScope.$on('recipe:details', function (event, recipe) {
       $scope.recipe = recipe;
       follow = false;

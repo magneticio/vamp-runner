@@ -17,7 +17,7 @@
                 <div class="recipe-step-buttons">
                     <div class="btn-group" role="group">
                         <button type="button"
-                                ng-disabled="isRunning()"
+                                ng-disabled="isRunning() || !isRunnable(recipe, step)"
                                 ng-click="run(recipe, step)"
                                 class="btn btn-default btn-with-icon"><i class="ion-play"></i>Run
                         </button>
