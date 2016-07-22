@@ -21,7 +21,6 @@ class RunnerHub(implicit val system: ActorSystem, val materializer: ActorMateria
   protected def onReceive(sender: ActorRef) = {
     case Command("info", _)            ⇒ forward("info", ProvideInfo, sender)
     case Command("recipes", _)         ⇒ forward("runner", ProvideRecipes, sender)
-    case Command("abort", _)           ⇒ forward("runner", Abort, sender)
     case Command("run", arguments)     ⇒ forward("runner", Run(arguments), sender)
     case Command("cleanup", arguments) ⇒ forward("runner", Cleanup(arguments), sender)
     case other                         ⇒ logger.info(s"Unknown command: $other")

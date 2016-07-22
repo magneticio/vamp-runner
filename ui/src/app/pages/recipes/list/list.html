@@ -14,13 +14,7 @@
                     class="btn btn-default btn-with-icon"
                     ng-click="run()"
                     ng-disabled="isRunning() || !isSelectedAny()"
-                    title="Run all selected recipes"><i class="ion-play"></i>Run
-            </button>
-            <button type="button"
-                    class="btn btn-default btn-with-icon"
-                    ng-click="abort()"
-                    ng-disabled="!isRunning()"
-                    title="Abort all"><i class="ion-stop"></i>Abort
+                    title="Run all selected recipes"><i class="ion-play"></i>Complete
             </button>
             <button type="button"
                     class="btn btn-default btn-with-icon"
@@ -53,7 +47,6 @@
             <i class="recipe succeeded ion-record" ng-show="item.state === 'succeeded'"></i>
             <i class="recipe failed ion-record" ng-show="item.state === 'failed'"></i>
             <i class="recipe running ion-record" ng-show="item.state === 'running'"></i>
-            <i class="recipe aborted ion-record" ng-show="item.state === 'aborted'"></i>
             <i class="recipe idle ion-record" ng-show="item.state === 'idle'"></i>
 
             <a href="javascript: void(0);" ng-click="details(item)">

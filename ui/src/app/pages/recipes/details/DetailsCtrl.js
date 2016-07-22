@@ -22,8 +22,8 @@
       return false;
     };
 
-    $scope.run = function (recipe, step, complete) {
-      api.runRecipeStep(recipe, step, complete);
+    $scope.run = function (recipe, step) {
+      api.run(recipe, step);
     };
 
     $rootScope.$on('recipe:details', function (event, recipe) {

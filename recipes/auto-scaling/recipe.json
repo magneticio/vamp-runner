@@ -6,7 +6,7 @@
       "description": "Deploy service.",
       "run": {
         "method": "PUT",
-        "resource": "artifacts.yml",
+        "resource": "deploy.yml",
         "await": [
           "blueprints:runner",
           "deployed"
@@ -14,7 +14,7 @@
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "artifacts.yml",
+        "resource": "undeploy.yml",
         "await": [
           "blueprints:runner",
           "undeployed"
@@ -25,7 +25,7 @@
       "description": "Remove default metrics aggregation workflow.",
       "run": {
         "method": "DELETE",
-        "resource": "default-metrics.yml",
+        "resource": "undeploy.yml",
         "await": [
           "workflows:metrics",
           "persistence:deleted"
@@ -33,7 +33,7 @@
       },
       "cleanup": {
         "method": "PUT",
-        "resource": "default-metrics.yml",
+        "resource": "deploy.yml",
         "await": [
           "workflows:metrics",
           "persistence:created"
@@ -44,7 +44,7 @@
       "description": "Run mock metrics aggregation workflow.",
       "run": {
         "method": "PUT",
-        "resource": "mock-metrics.yml",
+        "resource": "deploy.yml",
         "await": [
           "workflows:metrics",
           "persistence:deleted"
@@ -52,7 +52,7 @@
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "mock-metrics.yml",
+        "resource": "undeploy.yml",
         "await": [
           "workflows:metrics",
           "persistence:created"
@@ -63,7 +63,7 @@
       "description": "Auto scale deployment service based on response time.",
       "run": {
         "method": "PUT",
-        "resource": "auto-scale.yml",
+        "resource": "deploy.yml",
         "await": [
           "workflows:auto-scale",
           "exit"
@@ -71,7 +71,7 @@
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "auto-scale.yml",
+        "resource": "undeploy.yml",
         "await": [
           "workflows:auto-scale",
           "persistence:deleted"

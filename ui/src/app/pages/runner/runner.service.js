@@ -38,11 +38,7 @@
     });
 
     $rootScope.$on('recipe:run', function (event, data) {
-      push('info', 'user', 'Run recipe step: [' + data.recipe.name + ' / ' + data.step.description + '] with ' + (data.complete ? '' : 'no ') + 'complete');
-    });
-
-    $rootScope.$on('recipes:abort', function () {
-      push('info', 'user', 'Running recipes has been aborted.');
+      push('info', 'user', 'Run recipe step: [' + data.recipe.name + ' / ' + data.step.description + ']');
     });
 
     $rootScope.$on('recipes:cleanup', function () {
@@ -54,8 +50,6 @@
         push('error', 'system', 'Running recipe failed: \'' + recipe.name + '\'.');
       else if (recipe.state === 'succeeded')
         push('info', 'system', 'Running recipe succeeded: \'' + recipe.name + '\'.');
-      else if (recipe.state === 'aborted')
-        push('info', 'system', 'Running recipe aborted: \'' + recipe.name + '\'.');
     });
   }
 

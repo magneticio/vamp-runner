@@ -70,7 +70,6 @@
           var succeeded = 0;
           var failed = 0;
           var running = 0;
-          var aborted = 0;
           var idle = 0;
 
           for (var j = 0; j < recipe["steps"].length; j++) {
@@ -83,14 +82,11 @@
               failed++;
             else if (step.state === 'running')
               running++;
-            else if (step.state === 'aborted')
-              aborted++;
             else if (step.state === 'idle')
               idle++;
           }
 
           if (failed > 0) recipe.state = 'failed';
-          else if (aborted > 0) recipe.state = 'aborted';
           else if (running > 0) recipe.state = 'running';
           else if (succeeded > 0) recipe.state = 'succeeded';
           else recipe.state = 'idle';
@@ -127,30 +123,24 @@
       return result;
     };
 
-    this.run = function () {
-      var recipes = selected();
-      if (recipes.length > 0) command('run', recipes, 'recipes:run');
-    };
-
-    this.abort = function () {
-      command('abort', null, 'recipes:abort');
+    this.run = function (recipe, step) {
+      if (recipe) {
+        command('run', {
+          recipe: recipe.id,
+          step: step.id
+        }, 'recipe:run', {
+          recipe: recipe,
+          step: step
+        });
+      } else {
+        var recipes = selected();
+        if (recipes.length > 0) command('run', recipes, 'recipes:run');
+      }
     };
 
     this.cleanup = function () {
       var recipes = selected();
       if (recipes.length > 0) command('cleanup', recipes, 'recipes:cleanup');
-    };
-
-    this.runRecipeStep = function (recipe, step, complete) {
-      command('run', {
-        recipe: recipe.id,
-        step: step.id,
-        complete: complete
-      }, 'recipe:run', {
-        recipe: recipe,
-        step: step,
-        complete: complete
-      });
     };
 
     this.init = function () {

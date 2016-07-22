@@ -11,7 +11,7 @@ object Recipe {
   object State extends Enumeration {
     type StateType = Value
 
-    val Idle, Succeeded, Failed, Running, Aborted = Value
+    val Idle, Succeeded, Failed, Running = Value
   }
 
   object Method extends Enumeration {
@@ -19,7 +19,6 @@ object Recipe {
 
     val POST, PUT, DELETE = Value
   }
-
 }
 
 case class Recipe(id: String = UUID.randomUUID().toString, name: String, description: String, steps: List[RecipeStep])

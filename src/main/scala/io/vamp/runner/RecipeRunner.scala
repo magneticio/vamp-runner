@@ -25,12 +25,12 @@ trait RecipeRunner extends VampApiClient {
         }.map(update(recipe, _)).via {
           flow(recipe, { step ⇒ execute(step.run) })
         }
-      } ~> Sink.head[AnyRef]
+      } ~> Sink.last[AnyRef]
       ClosedShape
     }).run()
   }
 
-  protected def run(recipe: Recipe, step: RecipeStep, complete: Boolean) = {
+  protected def run(recipe: Recipe, step: RecipeStep) = {
     RunnableGraph.fromGraph(GraphDSL.create() { implicit builder ⇒
       Source.single(step).map { step ⇒
         step.copy(state = Recipe.State.Running)
@@ -40,8 +40,6 @@ trait RecipeRunner extends VampApiClient {
       ClosedShape
     }).run()
   }
-
-  protected def abort(recipes: List[Recipe]) = {}
 
   protected def cleanup(recipes: List[Recipe]) = {
     RunnableGraph.fromGraph(GraphDSL.create() { implicit builder ⇒

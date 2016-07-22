@@ -12,8 +12,6 @@ object RunnerActor {
 
   object ProvideRecipes
 
-  object Abort
-
   case class Run(arguments: AnyRef)
 
   case class Cleanup(arguments: AnyRef)
@@ -35,7 +33,6 @@ class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor wi
     case ProvideRecipes     ⇒ sender() ! Recipes(recipes.values.toList)
     case Run(arguments)     ⇒ run()(arguments)
     case Cleanup(arguments) ⇒ cleanup()(arguments)
-    case Abort              ⇒ abort(recipes.values.toList)
     case _                  ⇒
   }
 
@@ -59,8 +56,7 @@ class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor wi
     case map: Map[_, _] ⇒ for {
       recipe ← map.asInstanceOf[Map[String, _]].get("recipe").flatMap(id ⇒ recipes.get(id.toString))
       step ← map.asInstanceOf[Map[String, _]].get("step").flatMap(id ⇒ recipe.steps.find(_.id == id))
-      complete ← map.asInstanceOf[Map[String, _]].get("complete").map(_.toString.toBoolean)
-    } yield run(recipe, step, complete)
+    } yield run(recipe, step)
   }
 
   private def cleanup(): PartialFunction[AnyRef, Unit] = {

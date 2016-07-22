@@ -10,31 +10,16 @@
                 <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
                 <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>
                 <i class="recipe running ion-record" ng-show="step.state === 'running'"></i>
-                <i class="recipe aborted ion-record" ng-show="step.state === 'aborted'"></i>
                 <i class="recipe idle ion-record" ng-show="step.state === 'idle'"></i>
             </td>
-            <td class="default" width="50%">{{ :: step.description }}</td>
+            <td class="default" width="100%">{{ :: step.description }}</td>
             <td class="default">
                 <div class="recipe-step-buttons">
-                    <div class="btn-group" role="group" ng-show="!$last">
+                    <div class="btn-group" role="group">
                         <button type="button"
                                 ng-disabled="isRunning()"
-                                ng-click="run(recipe, step, true)"
+                                ng-click="run(recipe, step)"
                                 class="btn btn-default btn-with-icon"><i class="ion-play"></i>Run
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group" ng-show="$last">
-                        <button type="button"
-                                ng-disabled="isRunning()"
-                                ng-click="run(recipe, step, true)"
-                                class="btn btn-default btn-with-icon"
-                                title="Run and clean if succeeded"><i class="ion-play"></i>Complete
-                        </button>
-                        <button type="button"
-                                ng-disabled="isRunning()"
-                                ng-click="run(recipe, step, false)"
-                                class="btn btn-default btn-with-icon"
-                                title="Keep it running without cleanup"><i class="ion-ios-stopwatch"></i>Keep
                         </button>
                     </div>
                 </div>

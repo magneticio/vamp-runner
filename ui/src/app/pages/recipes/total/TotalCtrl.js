@@ -15,7 +15,6 @@
       var succeeded = 0;
       var failed = 0;
       var running = 0;
-      var aborted = 0;
       var idle = 0;
 
       for (var i = 0; i < api.recipes.length; i++) {
@@ -26,8 +25,6 @@
           failed++;
         else if (recipe.state === 'running')
           running++;
-        else if (recipe.state === 'aborted')
-          aborted++;
         else if (recipe.state === 'idle')
           idle++;
       }
@@ -58,13 +55,6 @@
           highlight: colorHelper.shade(allColors.yellow, 15),
           label: 'Running',
           percentage: percentage(running),
-          order: 2
-        }, {
-          value: aborted,
-          color: allColors.gray,
-          highlight: colorHelper.shade(allColors.gray, 15),
-          label: 'Aborted',
-          percentage: percentage(aborted),
           order: 2
         }, {
           value: idle,

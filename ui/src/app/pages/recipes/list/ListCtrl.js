@@ -80,10 +80,6 @@
       api.run();
     };
 
-    $scope.abort = function () {
-      api.abort();
-    };
-
     $scope.cleanup = function () {
       api.cleanup();
     };
