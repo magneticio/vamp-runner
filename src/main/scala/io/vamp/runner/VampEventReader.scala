@@ -1,6 +1,6 @@
 package io.vamp.runner
 
-import akka.actor.{ Actor, ActorLogging, ActorSystem, Props }
+import akka.actor.{ Actor, ActorLogging, ActorSystem }
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import de.heikoseeberger.akkasse.ServerSentEvent
@@ -12,13 +12,15 @@ import scala.concurrent.ExecutionContext
 
 object VampEventReader {
 
-  def props(implicit materializer: ActorMaterializer): Props = Props(classOf[VampEventReader], materializer)
+  sealed trait VampEventMessage
 
-  case class VampEvent(tags: Set[String])
+  case class VampEvent(tags: Set[String]) extends VampEventMessage
 
+  object VampEventRelease extends VampEventMessage
 }
 
-class VampEventReader(implicit val materializer: ActorMaterializer) extends Actor with ActorLogging {
+trait VampEventReader {
+  this: Actor with ActorLogging ⇒
 
   private implicit val format = Json.format
 
@@ -26,11 +28,9 @@ class VampEventReader(implicit val materializer: ActorMaterializer) extends Acto
 
   private implicit val executionContext: ExecutionContext = context.dispatcher
 
-  def receive: Receive = {
-    case any ⇒ println(any)
-  }
+  implicit def materializer: ActorMaterializer
 
-  override def preStart(): Unit = {
+  def sse(): Unit = {
     ServerSentEventClient(s"${Config.string("vamp.runner.api.url")}/events/stream", Sink.foreach[ServerSentEvent](
       event ⇒ self ! read[VampEvent](event.data)
     )).runWith(Sink.ignore)

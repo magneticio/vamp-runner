@@ -1,5 +1,7 @@
 package io.vamp.runner
 
+import java.util.concurrent.LinkedBlockingQueue
+
 import akka.actor.{ Actor, ActorLogging, ActorSystem, Props }
 import akka.agent.Agent
 import akka.stream.ActorMaterializer
@@ -22,11 +24,18 @@ object RunnerActor {
   case class UpdateState(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value)
 
   case class UpdateDirtyFlag(recipe: Recipe, step: RecipeStep, dirty: Boolean)
+
 }
 
-class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor with ActorLogging with RecipeLoader with RecipeRunner {
+class RunnerActor(implicit val materializer: ActorMaterializer)
+    extends Actor
+    with ActorLogging
+    with RecipeLoader
+    with RecipeRunner
+    with VampEventReader {
 
   import RunnerActor._
+  import VampEventReader._
 
   val timeout = Config.duration("vamp.runner.timeout")
 
@@ -36,36 +45,41 @@ class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor wi
 
   private val running = Agent[Boolean](false)
 
+  protected val events = new LinkedBlockingQueue[VampEventMessage](30)
+
   def receive: Receive = {
     case ProvideRecipes                       ⇒ sender() ! Recipes(recipes.values.toList)
     case Run(arguments)                       ⇒ if (!running.get()) run()(arguments)
     case Cleanup(arguments)                   ⇒ if (!running.get()) cleanup()(arguments)
     case UpdateState(recipe, step, state)     ⇒ update(recipe, step, state)
     case UpdateDirtyFlag(recipe, step, dirty) ⇒ update(recipe, step, dirty)
+    case message: VampEventMessage            ⇒ sse(message)
     case _                                    ⇒
   }
 
+  override def preStart(): Unit = sse()
+
   private def run(): PartialFunction[AnyRef, Unit] = {
     case list: List[_] ⇒
-      running.send(true)
+      startRun()
       run(ids2recipes(list).map { recipe ⇒
         recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map { step ⇒ step.copy(state = Recipe.State.Idle) }))
         recipe
-      }).onComplete(_ ⇒ running.send(false))
+      }).onComplete(_ ⇒ endRun())
 
     case map: Map[_, _] ⇒ for {
       recipe ← map.asInstanceOf[Map[String, _]].get("recipe").flatMap(id ⇒ recipes.get(id.toString))
       step ← map.asInstanceOf[Map[String, _]].get("step").flatMap(id ⇒ recipe.steps.find(_.id == id))
     } yield {
-      running.send(true)
-      run(recipe, step).onComplete(_ ⇒ running.send(false))
+      startRun()
+      run(recipe, step).onComplete(_ ⇒ endRun())
     }
   }
 
   private def cleanup(): PartialFunction[AnyRef, Unit] = {
     case list: List[_] ⇒
-      running.send(true)
-      cleanup(ids2recipes(list)).onComplete(_ ⇒ running.send(false))
+      startRun()
+      cleanup(ids2recipes(list)).onComplete(_ ⇒ endRun())
   }
 
   private def update(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value): Unit = {
@@ -86,4 +100,24 @@ class RunnerActor(implicit val materializer: ActorMaterializer) extends Actor wi
   }
 
   private def ids2recipes(ids: List[_]): List[Recipe] = ids.flatMap(id ⇒ recipes.get(id.toString))
+
+  private def sse(event: VampEventMessage) = {
+
+    event match {
+      case VampEvent(tags) ⇒ log.info(s"Vamp event: $tags")
+      case _               ⇒
+    }
+
+    while (!events.offer(event)) events.poll()
+  }
+
+  private def startRun() = {
+    events.clear()
+    running.send(true)
+  }
+
+  private def endRun() = {
+    self ! VampEventRelease
+    running.send(false)
+  }
 }
