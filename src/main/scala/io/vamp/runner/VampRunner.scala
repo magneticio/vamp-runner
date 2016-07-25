@@ -12,6 +12,8 @@ object VampRunner extends App with WebServer with Banner {
 
   banner()
 
+  system.actorOf(VampEventReader.props)
+
   val messenger = new RunnerHub
 
   val binding = server

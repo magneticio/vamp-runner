@@ -4,7 +4,8 @@ version := VersionHelper.versionByTag
 
 resolvers in ThisBuild ++= Seq(
   Resolver.typesafeRepo("releases"),
-  Resolver.jcenterRepo
+  Resolver.jcenterRepo,
+  Resolver.bintrayRepo("hseeberger", "maven")
 )
 
 libraryDependencies ++= {
@@ -14,6 +15,7 @@ libraryDependencies ++= {
       "com.typesafe.akka" %% "akka-agent" % "2.4.8" ::
       "com.typesafe.akka" %% "akka-http-core" % "2.4.8" ::
       "com.typesafe.akka" %% "akka-http-experimental" % "2.4.8" ::
+      ("de.heikoseeberger" %% "akka-sse" % "1.8.1" exclude("com.typesafe.akka", "akka-http-experimental")) ::
       ("com.typesafe.akka" %% "akka-slf4j" % "2.4.8" exclude("org.slf4j", "slf4j-api")) :: Nil
 
   val json =
