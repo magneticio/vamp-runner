@@ -2,10 +2,12 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-      .controller('RunnerCtrl', RunnerCtrl);
+    .controller('RunnerCtrl', RunnerCtrl);
 
   /** @ngInject */
-  function RunnerCtrl($rootScope, $scope, runner) {
+  function RunnerCtrl($rootScope, $scope, api, runner) {
+
+    $scope.config = api.config;
 
     $scope.logs = runner.logs;
 

@@ -9,6 +9,7 @@
   function Api($rootScope, $websocket, $timeout) {
 
     var info = this.info = {};
+    var config = this.config = {};
     var loads = this.loads = [];
     var recipes = this.recipes = [];
 
@@ -37,6 +38,16 @@
         }
 
         $rootScope.$emit('vamp:info', info);
+
+      } else if (data['type'] === 'config') {
+
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            config[key] = data[key];
+          }
+        }
+
+        $rootScope.$emit('vamp:config', config);
 
       } else if (data['type'] === 'load') {
 
@@ -151,6 +162,7 @@
 
         dataStream.onOpen(function () {
           command('info');
+          command('config');
           command('recipes');
         });
 
