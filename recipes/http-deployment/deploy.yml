@@ -1,5 +1,5 @@
 ---
-kind: blueprint
+kind: deployment
 name: sava
 
 gateways:

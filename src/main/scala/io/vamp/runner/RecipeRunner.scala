@@ -40,6 +40,7 @@ trait RecipeRunner extends VampApiClient {
   }
 
   protected def run(recipe: Recipe, step: RecipeStep): Future[RecipeStep] = {
+    log.info(s"Running: [${recipe.name} :: ${step.description}]")
     val result = Sink.head[RecipeStep]
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
       sink ⇒
@@ -65,6 +66,7 @@ trait RecipeRunner extends VampApiClient {
   }
 
   protected def cleanup(recipe: Recipe, step: RecipeStep): Future[RecipeStep] = {
+    log.info(s"Cleaning up: [${recipe.name} :: ${step.description}]")
     val result = Sink.head[RecipeStep]
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
       sink ⇒

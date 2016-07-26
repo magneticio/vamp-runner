@@ -8,14 +8,14 @@
         "method": "PUT",
         "resource": "deploy.yml",
         "await": [
-          "blueprints:sava", "archive:update"
+          "deployments:sava", "clusters:sava", "services:runner", "synchronization:deployed"
         ]
       },
       "cleanup": {
         "method": "DELETE",
         "resource": "undeploy.yml",
         "await": [
-          "blueprints:sava", "archive:delete"
+          "deployments:sava", "clusters:sava", "services:runner", "synchronization:undeployed"
         ]
       }
     },
@@ -23,16 +23,16 @@
       "description": "Send request to service and validate response.",
       "run": {
         "method": "PUT",
-        "resource": "deploy.yml",
+        "resource": "workflow.yml",
         "await": [
-          "blueprints:sava", "archive:update"
+          "workflows:sava-requester", "exit:0"
         ]
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "undeploy.yml",
+        "resource": "workflow.yml",
         "await": [
-          "blueprints:sava", "archive:delete"
+          "workflows:sava-requester", "unscheduled"
         ]
       }
     }

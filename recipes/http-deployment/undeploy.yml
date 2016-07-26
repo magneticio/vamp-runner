@@ -1,5 +1,5 @@
 ---
-kind: blueprint
+kind: deployment
 name: sava
 
 clusters:
@@ -14,3 +14,6 @@ clusters:
 ---
 kind: gateway
 name: sava/9050
+---
+kind: breed
+name: runner
