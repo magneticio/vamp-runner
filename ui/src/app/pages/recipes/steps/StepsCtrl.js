@@ -2,10 +2,10 @@
   'use strict';
 
   angular.module('VampRunner.pages.recipes')
-    .controller('DetailsCtrl', DetailsCtrl);
+    .controller('StepsCtrl', StepsCtrl);
 
   /** @ngInject */
-  function DetailsCtrl($rootScope, $scope, baConfig, api) {
+  function StepsCtrl($rootScope, $scope, baConfig, api) {
 
     $scope.transparent = baConfig.theme.blur;
 
