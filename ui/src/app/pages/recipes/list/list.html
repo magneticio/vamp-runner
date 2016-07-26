@@ -1,13 +1,5 @@
 <div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="ListCtrl">
 
-    <label class="select-all-label checkbox-inline custom-checkbox nowrap">
-        <input type="checkbox"
-               ng-click="selectAll($event)"
-               ng-checked="isSelectedAll()"
-               ng-disabled="isRunning()">
-        <span class="select-all-label">Select All</span>
-    </label>
-
     <div class="action-buttons">
         <div class="btn-group" role="group">
             <button type="button"
@@ -24,6 +16,14 @@
             </button>
         </div>
     </div>
+
+    <label class="select-all-label checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox"
+               ng-click="selectAll($event)"
+               ng-checked="isSelectedAll()"
+               ng-disabled="isRunning()">
+        <span class="select-all-label">Select All</span>
+    </label>
 
     <div class="box-shadow-border"></div>
 
