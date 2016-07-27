@@ -1,0 +1,5 @@
+---
+kind    : workflow
+name    : metrics
+breed   : metrics
+schedule: daemon

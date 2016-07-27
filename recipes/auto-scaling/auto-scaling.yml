@@ -1,0 +1,45 @@
+---
+kind: breed
+name: auto-scaling
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var http = require('request');
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+
+    var period = 7;
+    var scale = {
+      instances: 1,
+      cpu: 0.1,
+      memory: '64MB'
+    };
+
+    var process = function() {
+      api.api('events?tag=gateways:sava/sava/port&tag=metrics:responseTime', function(response) {
+
+        var responseTime = response[0]['value'];
+
+        if (responseTime > 1000 && scale.instances < 3)
+          scale.instances++;
+        else if (responseTime < 100 && scale.instances > 1) scale.instances--;
+
+        http({
+          url: api.url + 'deployments/sava/clusters/sava/services/runner/scale',
+          method: 'PUT',
+          json: scale
+          }, function (error, response, body) {
+            if (!error) api.event(['workflows:auto-scaling', 'scale'], scale.instances);
+          });
+      });
+    };
+
+    setInterval(process, period * 1000);
+
+---
+kind: workflow
+name: auto-scaling
+breed: auto-scaling
+schedule: daemon

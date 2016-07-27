@@ -4,6 +4,8 @@
      ba-panel-class="xmedium-panel feed-comply-panel with-scroll recipe-panel" ng-class="{'transparent': transparent}"
      ng-controller="StepsCtrl">
 
+    <p>{{ recipe.description }}</p>
+
     <table class="table table-hover">
         <tr ng-repeat="step in recipe.steps" class="recipe-step">
             <td>

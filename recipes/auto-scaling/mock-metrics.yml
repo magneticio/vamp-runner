@@ -1,0 +1,33 @@
+---
+kind: breed
+name: mock-metrics
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+
+    var period = 5;
+    var cyclePeriod = 60;
+
+    var counter = 0;
+
+    var process = function() {
+
+      var low = (++counter % (cyclePeriod / period)) < (cyclePeriod / (2 * period));
+
+      api.event(['gateways:sava/sava/port', 'metrics:rate'], low ? 100 : 1000);
+      api.event(['gateways:sava/sava/port', 'metrics:responseTime'], low ? 90 : 1100);
+
+      api.event(['workflows:mock-metrics', 'mocked'], 'mocked');
+    };
+
+    setInterval(process, period * 1000);
+
+---
+kind: workflow
+name: mock-metrics
+breed: mock-metrics
+schedule: daemon

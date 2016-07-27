@@ -25,7 +25,7 @@
         "method": "PUT",
         "resource": "workflow.yml",
         "await": [
-          "workflows:sava-requester", "exit:0"
+          "workflows:sava-requester", "response:ok"
         ]
       },
       "cleanup": {

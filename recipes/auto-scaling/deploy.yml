@@ -1,9 +1,9 @@
 ---
-kind: blueprint
+kind: deployment
 name: sava
 
 gateways:
-  9050: sava/port
+  9051: sava/port
 
 clusters:
   sava:
@@ -13,3 +13,7 @@ clusters:
         deployable: magneticio/sava:runner_1.0
         ports:
           port: 8081/http
+      scale:
+        instances: 1
+        cpu: 0.1
+        memory: 64MB

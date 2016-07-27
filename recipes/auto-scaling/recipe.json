@@ -8,16 +8,14 @@
         "method": "PUT",
         "resource": "deploy.yml",
         "await": [
-          "blueprints:runner",
-          "deployed"
+          "deployments:sava", "clusters:sava", "services:runner", "synchronization:deployed"
         ]
       },
       "cleanup": {
         "method": "DELETE",
         "resource": "undeploy.yml",
         "await": [
-          "blueprints:runner",
-          "undeployed"
+          "deployments:sava", "clusters:sava", "services:runner", "synchronization:undeployed"
         ]
       }
     },
@@ -25,18 +23,16 @@
       "description": "Remove default metrics aggregation workflow.",
       "run": {
         "method": "DELETE",
-        "resource": "undeploy.yml",
+        "resource": "metrics.yml",
         "await": [
-          "workflows:metrics",
-          "persistence:deleted"
+          "workflows:metrics", "unscheduled"
         ]
       },
       "cleanup": {
         "method": "PUT",
-        "resource": "deploy.yml",
+        "resource": "metrics.yml",
         "await": [
-          "workflows:metrics",
-          "persistence:created"
+          "workflows:metrics", "scheduled"
         ]
       }
     },
@@ -44,18 +40,16 @@
       "description": "Run mock metrics aggregation workflow.",
       "run": {
         "method": "PUT",
-        "resource": "deploy.yml",
+        "resource": "mock-metrics.yml",
         "await": [
-          "workflows:metrics",
-          "persistence:deleted"
+          "workflows:mock-metrics", "mocked"
         ]
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "undeploy.yml",
+        "resource": "mock-metrics.yml",
         "await": [
-          "workflows:metrics",
-          "persistence:created"
+          "workflows:mock-metrics", "unscheduled"
         ]
       }
     },
@@ -63,18 +57,16 @@
       "description": "Auto scale deployment service based on response time.",
       "run": {
         "method": "PUT",
-        "resource": "deploy.yml",
+        "resource": "auto-scaling.yml",
         "await": [
-          "workflows:auto-scale",
-          "exit"
+          "workflows:auto-scaling", "scale"
         ]
       },
       "cleanup": {
         "method": "DELETE",
-        "resource": "undeploy.yml",
+        "resource": "auto-scaling.yml",
         "await": [
-          "workflows:auto-scale",
-          "persistence:deleted"
+          "workflows:auto-scaling", "unscheduled"
         ]
       }
     }

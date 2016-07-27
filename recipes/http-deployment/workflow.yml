@@ -21,7 +21,7 @@ deployable:
       } else {
         http('http://' + vga + ':9050', function (error, response, body) {
           if (!error && response.statusCode == 200) {
-            api.event(['workflows:sava-requester', 'exit:0'], '');
+            api.event(['workflows:sava-requester', 'response:ok'], 'ok');
           }
         });
       }
