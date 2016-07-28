@@ -120,6 +120,14 @@
         }
 
         $rootScope.$emit('recipes:update', '');
+
+      } else if (data['type'] === 'event') {
+
+        var event = {
+          tags: data['tags']
+        };
+
+        $rootScope.$emit('vamp:event', event);
       }
     };
 

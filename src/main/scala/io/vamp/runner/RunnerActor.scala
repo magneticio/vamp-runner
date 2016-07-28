@@ -53,7 +53,7 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
     case Cleanup(arguments)                   ⇒ if (!running.get()) cleanup()(arguments)
     case UpdateState(recipe, step, state)     ⇒ update(recipe, step, state)
     case UpdateDirtyFlag(recipe, step, dirty) ⇒ update(recipe, step, dirty)
-    case message: VampEventMessage            ⇒ sse(message)
+    case message: VampEventMessage            ⇒ event(message)
     case _                                    ⇒
   }
 
@@ -101,11 +101,13 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
 
   private def ids2recipes(ids: List[_]): List[Recipe] = ids.flatMap(id ⇒ recipes.get(id.toString))
 
-  private def sse(event: VampEventMessage) = {
+  private def event(event: VampEventMessage) = {
 
     event match {
-      case VampEvent(tags) ⇒ log.info(s"Vamp event: $tags")
-      case _               ⇒
+      case e: VampEvent ⇒
+        log.info(s"Vamp event: $e")
+        context.parent ! Broadcast(e)
+      case _ ⇒
     }
 
     while (!events.offer(event)) events.poll()
