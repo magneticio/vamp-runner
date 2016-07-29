@@ -1,0 +1,7 @@
+---
+kind: gateway
+name: runner
+port: 9053
+routes:
+  runner/runner/port:
+    weight: 100%

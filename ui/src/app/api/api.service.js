@@ -10,6 +10,7 @@
 
     var info = this.info = {};
     var config = this.config = {};
+    var events = this.events = [];
     var loads = this.loads = [];
     var recipes = this.recipes = [];
 
@@ -122,13 +123,14 @@
         $rootScope.$emit('recipes:update', '');
 
       } else if (data['type'] === 'event') {
-
-        var event = {
-          tags: data['tags'],
+        var e = {
+          timestamp: new Date(),
+          tags: data['tags'].join(', '),
           value: data['value']
         };
-
-        $rootScope.$emit('vamp:event', event);
+        events.push(e);
+        while (events.length > 100) events.shift();
+        $rootScope.$emit('vamp:event', e);
       }
     };
 

@@ -1,0 +1,74 @@
+{
+  "name": "HTTP Deployment with Route Weight",
+  "description": "Deploying 2 HTTP services - one with route weight of 80%, another of 20%.",
+  "steps": [
+    {
+      "description": "Deploy 1st service - 100%",
+      "run": {
+        "method": "PUT",
+        "resource": "deploy1.yml",
+        "await": [
+          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "deploy1.yml",
+        "await": [
+          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Deploy 2nd service - 80% / 20%",
+      "run": {
+        "method": "PUT",
+        "resource": "deploy2.yml",
+        "await": [
+          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "deploy2.yml",
+        "await": [
+          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Add gateway.",
+      "run": {
+        "method": "PUT",
+        "resource": "deploy3.yml",
+        "await": [
+          "gateways", "gateways:runner", "deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "deploy3.yml",
+        "await": [
+          "gateways", "gateways:runner", "undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Send request to gateway and validate response.",
+      "run": {
+        "method": "PUT",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:runner-requester", "response:ok"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:runner-requester", "unscheduled"
+        ]
+      }
+    }
+  ]
+}

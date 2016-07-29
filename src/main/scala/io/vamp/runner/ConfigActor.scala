@@ -2,8 +2,6 @@ package io.vamp.runner
 
 import akka.actor.{ Actor, ActorLogging, Props }
 
-import scala.language.postfixOps
-
 object ConfigActor {
 
   def props: Props = Props(classOf[ConfigActor])

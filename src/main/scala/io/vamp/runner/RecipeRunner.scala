@@ -144,8 +144,8 @@ trait RecipeRunner extends VampApiClient {
   @tailrec
   private def await(action: RecipeStepAction): Recipe.State.Value = {
     events.take() match {
-      case VampEventRelease ⇒ Recipe.State.Failed
-      case VampEvent(tags)  ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
+      case VampEventRelease   ⇒ Recipe.State.Failed
+      case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
     }
   }
 }

@@ -1,0 +1,18 @@
+---
+kind: deployment
+name: runner
+clusters:
+  runner:
+    services:
+      - breed: runner:1
+        scale: small
+      - breed: runner:2
+        environment_variables:
+          SAVA_RUNNER_ID: 2.0.0
+        scale: small
+    gateways:
+      routes:
+        runner:1:
+          weight: 80%
+        runner:2:
+          weight: 20%

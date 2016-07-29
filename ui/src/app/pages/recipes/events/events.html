@@ -4,17 +4,16 @@
         <div class="btn-group" role="group">
             <button type="button"
                     class="btn btn-default"
-                    ng-click="clear()"
-                    ng-disabled="events.length === 0"><i class="ion-android-remove-circle"></i>
+                    ng-click="clear()"><i class="ion-android-remove-circle"></i>
             </button>
         </div>
     </div>
 
     <table class="table table-hover">
         <tr ng-repeat="event in events">
-            <td>{{ :: event.timestamp | date : 'HH:mm:ss'}}</td>
-            <td class="default" width="50%">{{ :: event.tags }}</td>
-            <td class="default" width="50%">{{ :: event.value }}</td>
+            <td width="10%">{{ :: event.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+            <td class="default" width="45%">{{ :: event.tags }}</td>
+            <td class="default" width="45%">{{ :: event.value }}</td>
         </tr>
     </table>
 
