@@ -14,7 +14,7 @@ object VampEventReader {
 
   sealed trait VampEventMessage
 
-  case class VampEvent(tags: Set[String]) extends VampEventMessage with Response {
+  case class VampEvent(tags: Set[String], value: AnyRef) extends VampEventMessage with Response {
     override val `type` = "event"
   }
 

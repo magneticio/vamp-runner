@@ -19,7 +19,8 @@
     $rootScope.$on('vamp:event', function (event, data) {
       var e = {
         timestamp: new Date(),
-        tags: data.tags.join(', ')
+        tags: data.tags.join(', '),
+        value: data.value
       };
       events.unshift(e);
     });

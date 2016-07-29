@@ -16,11 +16,11 @@
 
 .chart-bg {
   position: absolute;
-  width: 180px;
-  height: 180px;
-  left: 60px;
-  top: 60px;
-  border-radius: 100px;
+  width: 120px;
+  height: 120px;
+  left: 90px;
+  top: 40px;
+  border-radius: 67px;
   background-color: transparent;
 }
 
@@ -50,9 +50,9 @@
 }
 
 .total-chart {
-  width: 300px;
+  width: 200px;
   position: relative;
-  min-height: 300px;
+  min-height: 200px;
   float: left;
 }
 
@@ -85,8 +85,8 @@
 
 .canvas-holder {
   display: inline-block;
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
   position: relative;
   float: left;
 }
@@ -155,7 +155,7 @@ div.total-info {
 }
 
 .chart-bg {
-  left: calc(50% - 90px);
+  left: calc(50% - 60px);
 }
 
 @media (max-width: 1465px) and (min-width: 1199px) {
@@ -168,17 +168,17 @@ div.total-info {
     margin: 0 auto;
   }
   .chart-bg {
-    left: calc(50% - 90px);
+    left: calc(50% - 60px);
   }
 }
 
 @media (max-width: 380px) {
   .total-chart {
-    width: 240px;
+    width: 160px;
   }
   .canvas-holder {
-    width: 240px;
-    height: 240px;
+    width: 160px;
+    height: 160px;
   }
   .chart-bg {
     top: 30px;

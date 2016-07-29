@@ -124,7 +124,8 @@
       } else if (data['type'] === 'event') {
 
         var event = {
-          tags: data['tags']
+          tags: data['tags'],
+          value: data['value']
         };
 
         $rootScope.$emit('vamp:event', event);

@@ -21,7 +21,7 @@ deployable:
       api.event(['gateways:sava/sava/port', 'metrics:rate'], low ? 100 : 1000);
       api.event(['gateways:sava/sava/port', 'metrics:responseTime'], low ? 90 : 1100);
 
-      api.event(['workflows:mock-metrics', 'mocked'], 'mocked');
+      api.event(['workflows:mock-metrics', 'mocked'], low ? 90 : 1100);
     };
 
     setInterval(process, period * 1000);

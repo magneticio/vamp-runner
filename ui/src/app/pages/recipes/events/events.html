@@ -13,7 +13,8 @@
     <table class="table table-hover">
         <tr ng-repeat="event in events">
             <td>{{ :: event.timestamp | date : 'HH:mm:ss'}}</td>
-            <td class="default" width="100%">{{ :: event.tags }}</td>
+            <td class="default" width="50%">{{ :: event.tags }}</td>
+            <td class="default" width="50%">{{ :: event.value }}</td>
         </tr>
     </table>
 

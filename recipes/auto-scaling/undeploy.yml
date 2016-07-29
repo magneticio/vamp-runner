@@ -5,11 +5,7 @@ name: sava
 clusters:
   sava:
     services:
-      breed:
-        name: runner
-        deployable: magneticio/sava:runner_1.0
-        ports:
-          port: 8081/http
+      breed: runner
 
 ---
 kind: gateway

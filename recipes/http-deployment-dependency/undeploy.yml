@@ -1,0 +1,19 @@
+---
+kind: deployment
+name: runner
+clusters:
+  frontend:
+    services:
+      breed: frontend
+  backend:
+    services:
+      breed: backend
+---
+kind: gateway
+name: runner/9052
+---
+kind: breed
+name: frontend
+---
+kind: breed
+name: backend
