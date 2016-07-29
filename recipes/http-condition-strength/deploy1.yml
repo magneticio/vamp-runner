@@ -20,4 +20,8 @@ name: small
 cpu: 0.2
 memory: 64MB
 instances: 1
+---
+kind: condition
+name: url_beg
+condition: "< url_beg /2 >"
 

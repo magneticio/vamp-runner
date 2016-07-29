@@ -1,0 +1,10 @@
+---
+kind: gateway
+name: runner1/9054
+---
+kind: deployment
+name: runner1
+clusters:
+  runner:
+    services:
+      breed: runner:1

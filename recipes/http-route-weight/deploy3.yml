@@ -1,7 +1,18 @@
 ---
-kind: gateway
+kind: deployment
 name: runner
-port: 9053
-routes:
-  runner/runner/port:
-    weight: 100%
+clusters:
+  runner:
+    services:
+      - breed: runner:1
+        scale: small
+      - breed: runner:2
+        environment_variables:
+          SAVA_RUNNER_ID: 2.0.0
+        scale: small
+    gateways:
+      routes:
+        runner:1:
+          weight: 80%
+        runner:2:
+          weight: 20%

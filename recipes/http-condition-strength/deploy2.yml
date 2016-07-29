@@ -1,0 +1,9 @@
+---
+kind: deployment
+name: runner1
+gateways:
+  9054: runner/port
+clusters:
+  runner:
+    services:
+      breed: runner:1

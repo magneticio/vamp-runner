@@ -5,4 +5,4 @@ clusters:
   runner:
     services:
       - breed: runner:1
-        scale: small
+      - breed: runner:2

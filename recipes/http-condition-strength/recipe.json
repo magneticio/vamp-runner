@@ -1,55 +1,55 @@
 {
-  "name": "HTTP Deployment with Route Weight",
-  "description": "Deploying 2 HTTP services - one with route weight of 80%, another of 20%.",
+  "name": "HTTP Deployment with Condition Strength",
+  "description": "Deploying 2 HTTP services with route weight and condition strength.",
   "steps": [
     {
-      "description": "Deploy 2 breeds and scale.",
+      "description": "Create 2 breeds, scale and condition.",
       "run": {
         "method": "PUT",
         "resource": "deploy1.yml",
         "await": [
-          "scales:small", "archive:update"
+          "conditions:url_beg", "archive:update"
         ]
       },
       "cleanup": {
         "method": "DELETE",
         "resource": "deploy1.yml",
         "await": [
-          "scales:small", "archive:delete"
+          "conditions:url_beg", "archive:delete"
         ]
       }
     },
     {
-      "description": "Deploy 1st service - 100%.",
+      "description": "Deploy 1st service.",
       "run": {
         "method": "PUT",
         "resource": "deploy2.yml",
         "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:deployed"
+          "deployments:runner1", "clusters:runner", "services:runner:1", "synchronization:deployed"
         ]
       },
       "cleanup": {
         "method": "DELETE",
         "resource": "undeploy2.yml",
         "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:undeployed"
+          "deployments:runner1", "clusters:runner", "services:runner:1", "synchronization:undeployed"
         ]
       }
     },
     {
-      "description": "Deploy 2nd service - 80% / 20%.",
+      "description": "Deploy 2nd service.",
       "run": {
         "method": "PUT",
         "resource": "deploy3.yml",
         "await": [
-          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:deployed"
+          "deployments:runner2", "clusters:runner", "services:runner:2", "synchronization:deployed"
         ]
       },
       "cleanup": {
-        "method": "PUT",
-        "resource": "deploy3.yml",
+        "method": "DELETE",
+        "resource": "undeploy3.yml",
         "await": [
-          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:deployed"
+          "deployments:runner2", "clusters:runner", "services:runner:2", "synchronization:undeployed"
         ]
       }
     },
@@ -71,7 +71,7 @@
       }
     },
     {
-      "description": "Send requests to gateway and validate response - 80% / 20%.",
+      "description": "Send requests to gateway and validate response - 40% / 60%.",
       "run": {
         "method": "PUT",
         "resource": "workflow.yml",

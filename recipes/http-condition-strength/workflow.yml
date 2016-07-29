@@ -33,7 +33,7 @@ deployable:
 
       for (var i = 0; i < 50; i++) {
 
-        http('http://' + vga + ':9053', function (error, response, body) {
+        http('http://' + vga + ':9056/2', function (error, response, body) {
           if (!error && response.statusCode == 200) {
             count++;
             var result = JSON.parse(body);
@@ -44,8 +44,7 @@ deployable:
               if (count === 50) {
                 var p1 = 100.0 * count1 / count;
                 var p2 = 100.0 * count2 / count;
-
-                if (p1 > 81 || p1 < 79 || p2 > 21 || p2 < 19)
+                if (p1 > 41 || p1 < 39 || p2 > 61 || p2 < 59)
                   api.event(['workflows:runner-requester', 'response:error'], p1 + '% / ' + p2 + '%');
                 else
                   api.event(['workflows:runner-requester', 'response:ok'], p1 + '% / ' + p2 + '%');

@@ -1,0 +1,12 @@
+---
+kind: gateway
+name: runner
+port: 9056
+routes:
+  runner1/9054:
+    weight: 80%
+  runner2/9055:
+    weight: 20%
+    condition_strength: 50%
+    conditions:
+    - url_beg
