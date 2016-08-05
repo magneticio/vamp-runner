@@ -137,15 +137,13 @@ trait RecipeRunner extends VampApiClient {
       case Recipe.Method.DELETE ⇒ apiDelete(input = action.resource, recoverWith = recover)
     }) map {
       case Right(_) ⇒ Recipe.State.Failed
-      case other    ⇒ other
+      case other    ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else other
     }
   }
 
   @tailrec
-  private def await(action: RecipeStepAction): Recipe.State.Value = {
-    events.take() match {
-      case VampEventRelease   ⇒ Recipe.State.Failed
-      case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
-    }
+  private def await(action: RecipeStepAction): Recipe.State.Value = events.take() match {
+    case VampEventRelease   ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else Recipe.State.Failed
+    case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
   }
 }
