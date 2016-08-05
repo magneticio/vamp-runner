@@ -1,0 +1,40 @@
+{
+  "name": "TCP Deployment with Dependencies",
+  "description": "Deploying 2 TCP services - 1 depends on another.",
+  "steps": [
+    {
+      "description": "Deploy services.",
+      "run": {
+        "method": "PUT",
+        "resource": "deploy.yml",
+        "await": [
+          "deployments:sava", "clusters:frontend", "services:frontend:runner", "synchronization:deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "undeploy.yml",
+        "await": [
+          "deployments:sava", "clusters:frontend", "services:frontend:runner", "synchronization:undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Send TCP request to frontend service and validate response.",
+      "run": {
+        "method": "PUT",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:runner-requester", "response:ok"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:runner-requester", "unscheduled"
+        ]
+      }
+    }
+  ]
+}
