@@ -32,7 +32,7 @@ deployable:
           json: scale
           }, function (error, response, body) {
             if (!error) api.event(['workflows:auto-scaling', 'scale'], scale.instances);
-          });
+        });
       });
     };
 
