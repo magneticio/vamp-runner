@@ -1,0 +1,40 @@
+{
+  "name": "TCP Deployment",
+  "description": "Deploying single TCP service.",
+  "steps": [
+    {
+      "description": "Deploy service.",
+      "run": {
+        "method": "PUT",
+        "resource": "deploy.yml",
+        "await": [
+          "deployments:sava", "clusters:runner", "services:tcp:1.0.0", "synchronization:deployed"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "undeploy.yml",
+        "await": [
+          "deployments:sava", "clusters:runner", "services:tcp:1.0.0", "synchronization:undeployed"
+        ]
+      }
+    },
+    {
+      "description": "Send request to service and validate response.",
+      "run": {
+        "method": "PUT",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:sava-requester", "response:ok"
+        ]
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "resource": "workflow.yml",
+        "await": [
+          "workflows:sava-requester", "unscheduled"
+        ]
+      }
+    }
+  ]
+}

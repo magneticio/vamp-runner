@@ -3,15 +3,15 @@ kind: deployment
 name: sava
 
 clusters:
-  sava:
+  runner:
     services:
       breed:
-        name: runner
+        name: tcp:1.0.0
         deployable: magneticio/sava:runner_1.0
 
 ---
 kind: gateway
-name: sava/9050
+name: sava/9057
 ---
 kind: breed
-name: runner
+name: tcp:1.0.0
