@@ -131,6 +131,9 @@
         events.push(e);
         while (events.length > 100) events.shift();
         $rootScope.$emit('vamp:event', e);
+
+      } else if (data['type'] === 'busy') {
+        $rootScope.$emit('vamp:busy', 'busy');
       }
     };
 

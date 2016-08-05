@@ -51,6 +51,10 @@
       else if (recipe.state === 'succeeded')
         push('info', 'system', 'Running recipe succeeded: \'' + recipe.name + '\'.');
     });
+
+    $rootScope.$on('vamp:busy', function () {
+      push('error', 'system', 'Already busy with "run" or "cleanup" actions.');
+    });
   }
 
 })();

@@ -19,6 +19,10 @@ object RunnerActor {
 
   case class Cleanup(arguments: AnyRef)
 
+  object Busy extends Response {
+    override val `type`: String = "busy"
+  }
+
   case class Recipes(recipes: List[Recipe]) extends Response
 
   case class UpdateState(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value)
@@ -49,8 +53,8 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
 
   def receive: Receive = {
     case ProvideRecipes                       ⇒ sender() ! Recipes(recipes.values.toList)
-    case Run(arguments)                       ⇒ if (!running.get()) run()(arguments)
-    case Cleanup(arguments)                   ⇒ if (!running.get()) cleanup()(arguments)
+    case Run(arguments)                       ⇒ if (!running.get()) run()(arguments) else sender() ! Busy
+    case Cleanup(arguments)                   ⇒ if (!running.get()) cleanup()(arguments) else sender() ! Busy
     case UpdateState(recipe, step, state)     ⇒ update(recipe, step, state)
     case UpdateDirtyFlag(recipe, step, dirty) ⇒ update(recipe, step, dirty)
     case message: VampEventMessage            ⇒ event(message)
