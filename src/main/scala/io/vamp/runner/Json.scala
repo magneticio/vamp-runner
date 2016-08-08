@@ -8,11 +8,12 @@ object Json {
   val format = new DefaultFormats {
     override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = (classOf[AnyRef], new FieldSerializer[AnyRef](
       {
-        case (_, _: RecipeStepAction) ⇒ None
-        case (name, value)            ⇒ Option((underscore(name), value))
+        case (name, value: RunRecipeStep)     ⇒ Option((underscore(name), value.copy(resource = "")))
+        case (name, value: CleanupRecipeStep) ⇒ Option((underscore(name), value.copy(resource = "")))
+        case (name, value)                    ⇒ Option((underscore(name), value))
       }
     )) :: Nil
-  } + new EnumNameSerializer(Recipe.State) + new EnumNameSerializer(Recipe.Method)
+  } + new EnumNameSerializer(Recipe.State)
 
   private def underscore(s: String): String = {
     var lower = false

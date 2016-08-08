@@ -84,8 +84,8 @@
           var running = 0;
           var idle = 0;
 
-          for (var j = 0; j < recipe["steps"].length; j++) {
-            var step = recipe["steps"][j];
+          for (var j = 0; j < recipe["run"].length; j++) {
+            var step = recipe["run"][j];
             step.state = step.state.toLowerCase();
 
             if (step.state === 'succeeded')

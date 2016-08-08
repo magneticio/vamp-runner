@@ -1,40 +1,44 @@
 {
   "name": "HTTP Deployment",
   "description": "Deploying single HTTP service.",
-  "steps": [
+  "run": [
     {
       "description": "Deploy service.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy.yml",
-        "await": [
-          "deployments:sava", "clusters:sava", "services:runner", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy.yml",
-        "await": [
-          "deployments:sava", "clusters:sava", "services:runner", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Send request to service and validate response.",
-      "run": {
-        "method": "PUT",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:sava-requester", "response:ok"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:sava-requester", "unscheduled"
-        ]
-      }
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:sava-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Undeploy service.",
+      "resource": "undeploy.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Unschedule workflow.",
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:sava-requester",
+        "unscheduled"
+      ]
     }
   ]
 }

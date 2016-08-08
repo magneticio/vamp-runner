@@ -25,9 +25,9 @@ object RunnerActor {
 
   case class Recipes(recipes: List[Recipe]) extends Response
 
-  case class UpdateState(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value)
+  case class UpdateState(recipe: Recipe, step: RunRecipeStep, state: Recipe.State.Value)
 
-  case class UpdateDirtyFlag(recipe: Recipe, step: RecipeStep, dirty: Boolean)
+  case class UpdateDirtyFlag(recipe: Recipe, step: RunRecipeStep, dirty: Boolean)
 
 }
 
@@ -67,13 +67,13 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
     case list: List[_] ⇒
       startRun()
       run(ids2recipes(list).map { recipe ⇒
-        recipes += (recipe.id -> recipe.copy(steps = recipe.steps.map { step ⇒ step.copy(state = Recipe.State.Idle) }))
+        recipes += (recipe.id -> recipe.copy(run = recipe.run.map { run ⇒ run.copy(state = Recipe.State.Idle) }))
         recipe
       }).onComplete(_ ⇒ endRun())
 
     case map: Map[_, _] ⇒ for {
       recipe ← map.asInstanceOf[Map[String, _]].get("recipe").flatMap(id ⇒ recipes.get(id.toString))
-      step ← map.asInstanceOf[Map[String, _]].get("step").flatMap(id ⇒ recipe.steps.find(_.id == id))
+      step ← map.asInstanceOf[Map[String, _]].get("step").flatMap(id ⇒ recipe.run.find(_.id == id))
     } yield {
       startRun()
       run(recipe, step).onComplete(_ ⇒ endRun())
@@ -86,17 +86,17 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
       cleanup(ids2recipes(list)).onComplete(_ ⇒ endRun())
   }
 
-  private def update(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value): Unit = {
+  private def update(recipe: Recipe, step: RunRecipeStep, state: Recipe.State.Value): Unit = {
     update(recipe, step, { step ⇒ step.copy(state = state) })
   }
 
-  private def update(recipe: Recipe, step: RecipeStep, dirty: Boolean): Unit = {
+  private def update(recipe: Recipe, step: RunRecipeStep, dirty: Boolean): Unit = {
     update(recipe, step, { step ⇒ step.copy(dirty = dirty) })
   }
 
-  private def update(recipe: Recipe, step: RecipeStep, update: RecipeStep ⇒ RecipeStep): Unit = {
+  private def update(recipe: Recipe, step: RunRecipeStep, update: RunRecipeStep ⇒ RunRecipeStep): Unit = {
     recipes.get(recipe.id).map { r ⇒
-      recipes += (r.id -> r.copy(steps = r.steps.map { s ⇒
+      recipes += (r.id -> r.copy(run = r.run.map { s ⇒
         if (s.id == step.id) update(s) else s
       }))
     }

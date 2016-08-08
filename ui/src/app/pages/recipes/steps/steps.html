@@ -7,7 +7,7 @@
     <p>{{ recipe.description }}</p>
 
     <table class="table table-hover">
-        <tr ng-repeat="step in recipe.steps" class="recipe-step">
+        <tr ng-repeat="step in recipe.run" class="recipe-step">
             <td>
                 <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
                 <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>

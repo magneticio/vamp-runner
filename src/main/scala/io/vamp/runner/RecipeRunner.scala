@@ -25,31 +25,33 @@ trait RecipeRunner extends VampApiClient {
   protected def run(recipes: List[Recipe]): Future[_] = {
 
     val futures = recipes.map { recipe ⇒
-      recipe.steps.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
+      recipe.run.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
         case t: Throwable ⇒ Recipe.State.Failed
       } flatMap {
         case Recipe.State.Failed ⇒ Future.successful(Recipe.State.Failed)
         case _ ⇒
-          recipe.steps.reverse.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+          recipe.cleanup.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
             case t: Throwable ⇒ Recipe.State.Failed
+          } map { _ ⇒
+            recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
           }
       }
     }
-
     Future.sequence(futures)
   }
 
   protected def cleanup(recipes: List[Recipe]): Future[_] = {
     val futures = recipes.map { recipe ⇒
-      recipe.steps.reverse.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+      recipe.cleanup.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
         case t: Throwable ⇒ Recipe.State.Failed
+      } map { _ ⇒
+        recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
       }
     }
-
     Future.sequence(futures)
   }
 
-  protected def run(recipe: Recipe, step: RecipeStep): Future[Recipe.State.Value] = {
+  protected def run(recipe: Recipe, step: RunRecipeStep): Future[Recipe.State.Value] = {
     log.info(s"Running: [${recipe.name} :: ${step.description}]")
     val result = Sink.head[Recipe.State.Value]
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
@@ -57,7 +59,7 @@ trait RecipeRunner extends VampApiClient {
         Source.single(step).map { step ⇒
           self ! UpdateState(recipe, step, Recipe.State.Running)
           step
-        } ~> runFlow(recipe) ~> sink.in
+        } ~> runFlow(recipe, step) ~> sink.in
         ClosedShape
     }).run().flatMap {
       case Recipe.State.Failed ⇒ Future.failed(new RuntimeException())
@@ -65,38 +67,40 @@ trait RecipeRunner extends VampApiClient {
     }
   }
 
-  protected def cleanup(recipe: Recipe, step: RecipeStep): Future[Recipe.State.Value] = {
+  protected def cleanup(recipe: Recipe, step: CleanupRecipeStep): Future[Recipe.State.Value] = {
     log.info(s"Cleaning up: [${recipe.name} :: ${step.description}]")
     val result = Sink.head[Recipe.State.Value]
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
       sink ⇒
-        Source.single(step) ~> cleanupFlow(recipe) ~> sink.in
+        Source.single(step) ~> cleanupFlow(recipe, step) ~> sink.in
         ClosedShape
     }).run()
   }
 
-  private def runFlow(recipe: Recipe): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
-    flow("Run", recipe, { step ⇒ step.run }, { (step, state) ⇒
-      self ! UpdateState(recipe, step, state)
-      self ! UpdateDirtyFlag(recipe, step, dirty = true)
+  private def runFlow(recipe: Recipe, step: RunRecipeStep): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
+    flow("Run", recipe, step, { (step, state) ⇒
+      step match {
+        case s: RunRecipeStep ⇒
+          self ! UpdateState(recipe, s, state)
+          self ! UpdateDirtyFlag(recipe, s, dirty = true)
+        case _ ⇒
+      }
     }, silent = false)
   }
 
-  private def cleanupFlow(recipe: Recipe): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
-    flow("Cleanup", recipe, { step ⇒ step.cleanup }, { (step, state) ⇒
-      self ! UpdateDirtyFlag(recipe, step, dirty = false)
-    }, silent = true)
+  private def cleanupFlow(recipe: Recipe, step: CleanupRecipeStep): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
+    flow("Cleanup", recipe, step, { (_, _) ⇒ }, silent = true)
   }
 
-  private def flow(designator: String, recipe: Recipe, action: RecipeStep ⇒ RecipeStepAction, update: (RecipeStep, Recipe.State.Value) ⇒ Unit, silent: Boolean): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
+  private def flow(designator: String, recipe: Recipe, step: RecipeStep, update: (RecipeStep, Recipe.State.Value) ⇒ Unit, silent: Boolean): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {
 
     val graph = GraphDSL.create() { implicit builder ⇒
 
       val in = builder.add(Broadcast[RecipeStep](3))
       val collect = builder.add(Merge[AnyRef](3))
 
-      val execution = Flow[RecipeStep].mapAsync(1) { step ⇒ execute(action(step)).map { result ⇒ step -> result } }
-      val awaiting = Flow[RecipeStep].mapAsync(1) { step ⇒ Future(await(action(step))).map { result ⇒ step -> result } }
+      val execution = Flow[RecipeStep].mapAsync(1) { step ⇒ execute(step).map { result ⇒ step -> result } }
+      val awaiting = Flow[RecipeStep].mapAsync(1) { step ⇒ Future(await(step)).map { result ⇒ step -> result } }
       val timeout = Flow[RecipeStep].flatMapConcat { step ⇒ Source.tick(actionTimeout, actionTimeout, step -> Recipe.State.Failed) }
 
       val resolve = Flow[AnyRef].collect {
@@ -123,7 +127,7 @@ trait RecipeRunner extends VampApiClient {
     Flow.fromGraph(graph)
   }
 
-  private def execute(action: RecipeStepAction): Future[AnyRef] = {
+  private def execute(action: RecipeStep): Future[AnyRef] = {
 
     def recover: AnyRef ⇒ Recipe.State.Value = {
       failure ⇒
@@ -131,10 +135,9 @@ trait RecipeRunner extends VampApiClient {
         Recipe.State.Failed
     }
 
-    (action.method match {
-      case Recipe.Method.PUT    ⇒ apiPut(input = action.resource, recoverWith = recover)
-      case Recipe.Method.POST   ⇒ apiPost(input = action.resource, recoverWith = recover)
-      case Recipe.Method.DELETE ⇒ apiDelete(input = action.resource, recoverWith = recover)
+    (action match {
+      case _: RunRecipeStep     ⇒ apiPut(input = action.resource, recoverWith = recover)
+      case _: CleanupRecipeStep ⇒ apiDelete(input = action.resource, recoverWith = recover)
     }) map {
       case Right(_) ⇒ Recipe.State.Failed
       case other    ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else other
@@ -142,7 +145,7 @@ trait RecipeRunner extends VampApiClient {
   }
 
   @tailrec
-  private def await(action: RecipeStepAction): Recipe.State.Value = events.take() match {
+  private def await(action: RecipeStep): Recipe.State.Value = events.take() match {
     case VampEventRelease   ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else Recipe.State.Failed
     case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
   }

@@ -31,8 +31,8 @@
 
       var runnable = true;
 
-      for (var i = 0; i < recipe.steps.length; i++) {
-        var s = recipe.steps[i];
+      for (var i = 0; i < recipe.run.length; i++) {
+        var s = recipe.run[i];
         if (s.id == step.id)
           return runnable;
         else {

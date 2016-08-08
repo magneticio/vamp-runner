@@ -33,12 +33,15 @@ trait RecipeLoader {
       } get
 
       recipe map { recipe ⇒
-        recipe.copy(steps = recipe.steps.map { step ⇒
-          step.copy(
-            run = step.run.copy(resource = load(step.run.resource)),
-            cleanup = step.cleanup.copy(resource = load(step.cleanup.resource))
-          )
-        })
+
+        log.info(s"Recipe : ${recipe.name}")
+        recipe.run.foreach { run ⇒ log.info(s"Run    : ${run.description}") }
+        recipe.cleanup.foreach { cleanup ⇒ log.info(s"Cleanup: ${cleanup.description}") }
+
+        recipe.copy(
+          run = recipe.run.map { run ⇒ run.copy(resource = load(run.resource)) },
+          cleanup = recipe.cleanup.map { cleanup ⇒ cleanup.copy(resource = load(cleanup.resource)) }
+        )
       }
     }
   }
