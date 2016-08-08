@@ -1,40 +1,56 @@
 {
   "name": "HTTP Deployment with Dependencies",
   "description": "Deploying 2 HTTP services - 1 depends on another.",
-  "steps": [
+  "run": [
     {
       "description": "Deploy services.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy.yml",
-        "await": [
-          "deployments:runner", "clusters:frontend", "services:frontend", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy.yml",
-        "await": [
-          "deployments:runner", "clusters:frontend", "services:frontend", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:runner",
+        "clusters:frontend",
+        "services:frontend",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Send request to frontend service and validate response.",
-      "run": {
-        "method": "PUT",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "response:ok"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "unscheduled"
-        ]
-      }
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:runner-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule request workflow.",
+      "resource": "workflow.yml",
+      "exists": "workflows/runner-requester",
+      "await": [
+        "workflows:runner-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy services.",
+      "resource": "undeploy1.yml",
+      "exists": "deployments/runner",
+      "await": [
+        "deployments:runner",
+        "clusters:frontend",
+        "services:frontend",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breeds.",
+      "resource": "undeploy2.yml",
+      "exists": "breeds/frontend",
+      "await": [
+        "breeds:frontend",
+        "archive:delete"
+      ],
+      "timeout": "short"
     }
   ]
 }

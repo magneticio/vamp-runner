@@ -1,91 +1,94 @@
 {
   "name": "HTTP Deployment with Route Weight",
   "description": "Deploying 2 HTTP services - one with route weight of 80%, another of 20%.",
-  "steps": [
+  "run": [
     {
-      "description": "Deploy 2 breeds and scale.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy1.yml",
-        "await": [
-          "scales:small", "archive:update"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "deploy1.yml",
-        "await": [
-          "scales:small", "archive:delete"
-        ]
-      }
+      "description": "Create 2 breeds and scale.",
+      "resource": "deploy1.yml",
+      "await": [
+        "scales:small",
+        "archive:update"
+      ],
+      "timeout": "short"
     },
     {
       "description": "Deploy 1st service - 100%.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy2.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy2.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy2.yml",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Deploy 2nd service - 80% / 20%.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy3.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "PUT",
-        "resource": "deploy3.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:2", "synchronization:deployed"
-        ]
-      }
+      "resource": "deploy3.yml",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:2",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Add gateway.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy4.yml",
-        "await": [
-          "gateways", "gateways:runner", "deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "deploy4.yml",
-        "await": [
-          "gateways", "gateways:runner", "undeployed"
-        ]
-      }
+      "resource": "deploy4.yml",
+      "await": [
+        "gateways",
+        "gateways:runner",
+        "deployed"
+      ]
     },
     {
       "description": "Send requests to gateway and validate response - 80% / 20%.",
-      "run": {
-        "method": "PUT",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "response:ok"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "unscheduled"
-        ]
-      }
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:runner-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule request workflow.",
+      "resource": "workflow.yml",
+      "exists": "workflows/runner-requester",
+      "await": [
+        "workflows:runner-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Delete gateway.",
+      "resource": "deploy4.yml",
+      "exists": "gateways/runner",
+      "await": [
+        "gateways",
+        "gateways:runner",
+        "undeployed"
+      ]
+    },
+    {
+      "description": "Undeploy services.",
+      "resource": "undeploy.yml",
+      "exists": "deployments/runner",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breeds and scale.",
+      "resource": "deploy1.yml",
+      "exists": "scales/small",
+      "await": [
+        "scales:small",
+        "archive:delete"
+      ],
+      "timeout": "short"
     }
   ]
 }

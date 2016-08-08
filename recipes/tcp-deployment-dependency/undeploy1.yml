@@ -1,0 +1,16 @@
+---
+kind: deployment
+name: sava
+
+clusters:
+  frontend:
+    services:
+      breed: frontend:runner
+
+  backend:
+    services:
+      breed: backend:runner
+---
+kind: gateway
+name: sava/9058
+

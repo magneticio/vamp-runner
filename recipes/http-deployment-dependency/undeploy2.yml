@@ -1,6 +1,6 @@
 ---
 kind: breed
-name: runner:1
+name: frontend
 ---
 kind: breed
-name: runner:2
+name: backend

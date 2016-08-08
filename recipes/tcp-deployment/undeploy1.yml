@@ -1,0 +1,12 @@
+---
+kind: deployment
+name: sava
+
+clusters:
+  runner:
+    services:
+      breed: tcp:1.0.0
+
+---
+kind: gateway
+name: sava/9057

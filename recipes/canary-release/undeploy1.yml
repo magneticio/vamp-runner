@@ -1,6 +1,11 @@
 ---
-kind: breed
-name: runner:1
+kind: deployment
+name: runner
+clusters:
+  runner:
+    services:
+      - breed: runner:1
+      - breed: runner:2
 ---
-kind: breed
-name: runner:2
+kind: gateway
+name: runner/9059

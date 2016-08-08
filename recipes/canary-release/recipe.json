@@ -1,59 +1,65 @@
 {
   "name": "Canary Release",
   "description": "2 services and changing weight from 100% / 0% to 0% / 100%.",
-  "steps": [
+  "run": [
     {
       "description": "Create breeds for both services.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy1.yml",
-        "await": [
-          "breeds:runner:2",
-          "archive:update"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy1.yml",
-        "await": [
-          "breeds:runner:2",
-          "archive:delete"
-        ]
-      }
+      "resource": "deploy1.yml",
+      "await": [
+        "breeds:runner:2",
+        "archive:update"
+      ],
+      "timeout": "short"
     },
     {
       "description": "Deploy a blueprint with 2 services and weight 100% / 0%.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy2.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy2.yml",
-        "await": [
-          "deployments:runner", "clusters:runner", "services:runner:1", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy2.yml",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Send requests and perform canary release: 100% / 0% ⇒ 0% / 100%.",
-      "run": {
-        "method": "PUT",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "response:ok"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:runner-requester", "unscheduled"
-        ]
-      }
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:runner-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule canary release workflow.",
+      "resource": "workflow.yml",
+      "exists": "workflows/runner-requester",
+      "await": [
+        "workflows:runner-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy services.",
+      "resource": "undeploy1.yml",
+      "exists": "deployments/runner",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breeds.",
+      "resource": "undeploy2.yml",
+      "exists": "breeds/runner:2",
+      "await": [
+        "breeds:runner:2",
+        "archive:delete"
+      ],
+      "timeout": "short"
     }
   ]
 }

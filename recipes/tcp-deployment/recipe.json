@@ -1,40 +1,56 @@
 {
   "name": "TCP Deployment",
   "description": "Deploying single TCP service.",
-  "steps": [
+  "run": [
     {
       "description": "Deploy service.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy.yml",
-        "await": [
-          "deployments:sava", "clusters:runner", "services:tcp:1.0.0", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy.yml",
-        "await": [
-          "deployments:sava", "clusters:runner", "services:tcp:1.0.0", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:runner",
+        "services:tcp:1.0.0",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Send request to service and validate response.",
-      "run": {
-        "method": "PUT",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:sava-requester", "response:ok"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "workflow.yml",
-        "await": [
-          "workflows:sava-requester", "unscheduled"
-        ]
-      }
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:sava-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule request workflow.",
+      "resource": "workflow.yml",
+      "exists": "workflows/sava-requester",
+      "await": [
+        "workflows:sava-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy service and gateway.",
+      "resource": "undeploy1.yml",
+      "exists": "deployments/sava",
+      "await": [
+        "deployments:sava",
+        "clusters:runner",
+        "services:tcp:1.0.0",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breed.",
+      "resource": "undeploy2.yml",
+      "exists": "breeds/tcp:1.0.0",
+      "await": [
+        "breeds:tcp:1.0.0",
+        "archive:delete"
+      ],
+      "timeout": "short"
     }
   ]
 }

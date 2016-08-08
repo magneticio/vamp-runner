@@ -84,7 +84,8 @@
       "await": [
         "breeds:runner",
         "archive:delete"
-      ]
+      ],
+      "timeout": "short"
     }
   ]
 }
