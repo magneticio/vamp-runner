@@ -25,32 +25,31 @@ trait RecipeRunner extends VampApiClient {
   protected def events: BlockingQueue[VampEventMessage]
 
   protected def run(recipes: List[Recipe]): Future[_] = {
-
-    val futures = recipes.map { recipe ⇒
-      recipe.run.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s).recover {
+    recipes.foldLeft(Future.successful(Recipe.State.succeeded))((f, recipe) ⇒ f.flatMap { _ ⇒
+      recipe.run.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
         case t: Throwable ⇒ Recipe.State.failed
-      })).flatMap {
+      }.flatMap {
         case Recipe.State.`failed` ⇒ Future.successful(Recipe.State.failed)
         case _ ⇒
-          recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s).recover {
+          recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
             case t: Throwable ⇒ Recipe.State.failed
-          })).map { _ ⇒
+          }.map { any ⇒
             recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
+            any
           }
       }
-    }
-    Future.sequence(futures)
+    })
   }
 
   protected def cleanup(recipes: List[Recipe]): Future[_] = {
-    val futures = recipes.map { recipe ⇒
-      recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s).recover {
+    recipes.foldLeft(Future.successful(Recipe.State.succeeded))((f, recipe) ⇒ f.flatMap { _ ⇒
+      recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
         case t: Throwable ⇒ Recipe.State.failed
-      })).map { _ ⇒
+      }.map { any ⇒
         recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
+        any
       }
-    }
-    Future.sequence(futures)
+    })
   }
 
   protected def run(recipe: Recipe, step: RunRecipeStep): Future[Recipe.State.Value] = {
@@ -125,9 +124,9 @@ trait RecipeRunner extends VampApiClient {
 
       val out = builder.add(Merge[Recipe.State.Value](1))
 
-      in ~> execution ~> collect ~> resolve ~> out
       in ~> awaiting ~> collect
       in ~> timeout ~> collect
+      in ~> execution ~> collect ~> resolve ~> out
 
       FlowShape(in.in, out.out)
     }

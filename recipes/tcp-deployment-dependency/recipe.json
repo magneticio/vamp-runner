@@ -27,7 +27,7 @@
       "resource": "workflow.yml",
       "exists": "workflows/sava-requester",
       "await": [
-        "workflows:runner-requester",
+        "workflows:sava-requester",
         "unscheduled"
       ]
     },
