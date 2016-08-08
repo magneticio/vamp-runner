@@ -86,7 +86,7 @@
 
           for (var j = 0; j < recipe["run"].length; j++) {
             var step = recipe["run"][j];
-            step.state = step.state.toLowerCase();
+            step.state = step.state;
 
             if (step.state === 'succeeded')
               succeeded++;

@@ -10,7 +10,8 @@
         "clusters:sava",
         "services:runner",
         "synchronization:deployed"
-      ]
+      ],
+      "timeout": "long"
     },
     {
       "description": "Send request to service and validate response.",
@@ -18,7 +19,8 @@
       "await": [
         "workflows:sava-requester",
         "response:ok"
-      ]
+      ],
+      "timeout": "long"
     }
   ],
   "cleanup": [
@@ -30,7 +32,8 @@
         "clusters:sava",
         "services:runner",
         "synchronization:undeployed"
-      ]
+      ],
+      "timeout": "long"
     },
     {
       "description": "Unschedule workflow.",
@@ -38,7 +41,8 @@
       "await": [
         "workflows:sava-requester",
         "unscheduled"
-      ]
+      ],
+      "timeout": "long"
     }
   ]
 }

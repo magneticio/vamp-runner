@@ -18,20 +18,21 @@ trait RecipeRunner extends VampApiClient {
 
   implicit def materializer: ActorMaterializer
 
-  private val actionTimeout = Config.duration("vamp.runner.recipes.timeout")
+  private val actionTimeoutShort = Config.duration("vamp.runner.recipes.timeout.short")
+  private val actionTimeoutLong = Config.duration("vamp.runner.recipes.timeout.long")
 
   protected def events: BlockingQueue[VampEventMessage]
 
   protected def run(recipes: List[Recipe]): Future[_] = {
 
     val futures = recipes.map { recipe ⇒
-      recipe.run.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
-        case t: Throwable ⇒ Recipe.State.Failed
+      recipe.run.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
+        case t: Throwable ⇒ Recipe.State.failed
       } flatMap {
-        case Recipe.State.Failed ⇒ Future.successful(Recipe.State.Failed)
+        case Recipe.State.`failed` ⇒ Future.successful(Recipe.State.failed)
         case _ ⇒
-          recipe.cleanup.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
-            case t: Throwable ⇒ Recipe.State.Failed
+          recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+            case t: Throwable ⇒ Recipe.State.failed
           } map { _ ⇒
             recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
           }
@@ -42,8 +43,8 @@ trait RecipeRunner extends VampApiClient {
 
   protected def cleanup(recipes: List[Recipe]): Future[_] = {
     val futures = recipes.map { recipe ⇒
-      recipe.cleanup.foldLeft(Future.successful(Recipe.State.Succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
-        case t: Throwable ⇒ Recipe.State.Failed
+      recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+        case t: Throwable ⇒ Recipe.State.failed
       } map { _ ⇒
         recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
       }
@@ -57,12 +58,12 @@ trait RecipeRunner extends VampApiClient {
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
       sink ⇒
         Source.single(step).map { step ⇒
-          self ! UpdateState(recipe, step, Recipe.State.Running)
+          self ! UpdateState(recipe, step, Recipe.State.running)
           step
         } ~> runFlow(recipe, step) ~> sink.in
         ClosedShape
     }).run().flatMap {
-      case Recipe.State.Failed ⇒ Future.failed(new RuntimeException())
+      case Recipe.State.`failed` ⇒ Future.failed(new RuntimeException())
       case state               ⇒ Future.successful(state)
     }
   }
@@ -101,12 +102,18 @@ trait RecipeRunner extends VampApiClient {
 
       val execution = Flow[RecipeStep].mapAsync(1) { step ⇒ execute(step).map { result ⇒ step -> result } }
       val awaiting = Flow[RecipeStep].mapAsync(1) { step ⇒ Future(await(step)).map { result ⇒ step -> result } }
-      val timeout = Flow[RecipeStep].flatMapConcat { step ⇒ Source.tick(actionTimeout, actionTimeout, step -> Recipe.State.Failed) }
+
+      val waitUntil = step.timeout match {
+        case Recipe.Timeout.`short` ⇒ actionTimeoutShort
+        case Recipe.Timeout.`long`  ⇒ actionTimeoutLong
+      }
+
+      val timeout = Flow[RecipeStep].flatMapConcat { step ⇒ Source.tick(waitUntil, waitUntil, step -> Recipe.State.failed) }
 
       val resolve = Flow[AnyRef].collect {
         case (step: RecipeStep, state: Recipe.State.Value) ⇒
 
-          if (!silent && state == Recipe.State.Failed)
+          if (!silent && state == Recipe.State.failed)
             log.error(s"$designator - ${state.toString.toLowerCase}: [${recipe.name} :: ${step.description}]")
           else
             log.info(s"$designator - ${state.toString.toLowerCase}: [${recipe.name} :: ${step.description}]")
@@ -132,21 +139,21 @@ trait RecipeRunner extends VampApiClient {
     def recover: AnyRef ⇒ Recipe.State.Value = {
       failure ⇒
         log.error(failure.toString)
-        Recipe.State.Failed
+        Recipe.State.failed
     }
 
     (action match {
       case _: RunRecipeStep     ⇒ apiPut(input = action.resource, recoverWith = recover)
       case _: CleanupRecipeStep ⇒ apiDelete(input = action.resource, recoverWith = recover)
     }) map {
-      case Right(_) ⇒ Recipe.State.Failed
-      case other    ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else other
+      case Right(_) ⇒ Recipe.State.failed
+      case other    ⇒ if (action.await.isEmpty) Recipe.State.succeeded else other
     }
   }
 
   @tailrec
   private def await(action: RecipeStep): Recipe.State.Value = events.take() match {
-    case VampEventRelease   ⇒ if (action.await.isEmpty) Recipe.State.Succeeded else Recipe.State.Failed
-    case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.Succeeded else await(action)
+    case VampEventRelease   ⇒ if (action.await.isEmpty) Recipe.State.succeeded else Recipe.State.failed
+    case VampEvent(tags, _) ⇒ if (action.await.forall(tag ⇒ tags.contains(tag))) Recipe.State.succeeded else await(action)
   }
 }

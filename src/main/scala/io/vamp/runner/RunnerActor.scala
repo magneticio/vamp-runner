@@ -67,7 +67,7 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
     case list: List[_] ⇒
       startRun()
       run(ids2recipes(list).map { recipe ⇒
-        recipes += (recipe.id -> recipe.copy(run = recipe.run.map { run ⇒ run.copy(state = Recipe.State.Idle) }))
+        recipes += (recipe.id -> recipe.copy(run = recipe.run.map { run ⇒ run.copy(state = Recipe.State.idle) }))
         recipe
       }).onComplete(_ ⇒ endRun())
 
