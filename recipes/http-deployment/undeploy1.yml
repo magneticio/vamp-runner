@@ -6,10 +6,6 @@ clusters:
   sava:
     services:
       breed: runner
-
 ---
 kind: gateway
-name: sava/9051
----
-kind: breed
-name: runner
+name: sava/9050

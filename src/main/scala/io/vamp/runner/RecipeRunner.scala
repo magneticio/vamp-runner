@@ -140,9 +140,14 @@ trait RecipeRunner extends VampApiClient {
     def exists(cleanup: CleanupRecipeStep): Future[Boolean] = {
       if (cleanup.exists.nonEmpty) apiGet(cleanup.exists).map {
         case Left(json) ⇒ json != JNothing && json != JNull
-        case _          ⇒ false
+        case _          ⇒ true
       }
-      else Future.successful(false)
+      else Future.successful(true)
+    }
+
+    def apiRun() = action.method match {
+      case Recipe.Method.`create` ⇒ apiPut(input = action.resource, recoverWith = recover)
+      case Recipe.Method.`delete` ⇒ apiDelete(input = action.resource, recoverWith = recover)
     }
 
     def recover: AnyRef ⇒ Recipe.State.Value = {
@@ -152,10 +157,10 @@ trait RecipeRunner extends VampApiClient {
     }
 
     (action match {
-      case _: RunRecipeStep ⇒ apiPut(input = action.resource, recoverWith = recover)
+      case _: RunRecipeStep ⇒ apiRun()
       case c: CleanupRecipeStep ⇒
         exists(c).flatMap {
-          case true ⇒ apiDelete(input = action.resource, recoverWith = recover)
+          case true ⇒ apiRun()
           case _    ⇒ Future.successful(Recipe.State.succeeded)
         }
     }) map {

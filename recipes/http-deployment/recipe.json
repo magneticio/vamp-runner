@@ -10,8 +10,7 @@
         "clusters:sava",
         "services:runner",
         "synchronization:deployed"
-      ],
-      "timeout": "long"
+      ]
     },
     {
       "description": "Send request to service and validate response.",
@@ -19,8 +18,7 @@
       "await": [
         "workflows:sava-requester",
         "response:ok"
-      ],
-      "timeout": "long"
+      ]
     }
   ],
   "cleanup": [
@@ -31,20 +29,28 @@
       "await": [
         "workflows:sava-requester",
         "unscheduled"
-      ],
-      "timeout": "long"
+      ]
     },
     {
-      "description": "Undeploy service.",
-      "resource": "undeploy.yml",
+      "description": "Undeploy service and gateway.",
+      "resource": "undeploy1.yml",
       "exists": "deployments/sava",
       "await": [
         "deployments:sava",
         "clusters:sava",
         "services:runner",
         "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breed.",
+      "resource": "undeploy2.yml",
+      "exists": "breeds/runner",
+      "await": [
+        "breeds:runner",
+        "archive:delete"
       ],
-      "timeout": "long"
+      "timeout": "short"
     }
   ]
 }

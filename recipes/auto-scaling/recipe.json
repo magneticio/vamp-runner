@@ -1,74 +1,90 @@
 {
   "name": "Auto Scaling",
   "description": "Auto scaling number of instances based on application response time.",
-  "steps": [
+  "run": [
     {
       "description": "Deploy service.",
-      "run": {
-        "method": "PUT",
-        "resource": "deploy.yml",
-        "await": [
-          "deployments:sava", "clusters:sava", "services:runner", "synchronization:deployed"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "undeploy.yml",
-        "await": [
-          "deployments:sava", "clusters:sava", "services:runner", "synchronization:undeployed"
-        ]
-      }
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:deployed"
+      ]
     },
     {
       "description": "Remove default metrics aggregation workflow.",
-      "run": {
-        "method": "DELETE",
-        "resource": "metrics.yml",
-        "await": [
-          "workflows:metrics", "unscheduled"
-        ]
-      },
-      "cleanup": {
-        "method": "PUT",
-        "resource": "metrics.yml",
-        "await": [
-          "workflows:metrics", "scheduled"
-        ]
-      }
+      "resource": "metrics.yml",
+      "method": "delete",
+      "await": [
+        "workflows:metrics",
+        "unscheduled"
+      ]
     },
     {
       "description": "Run mock metrics aggregation workflow.",
-      "run": {
-        "method": "PUT",
-        "resource": "mock-metrics.yml",
-        "await": [
-          "workflows:mock-metrics", "mocked"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "mock-metrics.yml",
-        "await": [
-          "workflows:mock-metrics", "unscheduled"
-        ]
-      }
+      "resource": "mock-metrics.yml",
+      "await": [
+        "workflows:mock-metrics",
+        "mocked"
+      ]
     },
     {
       "description": "Auto scale deployment service based on response time.",
-      "run": {
-        "method": "PUT",
-        "resource": "auto-scaling.yml",
-        "await": [
-          "workflows:auto-scaling", "scale"
-        ]
-      },
-      "cleanup": {
-        "method": "DELETE",
-        "resource": "auto-scaling.yml",
-        "await": [
-          "workflows:auto-scaling", "unscheduled"
-        ]
-      }
+      "resource": "auto-scaling.yml",
+      "await": [
+        "workflows:auto-scaling",
+        "scale"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Remove auto scale workflow.",
+      "resource": "auto-scaling.yml",
+      "exists": "workflows/auto-scaling",
+      "await": [
+        "workflows:auto-scaling",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Remove mock metrics aggregation workflow.",
+      "resource": "mock-metrics.yml",
+      "exists": "workflows/mock-metrics",
+      "await": [
+        "workflows:mock-metrics",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Recreate default metrics aggregation workflow.",
+      "method": "create",
+      "resource": "metrics.yml",
+      "await": [
+        "workflows:metrics",
+        "scheduled"
+      ]
+    },
+    {
+      "description": "Undeploy service and gateway.",
+      "resource": "undeploy1.yml",
+      "exists": "deployments/sava",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breed.",
+      "resource": "undeploy2.yml",
+      "exists": "breeds/runner",
+      "await": [
+        "breeds:runner",
+        "archive:delete"
+      ]
     }
   ]
 }

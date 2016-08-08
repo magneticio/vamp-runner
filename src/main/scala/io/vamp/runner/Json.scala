@@ -13,7 +13,7 @@ object Json {
         case (name, value)                    ⇒ Option((underscore(name), value))
       }
     )) :: Nil
-  } + new EnumNameSerializer(Recipe.State) + new EnumNameSerializer(Recipe.Timeout)
+  } + new EnumNameSerializer(Recipe.State) + new EnumNameSerializer(Recipe.Timeout) + new EnumNameSerializer(Recipe.Method)
 
   private def underscore(s: String): String = {
     var lower = false
