@@ -53,7 +53,7 @@
     });
 
     $rootScope.$on('vamp:busy', function () {
-      push('error', 'system', 'Already busy with "run" or "cleanup" actions.');
+      push('error', 'system', 'Already busy with "run" or "cleanup" action.');
     });
   }
 

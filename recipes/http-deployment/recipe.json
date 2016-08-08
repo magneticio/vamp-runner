@@ -25,22 +25,24 @@
   ],
   "cleanup": [
     {
+      "description": "Unschedule workflow.",
+      "resource": "workflow.yml",
+      "exists": "workflows/sava-requester",
+      "await": [
+        "workflows:sava-requester",
+        "unscheduled"
+      ],
+      "timeout": "long"
+    },
+    {
       "description": "Undeploy service.",
       "resource": "undeploy.yml",
+      "exists": "deployments/sava",
       "await": [
         "deployments:sava",
         "clusters:sava",
         "services:runner",
         "synchronization:undeployed"
-      ],
-      "timeout": "long"
-    },
-    {
-      "description": "Unschedule workflow.",
-      "resource": "workflow.yml",
-      "await": [
-        "workflows:sava-requester",
-        "unscheduled"
       ],
       "timeout": "long"
     }

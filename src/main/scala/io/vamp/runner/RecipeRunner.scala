@@ -9,6 +9,7 @@ import akka.stream.scaladsl.GraphDSL.Implicits._
 import akka.stream.scaladsl.{ Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source }
 import io.vamp.runner.RunnerActor.{ UpdateDirtyFlag, UpdateState }
 import io.vamp.runner.VampEventReader.{ VampEvent, VampEventMessage, VampEventRelease }
+import org.json4s.JsonAST.{ JNothing, JNull }
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
@@ -26,14 +27,14 @@ trait RecipeRunner extends VampApiClient {
   protected def run(recipes: List[Recipe]): Future[_] = {
 
     val futures = recipes.map { recipe ⇒
-      recipe.run.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s))).recover {
+      recipe.run.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ run(recipe, s).recover {
         case t: Throwable ⇒ Recipe.State.failed
-      } flatMap {
+      })).flatMap {
         case Recipe.State.`failed` ⇒ Future.successful(Recipe.State.failed)
         case _ ⇒
-          recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+          recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s).recover {
             case t: Throwable ⇒ Recipe.State.failed
-          } map { _ ⇒
+          })).map { _ ⇒
             recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
           }
       }
@@ -43,9 +44,9 @@ trait RecipeRunner extends VampApiClient {
 
   protected def cleanup(recipes: List[Recipe]): Future[_] = {
     val futures = recipes.map { recipe ⇒
-      recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
+      recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s).recover {
         case t: Throwable ⇒ Recipe.State.failed
-      } map { _ ⇒
+      })).map { _ ⇒
         recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
       }
     }
@@ -64,7 +65,7 @@ trait RecipeRunner extends VampApiClient {
         ClosedShape
     }).run().flatMap {
       case Recipe.State.`failed` ⇒ Future.failed(new RuntimeException())
-      case state               ⇒ Future.successful(state)
+      case state                 ⇒ Future.successful(state)
     }
   }
 
@@ -136,6 +137,14 @@ trait RecipeRunner extends VampApiClient {
 
   private def execute(action: RecipeStep): Future[AnyRef] = {
 
+    def exists(cleanup: CleanupRecipeStep): Future[Boolean] = {
+      if (cleanup.exists.nonEmpty) apiGet(cleanup.exists).map {
+        case Left(json) ⇒ json != JNothing && json != JNull
+        case _          ⇒ false
+      }
+      else Future.successful(false)
+    }
+
     def recover: AnyRef ⇒ Recipe.State.Value = {
       failure ⇒
         log.error(failure.toString)
@@ -143,8 +152,12 @@ trait RecipeRunner extends VampApiClient {
     }
 
     (action match {
-      case _: RunRecipeStep     ⇒ apiPut(input = action.resource, recoverWith = recover)
-      case _: CleanupRecipeStep ⇒ apiDelete(input = action.resource, recoverWith = recover)
+      case _: RunRecipeStep ⇒ apiPut(input = action.resource, recoverWith = recover)
+      case c: CleanupRecipeStep ⇒
+        exists(c).flatMap {
+          case true ⇒ apiDelete(input = action.resource, recoverWith = recover)
+          case _    ⇒ Future.successful(Recipe.State.succeeded)
+        }
     }) map {
       case Right(_) ⇒ Recipe.State.failed
       case other    ⇒ if (action.await.isEmpty) Recipe.State.succeeded else other

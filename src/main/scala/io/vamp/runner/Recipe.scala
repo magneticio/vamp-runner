@@ -47,5 +47,6 @@ case class CleanupRecipeStep(
   id: String = UUID.randomUUID().toString,
   description: String,
   resource: String,
+  exists: String,
   await: Set[String],
   timeout: Recipe.Timeout.Value) extends RecipeStep
