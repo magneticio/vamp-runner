@@ -5,7 +5,7 @@
     .controller('StepsCtrl', StepsCtrl);
 
   /** @ngInject */
-  function StepsCtrl($rootScope, $scope, baConfig, api) {
+  function StepsCtrl($rootScope, $scope, $uibModal, baConfig, api) {
 
     $scope.transparent = baConfig.theme.blur;
 
@@ -42,6 +42,18 @@
       }
 
       return false;
+    };
+
+    $scope.open = function (step) {
+
+      $scope.step = step;
+
+      $uibModal.open({
+        animation: true,
+        templateUrl: 'app/pages/recipes/steps/modal.html',
+        size: 'lg',
+        scope: $scope
+      });
     };
 
     $rootScope.$on('recipe:details', function (event, recipe) {

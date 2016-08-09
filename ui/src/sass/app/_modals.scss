@@ -2,15 +2,28 @@
 .modal-content {
   border-radius: 5px;
   border: none;
-  color: $dropdown-text;
+  color: #ffffff;
+  $blurredBgUrl: $images-root + 'blur-bg-blurred.jpg';
+  background: url($blurredBgUrl);
+  transition: none;
+  background-attachment: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-body {
+  pre {
+    color: #ffffff;
+    font: 14px/16px "Roboto", sans-serif;
+    background-color: transparent;
+  }
 }
 
 .modal-header {
-  color: $label-text;
+  color: #ffffff;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   .modal-title {
-    color: $dropdown-text;
+    color: #ffffff;
   }
 }
 

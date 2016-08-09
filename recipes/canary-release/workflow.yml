@@ -54,7 +54,9 @@ deployable:
 
                   if (target <= 100) {
 
-                    api.event(['workflows:runner-requester', 'action:weight'], (120 - target) + '% / ' + (target - 20) + '% => ' + (100 - target) + '% / ' + target + '%');
+                    api.event(['workflows:runner-requester', 'action:weight'],
+                      (120 - target) + '% / ' + (target - 20) +
+                        '% => ' + (100 - target) + '% / ' + target + '%');
 
                     http({
                       url: api.url + 'gateways/runner/runner/port',

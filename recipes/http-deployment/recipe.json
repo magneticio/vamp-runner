@@ -1,9 +1,9 @@
 {
   "name": "HTTP Deployment",
-  "description": "Deploying single HTTP service.",
+  "description": "Deploying single HTTP service",
   "run": [
     {
-      "description": "Deploy service.",
+      "description": "Deploy service",
       "resource": "deploy.yml",
       "await": [
         "deployments:sava",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "description": "Send request to service and validate response.",
+      "description": "Send request to service and validate response",
       "resource": "workflow.yml",
       "await": [
         "workflows:sava-requester",
@@ -23,7 +23,7 @@
   ],
   "cleanup": [
     {
-      "description": "Unschedule workflow.",
+      "description": "Unschedule workflow",
       "resource": "workflow.yml",
       "condition": "workflows/sava-requester",
       "await": [
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "description": "Undeploy service and gateway.",
+      "description": "Undeploy service and gateway",
       "resource": "undeploy1.yml",
       "condition": "deployments/sava",
       "await": [
@@ -43,7 +43,7 @@
       ]
     },
     {
-      "description": "Delete breed.",
+      "description": "Delete breed",
       "resource": "undeploy2.yml",
       "condition": "breeds/runner",
       "await": [

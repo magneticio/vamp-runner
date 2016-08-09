@@ -1,9 +1,9 @@
 {
   "name": "HTTP Deployment with Dependencies",
-  "description": "Deploying 2 HTTP services - 1 depends on another.",
+  "description": "Deploying 2 HTTP services - 1 depends on another",
   "run": [
     {
-      "description": "Deploy services.",
+      "description": "Deploy services",
       "resource": "deploy.yml",
       "await": [
         "deployments:runner",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "description": "Send request to frontend service and validate response.",
+      "description": "Send request to frontend service and validate response",
       "resource": "workflow.yml",
       "await": [
         "workflows:runner-requester",
@@ -23,7 +23,7 @@
   ],
   "cleanup": [
     {
-      "description": "Unschedule request workflow.",
+      "description": "Unschedule request workflow",
       "resource": "workflow.yml",
       "condition": "workflows/runner-requester",
       "await": [
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "description": "Undeploy services.",
+      "description": "Undeploy services",
       "resource": "undeploy1.yml",
       "condition": "deployments/runner",
       "await": [
@@ -43,7 +43,7 @@
       ]
     },
     {
-      "description": "Delete breeds.",
+      "description": "Delete breeds",
       "resource": "undeploy2.yml",
       "condition": "breeds/frontend",
       "await": [

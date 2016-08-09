@@ -1,9 +1,9 @@
 {
   "name": "HTTP Deployment with Condition Strength",
-  "description": "Deploying 2 HTTP services with route weight and condition strength.",
+  "description": "Deploying 2 HTTP services with route weight and condition strength",
   "run": [
     {
-      "description": "Create 2 breeds, scale and condition.",
+      "description": "Create 2 breeds, scale and condition",
       "resource": "deploy1.yml",
       "await": [
         "conditions:url_beg",
@@ -12,7 +12,7 @@
       "timeout": "short"
     },
     {
-      "description": "Deploy 1st service.",
+      "description": "Deploy 1st service",
       "resource": "deploy2.yml",
       "await": [
         "deployments:runner1",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "description": "Deploy 2nd service.",
+      "description": "Deploy 2nd service",
       "resource": "deploy3.yml",
       "await": [
         "deployments:runner2",
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "description": "Add gateway.",
+      "description": "Add gateway",
       "resource": "deploy4.yml",
       "await": [
         "gateways",
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "description": "Send requests to gateway and validate response - 40% / 60%.",
+      "description": "Send requests to gateway and validate response - 40% / 60%",
       "resource": "workflow.yml",
       "await": [
         "workflows:runner-requester",
@@ -51,7 +51,7 @@
   ],
   "cleanup": [
     {
-      "description": "Unschedule request workflow.",
+      "description": "Unschedule request workflow",
       "resource": "workflow.yml",
       "condition": "workflows/runner-requester",
       "await": [
@@ -60,7 +60,7 @@
       ]
     },
     {
-      "description": "Remove gateway.",
+      "description": "Remove gateway",
       "resource": "deploy4.yml",
       "condition": "gateways/runner",
       "await": [
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "description": "Undeploy 2nd service.",
+      "description": "Undeploy 2nd service",
       "resource": "undeploy1.yml",
       "condition": "deployments/runner2",
       "await": [
@@ -81,7 +81,7 @@
       ]
     },
     {
-      "description": "Undeploy 1st service.",
+      "description": "Undeploy 1st service",
       "resource": "undeploy2.yml",
       "condition": "deployments/runner1",
       "await": [
@@ -92,7 +92,7 @@
       ]
     },
     {
-      "description": "Delete 2 breeds, scale and condition.",
+      "description": "Delete 2 breeds, scale and condition",
       "resource": "deploy1.yml",
       "condition": "conditions/url_beg",
       "await": [

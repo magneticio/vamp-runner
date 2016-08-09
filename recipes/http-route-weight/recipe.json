@@ -1,9 +1,9 @@
 {
   "name": "HTTP Deployment with Route Weight",
-  "description": "Deploying 2 HTTP services - one with route weight of 80%, another of 20%.",
+  "description": "Deploying 2 HTTP services - one with route weight of 80%, another of 20%",
   "run": [
     {
-      "description": "Create 2 breeds and scale.",
+      "description": "Create 2 breeds and scale",
       "resource": "deploy1.yml",
       "await": [
         "scales:small",
@@ -12,7 +12,7 @@
       "timeout": "short"
     },
     {
-      "description": "Deploy 1st service - 100%.",
+      "description": "Deploy 1st service - 100%",
       "resource": "deploy2.yml",
       "await": [
         "deployments:runner",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "description": "Deploy 2nd service - 80% / 20%.",
+      "description": "Deploy 2nd service - 80% / 20%",
       "resource": "deploy3.yml",
       "await": [
         "deployments:runner",
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "description": "Add gateway.",
+      "description": "Add gateway",
       "resource": "deploy4.yml",
       "await": [
         "gateways",
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "description": "Send requests to gateway and validate response - 80% / 20%.",
+      "description": "Send requests to gateway and validate response - 80% / 20%",
       "resource": "workflow.yml",
       "await": [
         "workflows:runner-requester",
@@ -51,7 +51,7 @@
   ],
   "cleanup": [
     {
-      "description": "Unschedule request workflow.",
+      "description": "Unschedule request workflow",
       "resource": "workflow.yml",
       "condition": "workflows/runner-requester",
       "await": [
@@ -60,7 +60,7 @@
       ]
     },
     {
-      "description": "Delete gateway.",
+      "description": "Delete gateway",
       "resource": "deploy4.yml",
       "condition": "gateways/runner",
       "await": [
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "description": "Undeploy services.",
+      "description": "Undeploy services",
       "resource": "undeploy.yml",
       "condition": "deployments/runner",
       "await": [
@@ -81,7 +81,7 @@
       ]
     },
     {
-      "description": "Delete breeds and scale.",
+      "description": "Delete breeds and scale",
       "resource": "deploy1.yml",
       "condition": "scales/small",
       "await": [

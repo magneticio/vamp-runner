@@ -1,9 +1,9 @@
 {
   "name": "Auto Scaling",
-  "description": "Auto scaling number of instances based on application response time.",
+  "description": "Auto scaling number of instances based on application response time",
   "run": [
     {
-      "description": "Deploy service.",
+      "description": "Deploy service",
       "resource": "deploy.yml",
       "await": [
         "deployments:sava",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "description": "Remove default metrics aggregation workflow.",
+      "description": "Remove default metrics aggregation workflow",
       "resource": "metrics.yml",
       "method": "delete",
       "condition": "workflows/metrics",
@@ -23,7 +23,7 @@
       ]
     },
     {
-      "description": "Run mock metrics aggregation workflow.",
+      "description": "Run mock metrics aggregation workflow",
       "resource": "mock-metrics.yml",
       "await": [
         "workflows:mock-metrics",
@@ -31,7 +31,7 @@
       ]
     },
     {
-      "description": "Auto scale deployment service based on response time.",
+      "description": "Auto scale deployment service based on response time",
       "resource": "auto-scaling.yml",
       "await": [
         "workflows:auto-scaling",
@@ -41,7 +41,7 @@
   ],
   "cleanup": [
     {
-      "description": "Remove auto scale workflow.",
+      "description": "Remove auto scale workflow",
       "resource": "auto-scaling.yml",
       "condition": "workflows/auto-scaling",
       "await": [
@@ -50,7 +50,7 @@
       ]
     },
     {
-      "description": "Remove mock metrics aggregation workflow.",
+      "description": "Remove mock metrics aggregation workflow",
       "resource": "mock-metrics.yml",
       "condition": "workflows/mock-metrics",
       "await": [
@@ -59,7 +59,7 @@
       ]
     },
     {
-      "description": "Recreate default metrics aggregation workflow.",
+      "description": "Recreate default metrics aggregation workflow",
       "method": "create",
       "resource": "metrics.yml",
       "await": [
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "description": "Undeploy service and gateway.",
+      "description": "Undeploy service and gateway",
       "resource": "undeploy1.yml",
       "condition": "deployments/sava",
       "await": [
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "description": "Delete breed.",
+      "description": "Delete breed",
       "resource": "undeploy2.yml",
       "condition": "breeds/runner",
       "await": [
