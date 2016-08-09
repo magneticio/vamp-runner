@@ -1,7 +1,7 @@
 package io.vamp.runner
 
 import akka.util.Timeout
-import com.typesafe.config.{ ConfigFactory, Config => TypesafeConfig }
+import com.typesafe.config.{ ConfigFactory, Config ⇒ TypesafeConfig }
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
