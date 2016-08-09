@@ -25,7 +25,7 @@
     {
       "description": "Unschedule request workflow.",
       "resource": "workflow.yml",
-      "exists": "workflows/runner-requester",
+      "condition": "workflows/runner-requester",
       "await": [
         "workflows:runner-requester",
         "unscheduled"
@@ -34,7 +34,7 @@
     {
       "description": "Undeploy services.",
       "resource": "undeploy1.yml",
-      "exists": "deployments/runner",
+      "condition": "deployments/runner",
       "await": [
         "deployments:runner",
         "clusters:frontend",
@@ -45,7 +45,7 @@
     {
       "description": "Delete breeds.",
       "resource": "undeploy2.yml",
-      "exists": "breeds/frontend",
+      "condition": "breeds/frontend",
       "await": [
         "breeds:frontend",
         "archive:delete"

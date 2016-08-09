@@ -37,6 +37,8 @@ sealed trait RecipeStep {
 
   def resource: String
 
+  def condition: String
+
   def await: Set[String]
 
   def timeout: TimeoutType
@@ -48,6 +50,7 @@ case class RunRecipeStep(
   id: String = UUID.randomUUID().toString,
   description: String,
   resource: String,
+  condition: String = "",
   await: Set[String] = Set(),
   method: MethodType = Recipe.Method.create,
   timeout: TimeoutType = Recipe.Timeout.long,
@@ -58,7 +61,7 @@ case class CleanupRecipeStep(
   id: String = UUID.randomUUID().toString,
   description: String,
   resource: String,
-  exists: String = "",
+  condition: String = "",
   await: Set[String] = Set(),
   method: MethodType = Recipe.Method.delete,
   timeout: TimeoutType = Recipe.Timeout.long) extends RecipeStep

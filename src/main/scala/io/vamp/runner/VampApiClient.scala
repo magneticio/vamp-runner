@@ -28,7 +28,7 @@ trait VampApiClient {
   protected def apiUrl: String = Config.string("vamp.runner.api.url")
 
   protected def apiGet(path: String): Future[Either[JValue, AnyRef]] = {
-    apiRequest(GET, path, None, { _ ⇒ throw new RuntimeException("No connection.") })
+    apiRequest(GET, path, None, { _ ⇒ "" })
   }
 
   protected def apiPut(path: String = "", input: String, recoverWith: AnyRef ⇒ AnyRef = { _ ⇒ "" }): Future[Either[JValue, AnyRef]] = {

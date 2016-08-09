@@ -53,7 +53,7 @@
     {
       "description": "Unschedule request workflow.",
       "resource": "workflow.yml",
-      "exists": "workflows/runner-requester",
+      "condition": "workflows/runner-requester",
       "await": [
         "workflows:runner-requester",
         "unscheduled"
@@ -62,7 +62,7 @@
     {
       "description": "Delete gateway.",
       "resource": "deploy4.yml",
-      "exists": "gateways/runner",
+      "condition": "gateways/runner",
       "await": [
         "gateways",
         "gateways:runner",
@@ -72,7 +72,7 @@
     {
       "description": "Undeploy services.",
       "resource": "undeploy.yml",
-      "exists": "deployments/runner",
+      "condition": "deployments/runner",
       "await": [
         "deployments:runner",
         "clusters:runner",
@@ -83,7 +83,7 @@
     {
       "description": "Delete breeds and scale.",
       "resource": "deploy1.yml",
-      "exists": "scales/small",
+      "condition": "scales/small",
       "await": [
         "scales:small",
         "archive:delete"

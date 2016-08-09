@@ -136,8 +136,8 @@ trait RecipeRunner extends VampApiClient {
 
   private def execute(action: RecipeStep): Future[AnyRef] = {
 
-    def exists(cleanup: CleanupRecipeStep): Future[Boolean] = {
-      if (cleanup.exists.nonEmpty) apiGet(cleanup.exists).map {
+    def condition(): Future[Boolean] = {
+      if (action.condition.nonEmpty) apiGet(action.condition).map {
         case Left(json) ⇒ json != JNothing && json != JNull
         case _          ⇒ true
       }
@@ -155,14 +155,10 @@ trait RecipeRunner extends VampApiClient {
         Recipe.State.failed
     }
 
-    (action match {
-      case _: RunRecipeStep ⇒ apiRun()
-      case c: CleanupRecipeStep ⇒
-        exists(c).flatMap {
-          case true ⇒ apiRun()
-          case _    ⇒ Future.successful(Recipe.State.succeeded)
-        }
-    }) map {
+    condition().flatMap {
+      case true ⇒ apiRun()
+      case _    ⇒ Future.successful(Recipe.State.succeeded)
+    } map {
       case Right(_) ⇒ Recipe.State.failed
       case other    ⇒ if (action.await.isEmpty) Recipe.State.succeeded else other
     }

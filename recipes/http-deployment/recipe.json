@@ -25,7 +25,7 @@
     {
       "description": "Unschedule workflow.",
       "resource": "workflow.yml",
-      "exists": "workflows/sava-requester",
+      "condition": "workflows/sava-requester",
       "await": [
         "workflows:sava-requester",
         "unscheduled"
@@ -34,7 +34,7 @@
     {
       "description": "Undeploy service and gateway.",
       "resource": "undeploy1.yml",
-      "exists": "deployments/sava",
+      "condition": "deployments/sava",
       "await": [
         "deployments:sava",
         "clusters:sava",
@@ -45,7 +45,7 @@
     {
       "description": "Delete breed.",
       "resource": "undeploy2.yml",
-      "exists": "breeds/runner",
+      "condition": "breeds/runner",
       "await": [
         "breeds:runner",
         "archive:delete"
