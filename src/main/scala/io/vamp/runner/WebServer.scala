@@ -14,8 +14,6 @@ trait WebServer {
 
   implicit def materializer: ActorMaterializer
 
-  implicit def executionContext = system.dispatcher
-
   def messenger: Hub
 
   val config = Config.config("vamp.runner.http")

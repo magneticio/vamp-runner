@@ -32,6 +32,8 @@ libraryDependencies ++= {
   akka ++ json ++ config ++ logging
 }
 
+mainClass in assembly := Some("io.vamp.runner.VampWebRunner")
+
 scalariformSettings ++ Seq(ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(AlignParameters, true)
   .setPreference(AlignSingleLineCaseStatements, true)

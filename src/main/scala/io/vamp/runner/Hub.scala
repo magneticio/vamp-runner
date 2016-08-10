@@ -24,7 +24,7 @@ object Hub {
 
   case class Forward(child: String, request: AnyRef, recipient: ActorRef)
 
-  case class Command(command: String, arguments: AnyRef)
+  case class Command(command: String, arguments: AnyRef = None)
 
 }
 
@@ -42,12 +42,15 @@ trait Hub {
 
   private implicit val format = Json.format
 
-  def channel: Flow[String, String, Any] = {
+  def channel: Flow[AnyRef, String, Any] = {
     val id = UUID.randomUUID()
 
     val in =
-      Flow[String]
-        .map(message ⇒ Request(id, read[Command](message)))
+      Flow[AnyRef]
+        .map {
+          case command: Command ⇒ Request(id, command)
+          case message          ⇒ Request(id, read[Command](message.toString))
+        }
         .to(Sink.actorRef[SessionEvent](actor, SessionClosed(id)))
 
     val out =

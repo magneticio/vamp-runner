@@ -13,7 +13,7 @@ class RunnerHub(implicit val system: ActorSystem, val materializer: ActorMateria
   import InfoActor._
   import RunnerActor._
 
-  private val logger = Logger(LoggerFactory.getLogger(getClass))
+  private val logger = Logger(LoggerFactory.getLogger(classOf[RunnerHub]))
 
   implicit val timeout: Timeout = Config.duration("vamp.runner.timeout")
 

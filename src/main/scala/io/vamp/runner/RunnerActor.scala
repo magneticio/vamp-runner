@@ -23,6 +23,8 @@ object RunnerActor {
     override val `type`: String = "busy"
   }
 
+  case class RunningState(running: Boolean) extends Response
+
   case class Recipes(recipes: List[Recipe]) extends Response
 
   case class UpdateState(recipe: Recipe, step: RunRecipeStep, state: Recipe.State.Value)
@@ -120,10 +122,12 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
   private def startRun() = {
     events.clear()
     running.send(true)
+    context.parent ! Broadcast(RunningState(true))
   }
 
   private def endRun() = {
     self ! VampEventRelease
     running.send(false)
+    context.parent ! Broadcast(RunningState(false))
   }
 }
