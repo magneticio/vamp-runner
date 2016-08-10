@@ -2,7 +2,7 @@
 
 ## Building
 
-Making all files:
+Making and copying all files:
 
 ```sh
 $ ./build.sh -m
@@ -47,7 +47,7 @@ $ docker run --net=host -e VAMP_RUNNER_API_URL=http://192.168.99.100:8080/api/v1
 
 Vamp Runner is accessible on port `8088`, e.g. `http://192.168.99.100:8088`.
 
-### Command line without web UI
+### From command line without web UI
 
 Main class: `io.vamp.runner.VampConsoleRunner`
 
@@ -70,9 +70,9 @@ $ java \
        io.vamp.runner.VampConsoleRunner --list --run "Auto Scaling" --run "Canary Release"
 ```
 
-Note: you need to have configuration files, check out building section (`target/docker`).
+Note: you need to have configuration files, check out [building](#building) section.
 
-### Command line with web UI 
+### From command line with web UI 
 
 ```sh
 $ java \
@@ -82,4 +82,4 @@ $ java \
        -jar vamp-runner.jar
 ```
 
-Note: you need to have configuration files, check out building section (`target/docker`).
+Note: you need to have configuration files, check out [building](#building) section.
