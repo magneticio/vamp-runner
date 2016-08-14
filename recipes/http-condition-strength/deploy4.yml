@@ -8,5 +8,5 @@ routes:
   runner2/9055:
     weight: 20%
     condition_strength: 50%
-    conditions:
-    - url_beg
+    condition:
+      reference: url_beg
