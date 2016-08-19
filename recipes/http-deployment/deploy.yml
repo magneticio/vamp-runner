@@ -8,8 +8,19 @@ gateways:
 clusters:
   sava:
     services:
+    -
       breed:
         name: runner
         deployable: magneticio/sava:runner_1.0
         ports:
-          port: 8081/http
+          port: 8085/http
+        environment_variables:
+          SAVA_RUNNER_ID: runner_1.0
+          SAVA_RUNNER_HTTP_PORT1: 8081
+
+      environment_variables:
+          SAVA_RUNNER_ID: runner
+
+environment_variables:
+  sava.SAVA_RUNNER_ID: sava
+  sava.SAVA_RUNNER_HTTP_PORT1: 8085

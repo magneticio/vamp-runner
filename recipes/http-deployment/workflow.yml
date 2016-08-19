@@ -21,7 +21,11 @@ deployable:
       } else {
         http('http://' + vga + ':9050', function (error, response, body) {
           if (!error && response.statusCode == 200) {
-            api.event(['workflows:sava-requester', 'response:ok'], body);
+            var response = JSON.parse(body);
+            if (response.id == "runner" && response.port == 8085)
+              api.event(['workflows:sava-requester', 'response:ok'], body);
+            else
+              api.event(['workflows:sava-requester', 'response:failed'], body);
           }
         });
       }
