@@ -47,7 +47,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
 
   private def query() = {
 
-    val path = info().map(_ ⇒ "info?for=jvm").getOrElse("info")
+    val path = info().map(_ ⇒ "info?on=jvm").getOrElse("info")
 
     apiGet(path) map {
       case Left(json) ⇒
