@@ -46,7 +46,10 @@ trait RecipeRunner extends VampApiClient {
       recipe.cleanup.foldLeft(Future.successful(Recipe.State.succeeded))((f, s) ⇒ f.flatMap(_ ⇒ cleanup(recipe, s))).recover {
         case t: Throwable ⇒ Recipe.State.failed
       }.map { any ⇒
-        recipe.run.foreach { run ⇒ self ! UpdateDirtyFlag(recipe, run, dirty = false) }
+        recipe.run.foreach { run ⇒
+          self ! UpdateState(recipe, run, Recipe.State.idle)
+          self ! UpdateDirtyFlag(recipe, run, dirty = false)
+        }
         any
       }
     })
@@ -65,6 +68,12 @@ trait RecipeRunner extends VampApiClient {
     }).run().flatMap {
       case Recipe.State.`failed` ⇒ Future.failed(new RuntimeException())
       case state                 ⇒ Future.successful(state)
+    }.map { result ⇒
+      recipe.cleanup.foreach { cleanup ⇒
+        self ! UpdateState(recipe, cleanup, Recipe.State.idle)
+      }
+      self ! VampEventRelease
+      result
     }
   }
 
@@ -75,11 +84,14 @@ trait RecipeRunner extends VampApiClient {
       sink ⇒
         self ! UpdateState(recipe, step, Recipe.State.running)
         Source.single(step) ~> cleanupFlow(recipe, step).map { any ⇒
-          self ! UpdateState(recipe, step, Recipe.State.idle)
+          self ! UpdateState(recipe, step, Recipe.State.succeeded)
           any
         } ~> sink.in
         ClosedShape
-    }).run()
+    }).run().map { result ⇒
+      self ! VampEventRelease
+      result
+    }
   }
 
   private def runFlow(recipe: Recipe, step: RunRecipeStep): Flow[RecipeStep, Recipe.State.Value, NotUsed] = {

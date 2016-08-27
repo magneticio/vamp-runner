@@ -11,12 +11,12 @@ resolvers in ThisBuild ++= Seq(
 libraryDependencies ++= {
 
   val akka =
-    "com.typesafe.akka" %% "akka-actor" % "2.4.8" ::
-      "com.typesafe.akka" %% "akka-agent" % "2.4.8" ::
-      "com.typesafe.akka" %% "akka-http-core" % "2.4.8" ::
-      "com.typesafe.akka" %% "akka-http-experimental" % "2.4.8" ::
+    "com.typesafe.akka" %% "akka-actor" % "2.4.9" ::
+      "com.typesafe.akka" %% "akka-agent" % "2.4.9" ::
+      "com.typesafe.akka" %% "akka-http-core" % "2.4.9" ::
+      "com.typesafe.akka" %% "akka-http-experimental" % "2.4.9" ::
       ("de.heikoseeberger" %% "akka-sse" % "1.8.1" exclude("com.typesafe.akka", "akka-http-experimental")) ::
-      ("com.typesafe.akka" %% "akka-slf4j" % "2.4.8" exclude("org.slf4j", "slf4j-api")) :: Nil
+      ("com.typesafe.akka" %% "akka-slf4j" % "2.4.9" exclude("org.slf4j", "slf4j-api")) :: Nil
 
   val json =
     "org.json4s" %% "json4s-native" % "3.4.0" ::
