@@ -1,5 +1,10 @@
 # Vamp Runner
 
+- running recipes as a part of Vamp integration testing
+- running show cases (presentations)
+
+Web UI theme is based on [akveo/blur-admin](https://github.com/akveo/blur-admin).
+
 ## Building
 
 Making and copying all files:
@@ -83,3 +88,6 @@ $ java \
 ```
 
 Note: you need to have configuration files, check out [building](#building) section.
+
+
+
