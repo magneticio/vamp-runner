@@ -16,7 +16,11 @@
         </div>
         <ul class="cleanup" ng-model="recipes">
             <li ng-repeat="step in recipe.cleanup">
-                <i class="recipe idle ion-record"></i> {{ :: step.description }}
+
+                <i class="recipe running ion-record" ng-show="step.state === 'running'"></i>
+                <i class="recipe idle ion-record" ng-show="step.state === 'idle'"></i>
+
+                {{ :: step.description }}
             </li>
         </ul>
     </div>

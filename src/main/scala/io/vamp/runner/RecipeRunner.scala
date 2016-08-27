@@ -73,7 +73,11 @@ trait RecipeRunner extends VampApiClient {
     val result = Sink.head[Recipe.State.Value]
     RunnableGraph.fromGraph(GraphDSL.create(result) { implicit builder ⇒
       sink ⇒
-        Source.single(step) ~> cleanupFlow(recipe, step) ~> sink.in
+        self ! UpdateState(recipe, step, Recipe.State.running)
+        Source.single(step) ~> cleanupFlow(recipe, step).map { any ⇒
+          self ! UpdateState(recipe, step, Recipe.State.idle)
+          any
+        } ~> sink.in
         ClosedShape
     }).run()
   }

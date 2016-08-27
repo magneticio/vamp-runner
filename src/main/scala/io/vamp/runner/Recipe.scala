@@ -44,6 +44,8 @@ sealed trait RecipeStep {
   def timeout: TimeoutType
 
   def method: MethodType
+
+  def state: StateType
 }
 
 case class RunRecipeStep(
@@ -64,4 +66,5 @@ case class CleanupRecipeStep(
   condition: String = "",
   await: Set[String] = Set(),
   method: MethodType = Recipe.Method.delete,
-  timeout: TimeoutType = Recipe.Timeout.long) extends RecipeStep
+  timeout: TimeoutType = Recipe.Timeout.long,
+  state: StateType = Recipe.State.idle) extends RecipeStep

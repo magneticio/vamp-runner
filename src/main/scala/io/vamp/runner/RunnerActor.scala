@@ -27,7 +27,7 @@ object RunnerActor {
 
   case class Recipes(recipes: List[Recipe]) extends Response
 
-  case class UpdateState(recipe: Recipe, step: RunRecipeStep, state: Recipe.State.Value)
+  case class UpdateState(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value)
 
   case class UpdateDirtyFlag(recipe: Recipe, step: RunRecipeStep, dirty: Boolean)
 
@@ -88,20 +88,37 @@ class RunnerActor(implicit val materializer: ActorMaterializer)
       cleanup(ids2recipes(list)).onComplete(_ ⇒ endRun())
   }
 
-  private def update(recipe: Recipe, step: RunRecipeStep, state: Recipe.State.Value): Unit = {
-    update(recipe, step, { step ⇒ step.copy(state = state) })
-  }
-
-  private def update(recipe: Recipe, step: RunRecipeStep, dirty: Boolean): Unit = {
-    update(recipe, step, { step ⇒ step.copy(dirty = dirty) })
-  }
-
-  private def update(recipe: Recipe, step: RunRecipeStep, update: RunRecipeStep ⇒ RunRecipeStep): Unit = {
-    recipes.get(recipe.id).map { r ⇒
-      recipes += (r.id -> r.copy(run = r.run.map { s ⇒
-        if (s.id == step.id) update(s) else s
-      }))
+  private def update(recipe: Recipe, step: RecipeStep, state: Recipe.State.Value): Unit = {
+    val u: PartialFunction[RecipeStep, RecipeStep] = {
+      case step: RunRecipeStep     ⇒ step.copy(state = state)
+      case step: CleanupRecipeStep ⇒ step.copy(state = state)
     }
+    update(recipe, step, u)
+  }
+
+  private def update(recipe: Recipe, step: RecipeStep, dirty: Boolean): Unit = {
+    val u: PartialFunction[RecipeStep, RecipeStep] = {
+      case s: RunRecipeStep ⇒ s.copy(dirty = dirty)
+      case s                ⇒ s
+    }
+    update(recipe, step, u)
+  }
+
+  private def update(recipe: Recipe, step: RecipeStep, update: PartialFunction[RecipeStep, RecipeStep]): Unit = {
+
+    recipes.get(recipe.id).map { r ⇒
+
+      val runSteps = r.run.map { s ⇒
+        if (s.id == step.id) update(s).asInstanceOf[RunRecipeStep] else s
+      }
+
+      val cleanupSteps = r.cleanup.map { s ⇒
+        if (s.id == step.id) update(s).asInstanceOf[CleanupRecipeStep] else s
+      }
+
+      recipes += (r.id -> r.copy(run = runSteps, cleanup = cleanupSteps))
+    }
+
     context.parent ! Broadcast(Recipes(RunnerActor.this.recipes.values.toList))
   }
 
