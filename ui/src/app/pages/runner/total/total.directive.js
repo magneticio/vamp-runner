@@ -9,7 +9,7 @@
     return {
       restrict: 'E',
       controller: 'TotalCtrl',
-      templateUrl: 'app/pages/recipes/total/total.html'
+      templateUrl: 'app/pages/runner/total/total.html'
     };
   }
 })();

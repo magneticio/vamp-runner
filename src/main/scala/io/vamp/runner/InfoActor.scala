@@ -33,11 +33,12 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
 
   val timeout = Config.duration("vamp.runner.timeout")
 
+  private val load = Agent[Option[Load]](None)
   private val info = Agent[Option[Info]](None)
 
   def receive: Receive = {
     case Query       ⇒ query()
-    case ProvideInfo ⇒ info().foreach(sender() ! _)
+    case ProvideInfo ⇒ provideInfo()
     case _           ⇒
   }
 
@@ -68,12 +69,19 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
 
             if (loadResult.uuid != infoValue.uuid) info send None
 
+            load send Option(loadResult)
+
             context.parent ! Broadcast(loadResult)
         }
       case _ ⇒
     } recover {
       case e ⇒ log.error(e.getMessage)
     }
+  }
+
+  private def provideInfo() = {
+    info().foreach(sender() ! _)
+    load().foreach(sender() ! _)
   }
 
   private def parseInfo(json: JValue) = {

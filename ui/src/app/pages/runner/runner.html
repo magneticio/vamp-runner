@@ -1,48 +1,17 @@
-<div class="row" ng-controller="RunnerCtrl">
+<div class="row">
     <div class="col-xs-4">
-        <div
-                ba-panel
-                ba-panel-title="Configuration"
-                ba-panel-class="with-scroll">
-            <form class="form-horizontal">
-                <div class="form-group" hidden>
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <div class="btn-group pull-right" role="group">
-                            <button type="submit" class="btn btn-default">Save</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="timeout-short" class="col-sm-4 control-label">Short timeout</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="timeout-short" placeholder="" ng-value="config.timeout.short" readonly>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="timeout-long" class="col-sm-4 control-label">Long timeout</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="timeout-long" placeholder="" ng-value="config.timeout.long" readonly>
-                    </div>
-                </div>
-            </form>
+        <div class="row">
+            <config></config>
+        </div>
+        <div class="row">
+            <div ba-panel
+                 ba-panel-title="Recipes Total"
+                 ba-panel-class="xmedium-panel total-panel">
+                <total></total>
+            </div>
         </div>
     </div>
     <div class="col-xs-8">
-        <div ba-panel>
-            <section id="cd-timeline" class="cd-container cssanimations" ng-model="logs">
-                <div class="cd-timeline-block" ng-repeat="log in logs">
-                    <div class="cd-timeline-img">
-                        <div class="kameleon-icon with-round-bg" ng-class="image(log)"><img
-                                ng-src="{{::( source(log) | kameleonImg )}}"></div>
-                    </div>
-
-                    <div class="cd-timeline-content" ng-class="class(log)">
-                        <h5>{{ :: title(log) | uppercase }}</h5>
-                        <p>{{ :: log.message }}</p>
-                        <span class="cd-date">{{ :: log.timestamp | date : 'yyyy-MM-dd HH:mm:ss Z'}}</span>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <log></log>
     </div>
 </div>

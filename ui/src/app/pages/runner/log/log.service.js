@@ -2,11 +2,11 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-    .service('runner', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
-      return new Runner($rootScope, api, toastr);
+    .service('log', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
+      return new Log($rootScope, api, toastr);
     }]);
 
-  function Runner($rootScope, api, toastr) {
+  function Log($rootScope, api, toastr) {
 
     var logs = this.logs = [];
 
@@ -41,8 +41,8 @@
       push('info', 'user', 'Run recipe step: [' + data.recipe.name + ' / ' + data.step.description + ']');
     });
 
-    $rootScope.$on('recipes:cleanup', function () {
-      push('info', 'user', 'Cleaning up all artifacts.');
+    $rootScope.$on('recipe:cleanup', function (event, recipe) {
+      push('info', 'user', 'Cleaning up recipe: ' + recipe.name);
     });
 
     $rootScope.$on('recipe:state', function (event, recipe) {

@@ -2,10 +2,10 @@
   'use strict';
 
   angular.module('VampRunner.pages.recipes')
-    .controller('StepsCtrl', StepsCtrl);
+    .controller('CleanupCtrl', CleanupCtrl);
 
   /** @ngInject */
-  function StepsCtrl($rootScope, $scope, $uibModal, baConfig, api) {
+  function CleanupCtrl($rootScope, $scope, $uibModal, baConfig, api) {
 
     $scope.transparent = baConfig.theme.blur;
 
@@ -20,44 +20,13 @@
       return false;
     };
 
-    $scope.run = function (recipe, step) {
-      api.run(recipe, step);
-    };
-
-    $scope.isRunnable = function (recipe, step) {
-      if (step.dirty) return true;
-
-      var runnable = true;
-
-      for (var i = 0; i < recipe.run.length; i++) {
-        var s = recipe.run[i];
-        if (s.id == step.id)
-          return runnable;
-        else {
-          runnable = runnable && s.dirty;
-          if (!runnable) return false;
-        }
-      }
-
-      return false;
-    };
-
-    $scope.open = function (step) {
-
-      $scope.step = step;
-
-      $uibModal.open({
-        animation: true,
-        templateUrl: 'app/pages/recipes/steps/modal.html',
-        size: 'lg',
-        scope: $scope
-      });
+    $scope.cleanup = function (recipe) {
+      api.cleanup(recipe);
     };
 
     $rootScope.$on('recipe:details', function (event, recipe) {
       $scope.recipe = recipe;
     });
-
 
     $rootScope.$on('recipes:update', function () {
       for (var i = 0; i < api.recipes.length; i++) {

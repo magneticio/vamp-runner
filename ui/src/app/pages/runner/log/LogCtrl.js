@@ -1,15 +1,13 @@
 (function () {
   'use strict';
 
-  angular.module('VampRunner.pages.runner')
-    .controller('RunnerCtrl', RunnerCtrl);
+  angular.module('VampRunner.pages.recipes')
+    .controller('LogCtrl', LogCtrl);
 
   /** @ngInject */
-  function RunnerCtrl($rootScope, $scope, api, runner) {
+  function LogCtrl($rootScope, $scope, api, log) {
 
-    $scope.config = api.config;
-
-    $scope.logs = runner.logs;
+    $scope.logs = log.logs;
 
     $scope.class = function (log) {
       var color = log.level === 'info' ? 'primary' : (log.level === 'error' ? 'danger' : 'warning');
@@ -30,7 +28,7 @@
     };
 
     $rootScope.$on('log', function () {
-      $scope.logs = runner.logs;
+      $scope.logs = log.logs;
     });
 
     var timelineBlocks = $('.cd-timeline-block'), offset = 0.8;

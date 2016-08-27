@@ -1,0 +1,16 @@
+<div ba-panel ba-panel-title="Log" ng-controller="LogCtrl">
+    <section id="cd-timeline" class="cd-container cssanimations" ng-model="logs">
+        <div class="cd-timeline-block" ng-repeat="log in logs">
+            <div class="cd-timeline-img">
+                <div class="kameleon-icon with-round-bg" ng-class="image(log)"><img
+                        ng-src="{{::( source(log) | kameleonImg )}}"></div>
+            </div>
+
+            <div class="cd-timeline-content" ng-class="class(log)">
+                <h5>{{ :: title(log) | uppercase }}</h5>
+                <p>{{ :: log.message }}</p>
+                <span class="cd-date">{{ :: log.timestamp | date : 'yyyy-MM-dd HH:mm:ss Z'}}</span>
+            </div>
+        </div>
+    </section>
+</div>

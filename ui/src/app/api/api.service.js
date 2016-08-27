@@ -103,20 +103,6 @@
           else if (succeeded > 0) recipe.state = 'succeeded';
           else recipe.state = 'idle';
 
-          //
-
-          if (select) {
-            recipe.selected = true;
-          } else {
-            for (var k = 0; k < old.length; k++) {
-              if (old[k].id === recipe['id']) {
-                recipe.selected = old[k].selected;
-                if (old[k].state !== recipe.state) $rootScope.$emit('recipe:state', recipe);
-                break;
-              }
-            }
-          }
-
           recipes.push(recipe);
         }
 
@@ -137,17 +123,6 @@
       }
     };
 
-    var selected = function () {
-      var result = [];
-
-      for (var i = 0; i < recipes.length; i++) {
-        var recipe = recipes[i];
-        if (recipe.selected) result.push(recipe.id);
-      }
-
-      return result;
-    };
-
     this.run = function (recipe, step) {
       if (recipe) {
         command('run', {
@@ -157,15 +132,11 @@
           recipe: recipe,
           step: step
         });
-      } else {
-        var recipes = selected();
-        if (recipes.length > 0) command('run', recipes, 'recipes:run');
       }
     };
 
-    this.cleanup = function () {
-      var recipes = selected();
-      if (recipes.length > 0) command('cleanup', recipes, 'recipes:cleanup');
+    this.cleanup = function (recipe) {
+      command('cleanup', [ recipe.id ], 'recipe:cleanup', recipe);
     };
 
     this.init = function () {

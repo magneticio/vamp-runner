@@ -1,57 +1,11 @@
 <div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="ListCtrl">
-
-    <div class="action-buttons">
-        <div class="btn-group" role="group">
-            <button type="button"
-                    class="btn btn-default btn-with-icon"
-                    ng-click="run()"
-                    ng-disabled="isRunning() || !isSelectedAny()"
-                    title="Run all selected recipes"><i class="ion-play"></i>Complete
-            </button>
-            <button type="button"
-                    class="btn btn-default btn-with-icon"
-                    ng-click="cleanup()"
-                    ng-disabled="isRunning() || !isSelectedAny()"
-                    title="Remove all artifacts for selected recipes"><i class="ion-scissors"></i>Cleanup
-            </button>
-        </div>
-    </div>
-
-    <label class="select-all-label checkbox-inline custom-checkbox nowrap">
-        <input type="checkbox"
-               ng-click="selectAll($event)"
-               ng-checked="isSelectedAll()"
-               ng-disabled="isRunning()">
-        <span class="select-all-label">Select All</span>
-    </label>
-
-    <div class="box-shadow-border"></div>
-
     <ul class="recipes" ng-model="recipes">
         <li ng-repeat="item in recipes"
-            ng-init="activeItem=false"
-            ng-class="{checked: isSelected(item.id), active: activeItem}"
-            ng-mouseenter="activeItem=true"
-            ng-mouseleave="activeItem=false"
-            ng-disabled="isRunning()">
+            ng-click="details(item)">
             <div class="blur-container">
                 <div class="blur-box"></div>
             </div>
-            <label class="recipe-checkbox custom-checkbox custom-input-success">
-                <input type="checkbox" name="selected"
-                       ng-checked="isSelected(item.id)"
-                       ng-click="updateSelection($event, item.id)"
-                       ng-disabled="isRunning()">
-                <span class="cut-with-dots">{{ item.name }}</span>
-            </label>
-            <i class="recipe succeeded ion-record" ng-show="item.state === 'succeeded'"></i>
-            <i class="recipe failed ion-record" ng-show="item.state === 'failed'"></i>
-            <i class="recipe running ion-record" ng-show="item.state === 'running'"></i>
-            <i class="recipe idle ion-record" ng-show="item.state === 'idle'"></i>
-
-            <a href="javascript: void(0);" ng-click="details(item)">
-                <i class="recipe-details ion-arrow-right-c"></i>
-            </a>
+            {{ item.name }}
         </li>
     </ul>
 </div>

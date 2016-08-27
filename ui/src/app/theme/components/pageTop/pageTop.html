@@ -4,7 +4,7 @@
 
     <div class="info-section" ng-show="connected">
         <span class="green">VAMP</span>
-        <span class="yellow">CPU</span> {{ load.cpu | number : 2 }}%
+        <span class="yellow">LOAD</span> {{ load.cpu | number : 2 }}%
         <span class="yellow">HEAP</span> {{ load.heap.percentage | number : 2 }}% <span class="gray"> [ {{ load.heap.used | number : 0 }}/{{ load.heap.max | number : 0 }}MB ]</span>
     </div>
 

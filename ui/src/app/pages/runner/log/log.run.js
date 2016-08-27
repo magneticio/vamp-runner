@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-    .run(["runner", function (runner) {
-      return runner.logs;
+    .run(["log", function (log) {
+      return log.logs;
     }]);
 
 })();
