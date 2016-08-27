@@ -1,6 +1,6 @@
 # Vamp Runner
 
-- running recipes as a part of Vamp integration testing
+- running recipes as a part of [Vamp](https://github.com/magneticio/vamp) integration testing
 - running show cases (presentations)
 
 Web UI theme is based on [akveo/blur-admin](https://github.com/akveo/blur-admin).
