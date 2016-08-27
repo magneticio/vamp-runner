@@ -2,6 +2,10 @@
     <a href="#/runner" class="al-logo clearfix"><span>Vamp</span>Runner</a>
     <a href class="collapse-menu-link ion-navicon" ba-sidebar-toggle-menu></a>
 
+    <div class="info-section" ng-show="error">
+        <span class="red">VAMP CONNECTION ERROR</span>
+    </div>
+
     <div class="info-section" ng-show="connected">
         <span class="green">VAMP</span>
         <span class="yellow">LOAD</span> {{ load.cpu | number : 2 }}%

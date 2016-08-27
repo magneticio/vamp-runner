@@ -17,6 +17,10 @@ object InfoActor {
 
   object ProvideInfo
 
+  object VampConnectionError extends Response {
+    override val `type`: String = "vamp-connection-error"
+  }
+
   case class Info(uuid: String, version: String, persistence: String, keyValueStore: String, gatewayDriver: String, containerDriver: String, workflowDriver: String) extends Response
 
   case class Load(uuid: String, cpu: Double, heap: Heap) extends Response
@@ -75,7 +79,9 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
         }
       case _ ⇒
     } recover {
-      case e ⇒ log.error(e.getMessage)
+      case e ⇒
+        log.error(e.getMessage)
+        context.parent ! Broadcast(VampConnectionError)
     }
   }
 

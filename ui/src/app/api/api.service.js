@@ -120,6 +120,8 @@
 
       } else if (data['type'] === 'busy') {
         $rootScope.$emit('vamp:busy', 'busy');
+      } else if (data['type'] === 'vamp-connection-error') {
+         $rootScope.$emit('vamp:error');
       }
     };
 

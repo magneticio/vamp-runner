@@ -83,7 +83,7 @@ function docker_make {
 
     cat > ${target_docker}/application.conf << EOF
 vamp.runner {
-  info.interval = 15 seconds
+  info.interval = 10 seconds
   http {
     port = 8088
     ui {
