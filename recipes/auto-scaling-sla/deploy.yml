@@ -1,0 +1,37 @@
+---
+kind: deployment
+name: sava
+
+gateways:
+  9060: sava/port
+
+clusters:
+
+  sava:
+    breed:
+      name: runner
+      deployable: magneticio/sava:1.0.0
+      ports:
+        port: 8080
+
+    scale:
+      cpu: 0.1
+      memory: 128MB
+      instances: 1
+
+    sla:
+      type: response_time_sliding_window
+      threshold:
+        upper: 1000
+        lower: 100
+      window:
+        interval: 10
+        cooldown: 0
+
+      escalations:
+        -
+          type: scale_instances
+          minimum: 1
+          maximum: 3
+          scale_by: 1
+

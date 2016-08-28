@@ -1,0 +1,92 @@
+{
+  "name": "Auto Scaling with built-in SLA",
+  "description": "Auto scaling number of instances using built-in SLA",
+  "run": [
+    {
+      "description": "Deploy service with built-in SLA",
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:deployed"
+      ]
+    },
+    {
+      "description": "Remove default metrics aggregation workflow",
+      "resource": "metrics.yml",
+      "method": "delete",
+      "condition": "workflows/metrics",
+      "await": [
+        "workflows:metrics",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Run mock metrics aggregation workflow",
+      "resource": "mock-metrics.yml",
+      "await": [
+        "workflows:mock-metrics",
+        "mocked"
+      ]
+    },
+    {
+      "description": "Check scale of the service",
+      "resource": "check-scale.yml",
+      "await": [
+        "workflows:check-scale",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Remove check scale workflow",
+      "resource": "check-scale.yml",
+      "condition": "workflows/check-scale",
+      "await": [
+        "workflows:check-scale",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Remove mock metrics aggregation workflow",
+      "resource": "mock-metrics.yml",
+      "condition": "workflows/mock-metrics",
+      "await": [
+        "workflows:mock-metrics",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Recreate default metrics aggregation workflow",
+      "method": "create",
+      "resource": "metrics.yml",
+      "await": [
+        "workflows:metrics",
+        "scheduled"
+      ]
+    },
+    {
+      "description": "Undeploy service and gateway",
+      "resource": "undeploy1.yml",
+      "condition": "deployments/sava",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breed",
+      "resource": "undeploy2.yml",
+      "condition": "breeds/sava:1.0.0",
+      "await": [
+        "breeds:sava:1.0.0",
+        "archive:delete"
+      ],
+      "timeout": "short"
+    }
+  ]
+}

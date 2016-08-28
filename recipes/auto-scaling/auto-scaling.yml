@@ -10,7 +10,7 @@ deployable:
     var vamp = require('vamp-node-client');
     var api = new vamp.Api();
 
-    var period = 7;
+    var period = 5;
     var scale = {
       instances: 1,
       cpu: 0.1,

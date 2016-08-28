@@ -1,0 +1,42 @@
+---
+kind: breed
+name: check-scale
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+
+    var request = require('request');
+    var http = request.defaults({
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+
+    var period = 5;
+
+    var process = function() {
+      http({
+        url: api.url + 'deployments/sava/clusters/sava/services/runner/scale'
+        }, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+
+            var scale = JSON.parse(body);
+
+            api.event(['workflows:check-scale', 'scale'], scale.instances);
+
+            if (scale.instances != 1)
+              api.event(['workflows:check-scale', 'response:ok'], 'ok');
+          }
+      });
+    };
+
+    process();
+    setInterval(process, period * 1000);
+
+---
+kind: workflow
+name: check-scale
+breed: check-scale
+schedule: daemon
