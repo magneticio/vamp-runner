@@ -14,7 +14,6 @@ ul.recipes {
     position: relative;
     border: 1px solid $input-border;
     cursor: pointer;
-    height: 42px;
     i.recipe {
       position: relative;
       cursor: pointer;
@@ -202,11 +201,10 @@ ul.cleanup {
   }
   li {
     margin: 0 0 -1px 0;
-    padding: 12px;
+    padding: 12px 0 0 12px;
     list-style: none;
     position: relative;
     border: 1px solid $input-border;
-    height: 42px;
     i.recipe {
       position: relative;
       top: 0px;
