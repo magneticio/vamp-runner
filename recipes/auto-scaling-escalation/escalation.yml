@@ -1,0 +1,37 @@
+---
+kind: breed
+name: escalation
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+
+    var period = 5;
+    var switchAfter = 30;
+
+    var low = false;
+    var elapsed = 0;
+
+    var process = function() {
+
+      elapsed += period;
+
+      if (elapsed % switchAfter == 0) low = !low;
+
+      var value = low ? 'deescalate' : 'escalate';
+
+      api.event(['workflows:escalation', value], value);
+      api.event(['deployment:sava', 'cluster:sava', 'sla:' + value], value);
+    };
+
+    process();
+    setInterval(process, period * 1000);
+
+---
+kind: workflow
+name: escalation
+breed: escalation
+schedule: daemon

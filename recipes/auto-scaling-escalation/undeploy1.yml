@@ -1,0 +1,12 @@
+---
+kind: deployment
+name: sava
+
+clusters:
+  sava:
+    services:
+      breed: runner
+
+---
+kind: gateway
+name: sava/9061
