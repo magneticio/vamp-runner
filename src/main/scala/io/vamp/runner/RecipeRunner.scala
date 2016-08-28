@@ -6,13 +6,14 @@ import akka.NotUsed
 import akka.actor.{ Actor, ActorLogging }
 import akka.stream._
 import akka.stream.scaladsl.GraphDSL.Implicits._
-import akka.stream.scaladsl.{ Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source }
+import akka.stream.scaladsl.{ Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source, ZipWith }
 import io.vamp.runner.RunnerActor.{ UpdateDirtyFlag, UpdateState }
 import io.vamp.runner.VampEventReader.{ VampEvent, VampEventMessage, VampEventRelease }
 import org.json4s.JsonAST.{ JNothing, JNull }
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 trait RecipeRunner extends VampApiClient {
   this: Actor with ActorLogging ⇒
@@ -117,7 +118,7 @@ trait RecipeRunner extends VampApiClient {
 
     val graph = GraphDSL.create() { implicit builder ⇒
 
-      val in = builder.add(Broadcast[RecipeStep](3))
+      val input = builder.add(Broadcast[RecipeStep](3))
       val collect = builder.add(Merge[AnyRef](3))
 
       val execution = Flow[RecipeStep].mapAsync(1) { step ⇒ execute(step).map { result ⇒ step -> result } }
@@ -145,13 +146,20 @@ trait RecipeRunner extends VampApiClient {
           state
       }
 
+      val zipper = builder.add(ZipWith[RecipeStep, Any, RecipeStep]((step, _) ⇒ step))
+      val ticker = Source.tick(initialDelay = 1.second, interval = 1.second, None)
+
       val out = builder.add(Merge[Recipe.State.Value](1))
 
-      in ~> awaiting ~> collect
-      in ~> timeout ~> collect
-      in ~> execution ~> collect ~> resolve ~> out
+      input ~> awaiting ~> collect
+      input ~> timeout ~> collect
 
-      FlowShape(in.in, out.out)
+      // workaround for delaying execution so awaiting events can be setup
+      input ~> zipper.in0
+      ticker ~> zipper.in1
+      zipper.out ~> execution ~> collect ~> resolve ~> out
+
+      FlowShape(input.in, out.out)
     }
 
     Flow.fromGraph(graph)
