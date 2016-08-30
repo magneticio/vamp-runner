@@ -7,8 +7,8 @@ deployable:
     'use strict';
 
     var http = require('request');
+    var vamp = require('vamp-node-client');
     var api = new vamp.Api();
-    var metrics = new vamp.Metrics(api);
 
     var $gateway = process.env.GATEWAY;
 
@@ -20,6 +20,8 @@ deployable:
 
     var $scaleMax = Number(process.env.SCALE_MAX);
     var $scaleMin = Number(process.env.SCALE_MIN);
+
+    var period = 5;  // seconds
 
     var run = function() {
       api.api('events?tag=routes:' + $route1 + '&tag=metrics:rate', function(response1) {
