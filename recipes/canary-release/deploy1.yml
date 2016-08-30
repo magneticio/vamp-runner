@@ -1,16 +1,2 @@
 ---
-kind: breed
-name: runner:1
-deployable: magneticio/sava:runner_1.0
-ports:
-  port: 8081/http
-environment_variables:
-  SAVA_RUNNER_ID: 1.0.0
----
-kind: breed
-name: runner:2
-deployable: magneticio/sava:runner_1.0
-ports:
-  port: 8081/http
-environment_variables:
-  SAVA_RUNNER_ID: 2.0.0
+name: sava:1.0

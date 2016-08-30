@@ -1,0 +1,78 @@
+---
+kind: breed
+name: canary
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var http = require('request');
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+    var metrics = new vamp.Metrics(api);
+
+    var $gateway  = process.env.GATEWAY;
+    var $service1 = process.env.SERVICE1;
+    var $service2 = process.env.SERVICE2;
+
+    var period = 5;  // seconds
+    var window = 30; // seconds
+
+    var run = function() {
+
+      api.api('gateways/' + $gateway, function(gateway) {
+
+        metrics.count({ ft: gateway.lookup_name }, { ST: { gte: 500 } }, window, function (errorCount) {
+
+          if (errorCount > 0)
+            rollback(gateway);
+          else
+            increase(gateway, gateway['routes'][$service1]['weight']);
+        });
+      });
+    };
+
+    var increase = function(gateway, oldWeight) {
+
+      var newWeight = (Math.round(oldWeight.substring(0, oldWeight.length - 1) / 5) - 1) * 5;
+
+      gateway['routes'][$service1]['weight'] = newWeight < 0 ? '0%' : newWeight + '%';
+      gateway['routes'][$service2]['weight'] = newWeight < 0 ? '100%' : (100 - newWeight) + '%';
+
+      update(gateway);
+    };
+
+    var rollback = function(gateway) {
+
+      gateway['routes'][$service1]['weight'] = '100%';
+      gateway['routes'][$service2]['weight'] = '0%';
+
+      update(gateway);
+    };
+
+    var update = function(gateway) {
+      http({
+        url: api.url + 'gateways/' + $gateway,
+        method: 'PUT',
+        json: gateway
+        }, function (error, response, body) {
+          if (!error)
+            api.event(['workflows:canary', 'updated'],
+              gateway['routes'][$service1]['weight'] + '/' + gateway['routes'][$service2]['weight']);
+          else
+            api.event(['workflows:canary', 'error'], error);
+      });
+    };
+
+    run();
+    setInterval(run, period * 1000);
+
+---
+kind: workflow
+name: canary
+breed: canary
+schedule: daemon
+environment_variables:
+  GATEWAY : "sava/sava/web"
+  SERVICE1: "sava/sava/sava:1.0/web"
+  SERVICE2: "sava/sava/sava:1.1/web"

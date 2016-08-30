@@ -35,6 +35,8 @@ sealed trait RecipeStep {
 
   def description: String
 
+  def as: Option[String]
+
   def resource: String
 
   def condition: String
@@ -52,6 +54,7 @@ case class RunRecipeStep(
   id: String = UUID.randomUUID().toString,
   description: String,
   resource: String,
+  as: Option[String] = None,
   condition: String = "",
   await: Set[String] = Set(),
   method: MethodType = Recipe.Method.create,
@@ -63,6 +66,7 @@ case class CleanupRecipeStep(
   id: String = UUID.randomUUID().toString,
   description: String,
   resource: String,
+  as: Option[String] = None,
   condition: String = "",
   await: Set[String] = Set(),
   method: MethodType = Recipe.Method.delete,

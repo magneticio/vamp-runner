@@ -1,0 +1,31 @@
+---
+kind: breed
+name: traffic
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var http = require('request');
+    var vamp = require('vamp-node-client');
+    var api = new vamp.Api();
+
+    var vga;
+
+    var run = function() {
+      if (!vga) {
+        api.config(function (config) {
+          vga = config['vamp.gateway-driver.host'];
+        });
+      } else http('http://' + vga + ':' + process.env.PORT);
+    };
+
+    setInterval(run, 500);
+
+---
+kind: workflow
+name: traffic
+breed: traffic
+schedule: daemon
+environment_variables:
+  PORT : 9050

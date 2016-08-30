@@ -1,0 +1,9 @@
+---
+kind: blueprint
+name: sava:1.0
+
+clusters:
+  sava:
+    services:
+    - breed: sava:1.0
+      scale: large

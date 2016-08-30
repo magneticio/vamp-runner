@@ -1,20 +1,20 @@
 ---
-kind: deployment
-name: runner
-gateways:
-  9059: runner/port
+kind: blueprint
+name: sava:1.1
 clusters:
-  runner:
+  sava:
+    services: sava:1.1
+---
+kind: breed
+name: sava:1.1
+deployable: magneticio/sava:1.1.0
+ports:
+  web: 8080/http
+---
+kind: deployment
+name: sava
+
+clusters:
+  sava:
     services:
-      - breed: runner:1
-        environment_variables:
-          SAVA_RUNNER_ID: 1.0.0
-      - breed: runner:2
-        environment_variables:
-          SAVA_RUNNER_ID: 2.0.0
-    gateways:
-      routes:
-        runner:1:
-          weight: 100%
-        runner:2:
-          weight: 0%
+      breed: sava:1.1

@@ -1,0 +1,7 @@
+---
+kind: gateway
+name: sava
+port: 9050/http
+routes:
+  sava/sava/web:
+    weight: 100%

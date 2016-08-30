@@ -1,62 +1,116 @@
 {
-  "name": "Canary Release",
-  "description": "2 services and changing weight from 100% / 0% to 0% / 100%",
+  "name": "Canary Release - Introducing New Service Version",
+  "description": "",
   "run": [
     {
-      "description": "Create breeds for both services",
-      "resource": "deploy1.yml",
+      "description": "Create blueprint",
+      "resource": "blueprint.yml",
+      "timeout": "short",
       "await": [
-        "breeds:runner:2",
+        "blueprints:sava:1.0",
         "archive:update"
-      ],
-      "timeout": "short"
+      ]
     },
     {
-      "description": "Deploy a blueprint with 2 services and weight 100% / 0%",
-      "resource": "deploy2.yml",
+      "description": "Create breed and scale",
+      "resource": "artifacts.yml",
+      "timeout": "short",
       "await": [
-        "deployments:runner",
-        "clusters:runner",
-        "services:runner:1",
+        "breeds:sava:1.0",
+        "archive:update"
+      ]
+    },
+    {
+      "description": "Deploy blueprint",
+      "resource": "deploy1.yml",
+      "as": "deployments/sava",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:sava:1.0",
         "synchronization:deployed"
       ]
     },
     {
-      "description": "Send requests and perform canary release: 100% / 0% ⇒ 0% / 100%",
-      "resource": "workflow.yml",
+      "description": "Create gateway",
+      "resource": "gateway.yml",
       "await": [
-        "workflows:runner-requester",
-        "response:ok"
+        "gateways:sava",
+        "archive:update"
+      ]
+    },
+    {
+      "description": "Introduce new service version",
+      "resource": "deploy2.yml",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:sava:1.1",
+        "synchronization:deployed"
+      ]
+    },
+    {
+      "description": "Generate traffic requests",
+      "resource": "traffic.yml",
+      "await": [
+        "workflows:traffic",
+        "scheduled"
+      ]
+    },
+    {
+      "description": "Automated canary release",
+      "resource": "canary.yml",
+      "await": [
+        "workflows:canary",
+        "updated"
       ]
     }
   ],
   "cleanup": [
     {
-      "description": "Unschedule canary release workflow",
-      "resource": "workflow.yml",
-      "condition": "workflows/runner-requester",
+      "description": "Remove canary workflow",
+      "resource": "canary.yml",
+      "condition": "workflows/canary",
       "await": [
-        "workflows:runner-requester",
+        "workflows:canary",
         "unscheduled"
       ]
     },
     {
-      "description": "Undeploy services",
-      "resource": "undeploy1.yml",
-      "condition": "deployments/runner",
+      "description": "Remove traffic workflow",
+      "resource": "traffic.yml",
+      "condition": "workflows/traffic",
       "await": [
-        "deployments:runner",
-        "clusters:runner",
-        "services:runner:1",
+        "workflows:traffic",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy service",
+      "resource": "undeploy.yml",
+      "condition": "deployments/sava",
+      "await": [
+        "deployments:sava",
+        "clusters:sava",
+        "services:sava:1.1",
         "synchronization:undeployed"
       ]
     },
     {
-      "description": "Delete breeds",
-      "resource": "undeploy2.yml",
-      "condition": "breeds/runner:2",
+      "description": "Remove gateway",
+      "resource": "remove_gateway.yml",
+      "condition": "gateways/sava",
       "await": [
-        "breeds:runner:2",
+        "gateways:sava",
+        "deployed"
+      ]
+    },
+    {
+      "description": "Delete blueprints, breeds and scale",
+      "resource": "remove_artifacts.yml",
+      "condition": "blueprints/sava:1.0",
+      "await": [
+        "breeds:sava:1.0",
         "archive:delete"
       ],
       "timeout": "short"

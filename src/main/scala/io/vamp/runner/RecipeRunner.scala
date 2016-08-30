@@ -75,7 +75,7 @@ trait RecipeRunner extends VampApiClient {
       result
     }
 
-    future.onComplete { _ ⇒ self ! VampEventRelease}
+    future.onComplete { _ ⇒ self ! VampEventRelease }
 
     future
   }
@@ -94,7 +94,7 @@ trait RecipeRunner extends VampApiClient {
         ClosedShape
     }).run()
 
-    future.onComplete { _ ⇒ self ! VampEventRelease}
+    future.onComplete { _ ⇒ self ! VampEventRelease }
 
     future
   }
@@ -176,7 +176,7 @@ trait RecipeRunner extends VampApiClient {
     }
 
     def apiRun() = action.method match {
-      case Recipe.Method.`create` ⇒ apiPut(input = action.resource, recoverWith = recover)
+      case Recipe.Method.`create` ⇒ apiPut(path = action.as.getOrElse(""), input = action.resource, recoverWith = recover)
       case Recipe.Method.`delete` ⇒ apiDelete(input = action.resource, recoverWith = recover)
     }
 

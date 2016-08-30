@@ -1,0 +1,65 @@
+{
+  "name": "Canary Release with Weight Check",
+  "description": "2 services and changing weight from 100% / 0% to 0% / 100%",
+  "run": [
+    {
+      "description": "Create breeds for both services",
+      "resource": "deploy1.yml",
+      "await": [
+        "breeds:runner:2",
+        "archive:update"
+      ],
+      "timeout": "short"
+    },
+    {
+      "description": "Deploy a blueprint with 2 services and weight 100% / 0%",
+      "resource": "deploy2.yml",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:deployed"
+      ]
+    },
+    {
+      "description": "Send requests and perform canary release: 100% / 0% ⇒ 0% / 100%",
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:runner-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule canary release workflow",
+      "resource": "workflow.yml",
+      "condition": "workflows/runner-requester",
+      "await": [
+        "workflows:runner-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy services",
+      "resource": "undeploy1.yml",
+      "condition": "deployments/runner",
+      "await": [
+        "deployments:runner",
+        "clusters:runner",
+        "services:runner:1",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Delete breeds",
+      "resource": "undeploy2.yml",
+      "condition": "breeds/runner:2",
+      "await": [
+        "breeds:runner:2",
+        "archive:delete"
+      ],
+      "timeout": "short"
+    }
+  ]
+}

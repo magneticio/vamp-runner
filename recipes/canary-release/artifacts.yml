@@ -1,0 +1,12 @@
+---
+kind: breed
+name: sava:1.0
+deployable: magneticio/sava:1.0.0
+ports:
+  web: 8080/http
+---
+kind: scale
+name: large
+instances: 4
+cpu: 0.1
+memory: 64MB
