@@ -64,9 +64,26 @@
         "workflows:canary",
         "updated"
       ]
+    },
+    {
+      "description": "Auto scaling",
+      "resource": "auto-scaling.yml",
+      "await": [
+        "'workflows:auto-scaling",
+        "scale'"
+      ]
     }
   ],
   "cleanup": [
+    {
+      "description": "Remove auto scaling workflow",
+      "resource": "auto-scaling.yml",
+      "condition": "workflows/auto-scaling",
+      "await": [
+        "workflows:auto-scaling",
+        "unscheduled"
+      ]
+    },
     {
       "description": "Remove canary workflow",
       "resource": "canary.yml",

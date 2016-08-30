@@ -1,0 +1,78 @@
+---
+kind: breed
+name: auto-scaling
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var http = require('request');
+    var api = new vamp.Api();
+    var metrics = new vamp.Metrics(api);
+
+    var $gateway = process.env.GATEWAY;
+
+    var $route1 = process.env.ROUTE1;
+    var $route2 = process.env.ROUTE2;
+
+    var $service1 = process.env.SERVICE1;
+    var $service2 = process.env.SERVICE2;
+
+    var $scaleMax = Number(process.env.SCALE_MAX);
+    var $scaleMin = Number(process.env.SCALE_MIN);
+
+    var run = function() {
+      api.api('events?tag=routes:' + $route1 + '&tag=metrics:rate', function(response1) {
+        api.api('events?tag=routes:' + $route2 + '&tag=metrics:rate', function(response2) {
+
+            var rate1 = Number(response1[0]['value']);
+            var rate2 = Number(response2[0]['value']);
+
+            if (rate1 + rate2 != 0) {
+              api.api($service1 + '/scale', function(scale1) {
+                api.api($service2 + '/scale', function(scale2) {
+
+                  var instances1 = Math.round((rate1 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
+                  var instances2 = Math.round((rate2 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
+
+                  if (scale1.instances != instances1 || scale2.instances != instances2) {
+                     scale1.instances = instances1;
+                     scale2.instances = instances2;
+
+                     updateScale($service1, scale1);
+                     updateScale($service2, scale2);
+                  }
+                });
+              });
+           }
+        });
+      });
+    };
+
+    var updateScale = function(service, scale) {
+      http({
+        url: api.url + service + '/scale',
+        method: 'PUT',
+        json: scale
+        }, function (error, response, body) {
+          if (!error)
+            api.event(['workflows:auto-scaling', 'scale', 'services:' + service], scale.instances);
+      });
+    };
+
+    run();
+    setInterval(run, period * 1000);
+
+---
+kind: workflow
+name: auto-scaling
+breed: auto-scaling
+schedule: daemon
+environment_variables:
+  GATEWAY  : "sava/sava/web"
+  ROUTE1   : "sava/sava/sava:1.0/web"
+  ROUTE2   : "sava/sava/sava:1.1/web"
+  SERVICE1 : "deployments/sava/clusters/sava/services/sava:1.0"
+  SERVICE2 : "deployments/sava/clusters/sava/services/sava:1.1"
+  SCALE_MAX: 4
+  SCALE_MIN: 2

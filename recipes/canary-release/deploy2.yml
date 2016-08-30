@@ -1,15 +1,15 @@
 ---
-kind: blueprint
-name: sava:1.1
-clusters:
-  sava:
-    services: sava:1.1
----
 kind: breed
 name: sava:1.1
 deployable: magneticio/sava:1.1.0
 ports:
   web: 8080/http
+---
+kind: blueprint
+name: sava:1.1
+clusters:
+  sava:
+    services: sava:1.1
 ---
 kind: deployment
 name: sava

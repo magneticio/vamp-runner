@@ -34,7 +34,7 @@ deployable:
 
     var increase = function(gateway, oldWeight) {
 
-      var newWeight = (Math.round(oldWeight.substring(0, oldWeight.length - 1) / 5) - 1) * 5;
+      var newWeight = (oldWeight.substring(0, oldWeight.length - 1) - 5;
 
       gateway['routes'][$service1]['weight'] = newWeight < 0 ? '0%' : newWeight + '%';
       gateway['routes'][$service2]['weight'] = newWeight < 0 ? '100%' : (100 - newWeight) + '%';
