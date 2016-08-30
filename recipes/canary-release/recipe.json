@@ -69,7 +69,7 @@
       "description": "Auto scaling",
       "resource": "auto-scaling.yml",
       "await": [
-        "'workflows:auto-scaling",
+        "workflows:auto-scaling",
         "scale'"
       ]
     }
