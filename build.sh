@@ -59,7 +59,7 @@ function gulp_make {
     rm -Rf bower_components node_modules release ui ui.tar.bz2 2> /dev/null
     npm install -g gulp gulp-cli && npm install && bower install && gulp build
     mv release ui && tar -cvjSf ui.tar.bz2 ui
-    rm -Rf ui && mv ui.tar.bz2 ${target_docker}/
+    mv ui release && mv ui.tar.bz2 ${target_docker}/
 }
 
 function docker_make {
