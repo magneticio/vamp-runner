@@ -93,8 +93,8 @@ vamp.runner {
   }
   recipes {
     timeout = {
-      short = 10 seconds
-      long  = 120 seconds
+      short = 5 seconds
+      long  = 60 seconds
     }
     files = [
       ${recipe_list}

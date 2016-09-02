@@ -21,32 +21,35 @@ deployable:
     var $scaleMax = Number(process.env.SCALE_MAX);
     var $scaleMin = Number(process.env.SCALE_MIN);
 
-    var period = 5;  // seconds
+    var period = 15;  // seconds
 
     var run = function() {
       api.api('events?tag=routes:' + $route1 + '&tag=metrics:rate', function(response1) {
         api.api('events?tag=routes:' + $route2 + '&tag=metrics:rate', function(response2) {
 
-            var rate1 = Number(response1[0]['value']);
-            var rate2 = Number(response2[0]['value']);
+          var rate1 = Number(response1[0]['value']);
+          var rate2 = Number(response2[0]['value']);
 
-            if (rate1 + rate2 != 0) {
-              api.api($service1 + '/scale', function(scale1) {
-                api.api($service2 + '/scale', function(scale2) {
+          api.api($service1 + '/scale', function(scale1) {
+            api.api($service2 + '/scale', function(scale2) {
 
-                  var instances1 = Math.round((rate1 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
-                  var instances2 = Math.round((rate2 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
+              var instances1 = Math.round(($scaleMax + $scaleMin) / 2);
+              var instances2 = instances1;
 
-                  if (scale1.instances != instances1 || scale2.instances != instances2) {
-                     scale1.instances = instances1;
-                     scale2.instances = instances2;
+              if (rate1 + rate2 != 0) {
+                instances1 = Math.round((rate1 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
+                instances2 = Math.round((rate2 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
+              }
 
-                     updateScale($service1, scale1);
-                     updateScale($service2, scale2);
-                  }
-                });
-              });
-           }
+              if (scale1.instances != instances1 || scale2.instances != instances2) {
+                 scale1.instances = instances1;
+                 scale2.instances = instances2;
+
+                 updateScale($service1, scale1);
+                 updateScale($service2, scale2);
+              }
+            });
+          });
         });
       });
     };
@@ -59,6 +62,8 @@ deployable:
         }, function (error, response, body) {
           if (!error)
             api.event(['workflows:auto-scaling', 'scale', 'services:' + service], scale.instances);
+          else
+            api.event(['workflows:auto-scaling', 'error', 'services:' + service], error);
       });
     };
 

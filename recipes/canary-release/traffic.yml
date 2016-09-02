@@ -11,13 +11,22 @@ deployable:
     var api = new vamp.Api();
 
     var vga;
+    var count = 0;
 
     var run = function() {
       if (!vga) {
         api.config(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
-      } else http('http://' + vga + ':' + process.env.PORT);
+      } else {
+        count++;
+        http('http://' + vga + ':' + process.env.PORT, function (error, response, body) {
+           if (!error)
+             if (count % 20 == 0) api.event(['workflows:traffic', 'response:ok'], count);
+           else
+             api.event(['workflows:traffic', 'response:error'], error);
+        });
+      }
     };
 
     setInterval(run, 500);
