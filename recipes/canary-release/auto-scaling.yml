@@ -21,7 +21,7 @@ deployable:
     var $scaleMax = Number(process.env.SCALE_MAX);
     var $scaleMin = Number(process.env.SCALE_MIN);
 
-    var period = 15;  // seconds
+    var $period = Number(process.env.PERIOD); // seconds
 
     var run = function() {
       api.api('events?tag=routes:' + $route1 + '&tag=metrics:rate', function(response1) {
@@ -68,7 +68,7 @@ deployable:
     };
 
     run();
-    setInterval(run, period * 1000);
+    setInterval(run, $period * 1000);
 
 ---
 kind: workflow
@@ -76,6 +76,7 @@ name: auto-scaling
 breed: auto-scaling
 schedule: daemon
 environment_variables:
+  PERIOD   : 15
   GATEWAY  : "sava/sava/web"
   ROUTE1   : "sava/sava/sava:1.0/web"
   ROUTE2   : "sava/sava/sava:1.1/web"

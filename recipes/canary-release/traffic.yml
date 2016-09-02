@@ -10,6 +10,8 @@ deployable:
     var vamp = require('vamp-node-client');
     var api = new vamp.Api();
 
+    var $period = Number(process.env.PERIOD); // ms
+
     var vga;
     var count = 0;
 
@@ -21,15 +23,17 @@ deployable:
       } else {
         count++;
         http('http://' + vga + ':' + process.env.PORT, function (error, response, body) {
-           if (!error)
-             if (count % 20 == 0) api.event(['workflows:traffic', 'response:ok'], count);
-           else
-             api.event(['workflows:traffic', 'response:error'], error);
+          if (!error) {
+            if (count % (10000 / $period) == 0)
+              api.event(['workflows:traffic', 'response:ok'], count);
+          } else {
+            api.event(['workflows:traffic', 'response:error'], error);
+          }
         });
       }
     };
 
-    setInterval(run, 500);
+    setInterval(run, $period);
 
 ---
 kind: workflow
@@ -37,4 +41,5 @@ name: traffic
 breed: traffic
 schedule: daemon
 environment_variables:
-  PORT : 9050
+  PERIOD: 500
+  PORT  : 9050

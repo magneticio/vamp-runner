@@ -15,14 +15,14 @@ deployable:
     var $service1 = process.env.SERVICE1;
     var $service2 = process.env.SERVICE2;
 
-    var period = 5;  // seconds
-    var window = 30; // seconds
+    var $period = Number(process.env.PERIOD); // seconds
+    var $window = Number(process.env.WINDOW); // seconds
 
     var run = function() {
 
       api.api('gateways/' + $gateway, function(gateway) {
 
-        metrics.count({ ft: gateway.lookup_name }, { ST: { gte: 500 } }, window, function (errorCount) {
+        metrics.count({ ft: gateway.lookup_name }, { ST: { gte: 500 } }, $window, function (errorCount) {
 
           if (errorCount > 0)
             rollback(gateway);
@@ -65,7 +65,7 @@ deployable:
     };
 
     run();
-    setInterval(run, period * 1000);
+    setInterval(run, $period * 1000);
 
 ---
 kind: workflow
@@ -73,6 +73,8 @@ name: canary
 breed: canary
 schedule: daemon
 environment_variables:
+  PERIOD  : 5
+  WINDOW  : 30
   GATEWAY : "sava/sava/web"
   SERVICE1: "sava/sava/sava:1.0/web"
   SERVICE2: "sava/sava/sava:1.1/web"
