@@ -21,8 +21,11 @@ deployable:
 
       if (elapsed % switchAfter == 0) low = !low;
 
-      api.event(['gateways:sava/sava/port', 'metrics:rate'], low ? 100 : 1000, 'metrics');
-      api.event(['gateways:sava/sava/port', 'metrics:responseTime'], low ? 50 : 1100, 'metrics');
+      api.event(['gateways:sava/sava/port', 'gateway', 'metrics:rate'], low ? 100 : 1000, 'metrics');
+      api.event(['gateways:sava/sava/port', 'routes:sava/sava/runner/port', 'route', 'metrics:rate'], low ? 100 : 1000, 'metrics');
+
+      api.event(['gateways:sava/sava/port', 'gateway', 'metrics:responseTime'], low ? 50 : 1100, 'metrics');
+      api.event(['gateways:sava/sava/port', 'routes:sava/sava/runner/port', 'route', 'metrics:responseTime'], low ? 50 : 1100, 'metrics');
 
       api.event(['workflows:mock-metrics', 'mocked'], low ? 50 : 1100);
     };
