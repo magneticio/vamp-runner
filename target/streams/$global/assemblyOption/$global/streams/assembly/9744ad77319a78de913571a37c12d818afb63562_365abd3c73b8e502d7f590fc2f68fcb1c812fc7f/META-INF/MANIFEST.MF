@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Implementation-Title: akka-stream-contrib
+Implementation-Version: 0.1
+Specification-Vendor: Lightbend Inc.
+Specification-Title: akka-stream-contrib
+Implementation-Vendor-Id: com.typesafe.akka
+Specification-Version: 0.1
+Implementation-URL: https://github.com/akka/akka-stream-contrib
+Vcs-Release-Tag: v0.1
+Implementation-Vendor: Lightbend Inc.
+Vcs-Release-Hash: 2df72e5523dc8a936cf671d693908eb471983cdf
+

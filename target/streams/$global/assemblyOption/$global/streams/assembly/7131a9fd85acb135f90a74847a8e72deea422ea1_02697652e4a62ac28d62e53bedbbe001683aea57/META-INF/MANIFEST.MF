@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: akka-sse
+Implementation-Version: 1.8.1
+Specification-Vendor: de.heikoseeberger
+Specification-Title: akka-sse
+Implementation-Vendor-Id: de.heikoseeberger
+Specification-Version: 1.8.1
+Implementation-URL: https://github.com/hseeberger/akka-sse
+Implementation-Vendor: de.heikoseeberger
+

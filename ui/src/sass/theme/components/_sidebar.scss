@@ -9,7 +9,7 @@ $angle-right: "\f101";
   z-index: 904;
   display: block;
   min-height: 100%;
-  background-color: $sidebar;
+  background-color: $color-big-stone;
   height: 100%;
   position: fixed;
 }
@@ -35,10 +35,10 @@ $angle-right: "\f101";
   position: relative;
   float: none;
   padding: 0;
+  color: red;
   &.selected:not(.with-sub-menu) {
-    background-color: $primary;
     a.al-sidebar-list-link {
-      color: $sidebar-text;
+      color: $color-radical-red;
       b {
         color: $sidebar-text;
       }
@@ -62,25 +62,28 @@ $angle-right: "\f101";
 
 a.al-sidebar-list-link {
   display: block;
-  height: 42px;
-  padding-left: 18px;
+  height: 40px;
+  padding-left: 20px;
   text-shadow: none;
-  font-size: 13px;
+  font-size: $font-size-small;
   text-decoration: none;
-  color: $sidebar-text;
+  color: white;
   line-height: 42px;
   white-space: nowrap;
   overflow: hidden;
   cursor: pointer;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+
   &:hover {
-    color: $primary;
+    color: $color-white-squeeze;
     b {
-      color: $primary;
+      color: $color-blue-dianne;
     }
   }
   i {
-    margin-right: 18px;
-    width: 16px;
+    margin-right: 20px;
+    width: 20px;
     display: inline-block;
   }
   b {
@@ -96,7 +99,7 @@ a.al-sidebar-list-link {
     top: 12px;
     padding: 0;
     text-align: center;
-    color: $sidebar-text;
+    color: $color-big-stone;
     transition: transform 0.2s linear;
   }
 }
@@ -161,7 +164,7 @@ a.al-sidebar-list-link {
 
 .sidebar-hover-elem {
   width: 4px;
-  background: $primary;
+  background: $color-radical-red;
   position: absolute;
   top: -150px;
   left: 176px;

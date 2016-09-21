@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1471603838389
+Bundle-Description: akka-parsing
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0;description=A
+ pache License, Version 2.0
+Bundle-ManifestVersion: 2
+Bundle-Name: akka-parsing
+Bundle-SymbolicName: com.typesafe.akka.parsing
+Bundle-Vendor: Lightbend Inc.
+Bundle-Version: 2.4.9
+Created-By: 1.8.0_101 (Oracle Corporation)
+Export-Package: akka.parboiled2;uses:="akka.parboiled2.support,akka.shap
+ eless,akka.shapeless.ops,scala,scala.collection,scala.collection.generi
+ c,scala.collection.immutable,scala.collection.mutable,scala.collection.
+ parallel,scala.math,scala.reflect,scala.reflect.api,scala.reflect.macro
+ s.whitebox,scala.runtime,scala.util,scala.util.control";version="2.4.9"
+ ,akka.parboiled2.support;uses:="akka.parboiled2,akka.shapeless,akka.sha
+ peless.ops,scala,scala.collection,scala.collection.immutable,scala.refl
+ ect,scala.reflect.api,scala.reflect.macros.whitebox,scala.runtime,scala
+ .util";version="2.4.9",akka.parboiled2.util;version="2.4.9",akka.shapel
+ ess;uses:="akka.shapeless.syntax,scala,scala.collection,scala.collectio
+ n.immutable,scala.reflect";version="2.4.9",akka.shapeless.ops;uses:="ak
+ ka.shapeless,scala.reflect";version="2.4.9",akka.shapeless.syntax;uses:
+ ="akka.shapeless,akka.shapeless.ops,scala.reflect";version="2.4.9"
+Import-Package: scala;version="[2.11,2.12)",scala.collection;version="[2
+ .11,2.12)",scala.collection.generic;version="[2.11,2.12)",scala.collect
+ ion.immutable;version="[2.11,2.12)",scala.collection.mutable;version="[
+ 2.11,2.12)",scala.collection.parallel;version="[2.11,2.12)",scala.math;
+ version="[2.11,2.12)",scala.reflect;version="[2.11,2.12)",scala.reflect
+ .api;version="[2.11,2.12)",scala.reflect.macros;version="[2.11,2.12)",s
+ cala.reflect.macros.whitebox;version="[2.11,2.12)",scala.runtime;versio
+ n="[2.11,2.12)",scala.sys;version="[2.11,2.12)",scala.util;version="[2.
+ 11,2.12)",scala.util.control;version="[2.11,2.12)",scala.quasiquotes;re
+ solution:=optional
+Private-Package: com.typesafe.akka.parsing.*
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Tool: Bnd-2.4.0.201411031534
