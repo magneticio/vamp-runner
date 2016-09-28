@@ -17,6 +17,17 @@
   height: $logo-height;
 }
 
+.al-logo {
+  position: relative;
+  p {
+    position: absolute;
+    right: -2px;
+    bottom: -22px;
+    color: rgba($color-big-stone, 0.5);
+    font-weight: 500;
+  }
+}
+
 .info-section {
   position: absolute;
   right: 20px;
