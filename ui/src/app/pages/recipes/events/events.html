@@ -1,20 +1,37 @@
-<div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="EventsCtrl">
-
-    <div class="pull-right">
-        <div class="btn-group" role="group">
-            <button type="button"
-                    class="btn btn-default btn-with-icon"
-                    ng-click="clear()"><i class="ion-trash-b"></i>Clear
-            </button>
+<div class="col-lg-12 col-md-12 col-sm-12">
+    <div class="panel panel-blur xmedium-panel feed-comply-panel with-scroll recipe-panel animated zoom-in" zoom-in ba-panel-blur>
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title">Events</h3>
+            <div class="button">
+                <div class="btn-group" role="group">
+                    <button type="button"
+                            class="btn btn-default btn-with-icon"
+                            ng-click="clear()"><i class="ion-trash-b"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <tr>
+                    <th>Time</th>
+                    <th>Tags</th>
+                    <th>Event data</th>
+                </tr>
+                <tr ng-repeat="event in events">
+                    <td style="text-align: left" width="20%">
+                        <p>
+                            {{ :: event.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}
+                        </p>
+                    </td>
+                    <td class="default" width="40%">
+                        <p>
+                            {{ :: event.tags }}
+                        </p>
+                    </td>
+                    <td class="default" width="40%">{{ :: event.value }}</td>
+                </tr>
+            </table>
         </div>
     </div>
-
-    <table class="table table-hover">
-        <tr ng-repeat="event in events">
-            <td width="10%">{{ :: event.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
-            <td class="default" width="45%">{{ :: event.tags }}</td>
-            <td class="default" width="45%">{{ :: event.value }}</td>
-        </tr>
-    </table>
-
 </div>

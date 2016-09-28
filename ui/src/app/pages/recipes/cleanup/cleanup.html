@@ -1,27 +1,35 @@
-<div class="col-lg-4 col-md-12 col-sm-12"
-     ba-panel
-     ba-panel-title="{{ recipe.name }}"
-     ba-panel-class="xmedium-panel feed-comply-panel with-scroll recipe-panel" ng-class="{'transparent': transparent}"
-     ng-controller="CleanupCtrl">
-
-    <div class="cleanup-container" ng-class="{'transparent': transparent}">
-        <div class="button">
-            <div class="btn-group" role="group">
-                <button type="button"
-                        ng-disabled="isRunning()"
-                        ng-click="cleanup(recipe)"
-                        class="btn btn-default btn-with-icon pull-right"><i class="ion-scissors"></i>Cleanup
-                </button>
+<div class="col-lg-3 col-md-12 col-sm-12">
+    <div class="panel panel-blur xmedium-panel feed-comply-panel with-scroll recipe-panel animated zoom-in" zoom-in ba-panel-blur>
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title">{{ recipe.name }}</h3>
+            <div class="button">
+                <div class="btn-group" role="group">
+                    <button type="button"
+                            ng-disabled="isRunning()"
+                            ng-click="cleanup(recipe)"
+                            class="btn btn-danger btn-with-icon pull-right"><i class="ion-scissors"></i>Cleanup
+                    </button>
+                </div>
             </div>
         </div>
-        <ul class="cleanup" ng-model="recipes">
-            <li ng-repeat="step in recipe.cleanup">
-                <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
-                <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>
-                <i class="recipe running ion-record" ng-show="step.state === 'running'"></i>
-                <i class="recipe idle ion-record" ng-show="step.state === 'idle'"></i>
-                {{ :: step.description }}
-            </li>
-        </ul>
+        <div class="panel-body">
+            <div class="cleanup-container" ng-class="{'transparent': transparent}">
+
+                <table class="table">
+                    <tr ng-repeat="step in recipe.run" class="recipe-step">
+                        <td>
+                            <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
+                            <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>
+                            <i class="recipe running ion-record" ng-show="step.state === 'running'"></i>
+                            <i class="recipe idle ion-record" ng-show="step.state === 'idle'"></i>
+                        </td>
+                        <td class="default" width="100%">
+                            <p>{{ :: step.description }}</p>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
     </div>
 </div>

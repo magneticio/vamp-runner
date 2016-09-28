@@ -227,16 +227,16 @@ ul.cleanup {
       line-height: 42px;
     }
     i.succeeded {
-      color: #0e8174;
+      color: $color-accent-green;
     }
     i.failed {
-      color: #ff6384;
+      color: $color-accent-red;
     }
     i.running {
-      color: #ffce56;
+      color: $color-accent-grey;
     }
     i.idle {
-      color: #36a2eb;
+      color: $color-jungle-mist;
     }
 
     i.mark {

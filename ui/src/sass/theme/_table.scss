@@ -14,11 +14,13 @@
       }
     }
   }
+
   & > tbody {
     & > tr {
       & > tr:first-child {
         padding-top: 1px;
       }
+
       & > td {
         padding: 0px 8px;
         line-height: 35px;
@@ -29,6 +31,11 @@
         &:last-child {
           padding-right: 16px !important;
         }
+      }
+    }
+    & > tr:last-of-type {
+      td {
+        border-bottom: 1px solid $border-light;
       }
     }
   }

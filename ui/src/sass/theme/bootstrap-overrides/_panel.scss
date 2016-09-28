@@ -1,4 +1,4 @@
-$panel-title-height: 40px;
+$panel-title-height: 60px;
 $panel-heading-font-size: $font-size-medium-small;
 
 .panel {
@@ -56,6 +56,8 @@ $panel-heading-font-size: $font-size-medium-small;
   > .panel-body {
     padding: 10px 10px;
     height: 100%;
+    overflow-x: hidden;
+
   }
   > .panel-heading {
     color: $color-big-stone;
@@ -69,7 +71,7 @@ $panel-heading-font-size: $font-size-medium-small;
 .panel-heading, .panel-footer {
   border-bottom: 1px solid $color-white-squeeze;
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.12);
-  height: 40px;
+  height: 60px;
   font-size: $font-size-medium-small;
   padding: 0 10px;
   display: flex;
@@ -202,8 +204,30 @@ label {
 
 .recipe-panel {
 
+  p {
+    font-weight: $font-light;
+  }
+
+  td {
+    p {
+      line-height: 1.7;
+      padding: 6px;
+      margin-bottom: 0;
+    }
+  }
+
+  .recipe-step {
+
+  }
+
+
   .panel-body {
     padding: 0 !important;
+
+    >p {
+      padding: 10px 10px 0 10px;
+      line-height: 1.7;
+    }
   }
   li {
     border-bottom : 1px solid gainsboro !important;
