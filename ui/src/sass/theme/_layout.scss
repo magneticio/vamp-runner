@@ -17,7 +17,8 @@ body {
   color: $default-text;
   background-color: $body-bg;
   &.blur-theme {
-    @include main-background();
+    background-color: $color-white-squeeze;
+    //@include main-background();
   }
 }
 
@@ -145,7 +146,7 @@ a {
 }
 
 .al-content {
-  padding: 8px 32px 8px 40px;
+  padding: 20px 20px 20px 20px;
 }
 
 @media screen and (max-width: $resXS) {

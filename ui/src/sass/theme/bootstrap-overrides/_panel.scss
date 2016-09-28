@@ -1,15 +1,16 @@
-$panel-title-height: 44px;
-$panel-heading-font-size: 16px;
+$panel-title-height: 40px;
+$panel-heading-font-size: $font-size-medium-small;
 
 .panel {
   @include scrollbars(.4em, rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.7));
-  color: $default-text;
-  background-color: $default;
-  border: none;
-  border-radius: 5px;
+  color: $color-big-stone;
+  background-color: white;
+  //border: 1px solid $color-big-stone;
   position: relative;
-  margin-bottom: 24px;
-  box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
+  box-shadow: 0 0 4px -1px rgba(0, 0, 0, 0.25);
+  border-radius: 0;
+
   &.animated {
     animation-duration: 0.5s;
   }
@@ -44,38 +45,39 @@ $panel-heading-font-size: 16px;
 }
 
 .panel.panel-blur {
-  $blurredBgUrl: $images-root + 'blur-bg-blurred.jpg';
-  background: url($blurredBgUrl);
-  transition: none;
-  background-attachment: fixed;
+  //$blurredBgUrl: $images-root + 'blur-bg-blurred.jpg';
+  //background: url($blurredBgUrl);
+  //transition: none;
+  //background-attachment: fixed;
 }
 
 .panel {
   > .panel-body {
-    padding: 15px 22px;
+    padding: 10px 10px;
     height: 100%;
   }
   > .panel-heading {
-    color: $default-text;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    color: $color-big-stone;
+    border-radius: 0 !important;
   }
   > .panel-footer {
-    color: $default-text;
+    color: $color-big-stone;
   }
 }
 
 .panel-heading, .panel-footer {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid $color-white-squeeze;
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.12);
-  height: $panel-title-height;
-  font-size: $panel-heading-font-size;
-  $vertical-padding: ($panel-title-height - $panel-heading-font-size) / 2;
-  padding: $vertical-padding 22px;
+  height: 40px;
+  font-size: $font-size-medium-small;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
 }
 
 .panel-title {
-  font-weight: $font-bold;
+  font-size: $font-size-medium-small;
+  font-weight: 300;
   text-transform: uppercase;
   opacity: 0.9;
 }
@@ -177,3 +179,22 @@ $panel-heading-font-size: 16px;
 .panel-group .panel {
   border-radius: 0;
 }*/
+
+// Custom stuff
+label {
+  font-size: $font-size-small !important;
+  color: $color-big-stone !important;
+  font-weight: 300 !important;
+}
+
+.btn {
+  border-radius: 5px;
+  font-size: $font-size-small !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+  padding-left: 10px;
+  padding-right: 10px;
+}

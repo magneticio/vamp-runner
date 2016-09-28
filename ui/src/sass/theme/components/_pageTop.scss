@@ -1,41 +1,31 @@
 .page-top {
-  background-color: $sidebar;
+  display: flex;
+  align-items: center;
+  background-color: white;
   position: fixed;
   z-index: 904;
-  box-shadow: 2px 0px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 2px -2px rgba($color-big-stone, 0.25);
   height: 66px;
   width: 100%;
   min-width: $resMin;
-  padding: 0 32px 0 40px;
-
-  &.scrolled {
-    background-color: rgba(black, 0.85)
-  }
+  padding: 0 20px;
 }
 
-a.al-logo {
-  color: $sidebar-text;
-  display: block;
-  font-size: 24px;
-  font-family: $font-family;
-  white-space: nowrap;
-  float: left;
-  outline: none !important;
-  line-height: 60px;
-
-  span {
-    color: $primary;
-  }
+.top-logo {
+  $logo-height: 30px;
+  //margin-top: (66px - $logo-height)/2;
+  height: $logo-height;
 }
 
 .info-section {
   position: absolute;
-  right: 50px;
+  right: 20px;
   top: 0;
   height: 66px;
   line-height: 66px;
   color: #fff;
-  font-weight: bold;
+  font-weight: 300;
+  font-size: $font-size-small;
 
   span.green {
     color: $primary;
@@ -98,14 +88,13 @@ a.collapse-menu-link {
   display: block;
   text-decoration: none;
   line-height: 42px;
-  color: $sidebar-text;
+  color: $color-big-stone;
   padding: 0;
-  float: left;
-  margin: 11px 0 0 25px;
+  margin-left: 10px;
 
   &:hover {
     text-decoration: none;
-    color: $warning;
+    color: $color-brick-red;
   }
 }
 
