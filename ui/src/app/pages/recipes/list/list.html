@@ -1,7 +1,8 @@
 <div class="recipes-container" ng-class="{'transparent': transparent}" ng-controller="ListCtrl">
     <ul class="recipes" ng-model="recipes">
         <li ng-repeat="item in recipes"
-            ng-click="details(item)">
+            ng-click="details(item)"
+            ng-class="{'active': item.active}">
             <div class="blur-container">
                 <div class="blur-box"></div>
             </div>
