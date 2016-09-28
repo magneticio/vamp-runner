@@ -20,7 +20,7 @@
   function chartJsConfig(ChartJsProvider, baConfigProvider) {
     var layoutColors = baConfigProvider.colors;
     ChartJsProvider.setOptions({
-      colours: [ layoutColors.info, layoutColors.success, layoutColors.default, layoutColors.primary],
+      colours: [ layoutColors.all.yellow, layoutColors.all.green, layoutColors.default, layoutColors.primary],
       responsive: true,
       scaleFontColor: layoutColors.defaultText,
       scaleLineColor: layoutColors.border,

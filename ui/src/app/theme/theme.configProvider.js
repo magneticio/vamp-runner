@@ -21,13 +21,14 @@
     danger: '#e85656'
   };
 
+
   // all colors for charts
   var allColors = {
-    red: '#ff6384',
-    green: '#0e8174',
-    yellow: '#ffce56',
-    blue: '#36a2eb',
-    gray: '#c0c0c0'
+    red: '#FD4362',
+    green: '#00CE9F',
+    yellow: '#FFAA21;',
+    blue: '#183B4D',
+    gray: '#7BA1B8'
   };
 
   angular.module('VampRunner.theme')
