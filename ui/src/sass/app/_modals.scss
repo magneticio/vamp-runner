@@ -1,20 +1,32 @@
+.modal {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .modal-content {
   border-radius: 5px;
   border: none;
-  color: #ffffff;
-  $blurredBgUrl: $images-root + 'blur-bg-blurred.jpg';
-  background: url($blurredBgUrl);
+  color: $color-big-stone;
+
   transition: none;
   background-attachment: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: white;
 }
 
 .modal-body {
+  padding: 20px 20px !important;
   pre {
-    color: #ffffff;
-    font: 14px/16px "Roboto", sans-serif;
+    background-color: rgba($color-jungle-mist, 0.5) !important;
+    border: none !important;
+    border-radius: 2px !important;
+    color: $color-big-stone;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
     background-color: transparent;
+    margin: 0 !important;
+    padding: 20px !important;
   }
 }
 
@@ -23,7 +35,9 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   .modal-title {
-    color: #ffffff;
+    color: $color-big-stone;
+    font-weight: 300;
+
   }
 }
 
@@ -62,9 +76,14 @@ $modal-input-border: #e7e7e7;
     }
   }
   .modal-header {
-    border: none;
+    padding: 10px 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
     .close {
-      margin-top: -5px;
+      margin-top: 0;
+      transform: translate(0, 2px);
     }
   }
   .modal-footer {
