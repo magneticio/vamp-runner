@@ -29,6 +29,7 @@ deployable:
 
       events.flatMap(_).head().each(function (response) {
         var responseTime = response.value;
+        var current = scale.instances;
 
         if (responseTime > 1000 && scale.instances < 3)
           scale.instances++;
@@ -36,13 +37,15 @@ deployable:
 
         console.log(JSON.stringify(scale));
 
-        http({
-          url: api.url + 'deployments/sava/clusters/sava/services/runner/scale',
-          method: 'PUT',
-          json: scale
-        }, function (error) {
-          if (!error) api.event(['workflows:auto-scaling', 'scale'], scale.instances);
-        });
+        if (current !== scale.instances) {
+          http({
+            url: api.url + 'deployments/sava/clusters/sava/services/runner/scale',
+            method: 'PUT',
+            json: scale
+          }, function (error) {
+            if (!error) api.event(['workflows:auto-scaling', 'scale'], scale.instances);
+          });
+        }
       });
     };
 
