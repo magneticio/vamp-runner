@@ -1,12 +1,8 @@
 ---
-kind: deployment
 name: sava
+kind: blueprint
 
 clusters:
   sava:
     services:
       breed: runner
-
----
-kind: gateway
-name: sava/9051

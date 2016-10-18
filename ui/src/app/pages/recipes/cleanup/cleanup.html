@@ -16,7 +16,7 @@
             <div class="cleanup-container" ng-class="{'transparent': transparent}">
 
                 <table class="table">
-                    <tr ng-repeat="step in recipe.run" class="recipe-step">
+                    <tr ng-repeat="step in recipe.cleanup" class="recipe-step">
                         <td class="step-state">
                             <i class="recipe succeeded ion-record" ng-show="step.state === 'succeeded'"></i>
                             <i class="recipe failed ion-record" ng-show="step.state === 'failed'"></i>

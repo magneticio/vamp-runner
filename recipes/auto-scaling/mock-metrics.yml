@@ -10,7 +10,7 @@ deployable:
     var api = new vamp.Api();
 
     var period = 5;
-    var switchAfter = 30;
+    var switchAfter = 15;
 
     var low = false;
     var elapsed = 0;

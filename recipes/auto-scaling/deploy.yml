@@ -1,6 +1,6 @@
 ---
-kind: deployment
 name: sava
+kind: blueprint
 
 gateways:
   9051: sava/port
