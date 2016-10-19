@@ -1,3 +1,6 @@
 ---
 kind: breed
 name: runner
+---
+kind: gateway
+name: sava/9060

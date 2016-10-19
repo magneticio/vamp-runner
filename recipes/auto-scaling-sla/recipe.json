@@ -5,6 +5,7 @@
     {
       "description": "Deploy service with built-in SLA",
       "resource": "deploy.yml",
+      "as": "deployments/sava",
       "await": [
         "deployments:sava",
         "clusters:sava",
@@ -68,8 +69,9 @@
       ]
     },
     {
-      "description": "Undeploy service and gateway",
+      "description": "Undeploy service",
       "resource": "undeploy1.yml",
+      "as": "deployments/sava",
       "condition": "deployments/sava",
       "await": [
         "deployments:sava",
@@ -79,14 +81,14 @@
       ]
     },
     {
-      "description": "Delete breed",
+      "description": "Delete breed and gateway",
       "resource": "undeploy2.yml",
-      "condition": "breeds/sava:1.0.0",
+      "condition": "gateways/sava/9060",
       "await": [
-        "breeds:sava:1.0.0",
-        "archive:delete"
-      ],
-      "timeout": "short"
+        "gateways",
+        "gateways:sava/9060",
+        "undeployed"
+      ]
     }
   ]
 }

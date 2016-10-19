@@ -7,28 +7,26 @@ deployable:
     'use strict';
 
     var vamp = require('vamp-node-client');
-    var api = new vamp.Api();
+    var _ = require('highland');
+    var request = require('request-promise');
 
-    var request = require('request');
     var http = request.defaults({
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
+
+    var api = new vamp.Api();
 
     var period = 5;
 
     var process = function() {
       http({
         url: api.url + 'deployments/sava/clusters/sava/services/runner/scale'
-        }, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-
-            var scale = JSON.parse(body);
-
-            api.event(['workflows:check-scale', 'scale'], scale.instances);
-
-            if (scale.instances != 1)
-              api.event(['workflows:check-scale', 'response:ok'], 'ok');
-          }
+      }).promise().then(function (response) {
+        if (response) {
+          var scale = JSON.parse(response);
+          api.event(['workflows:check-scale', 'scale'], scale.instances);
+          if (scale.instances != 1) api.event(['workflows:check-scale', 'response:ok'], 'ok');
+        }
       });
     };
 
