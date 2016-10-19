@@ -5,7 +5,6 @@
     {
       "description": "Deploy service with built-in SLA",
       "resource": "deploy.yml",
-      "as": "deployments/sava",
       "await": [
         "deployments:sava",
         "clusters:sava",
@@ -71,7 +70,6 @@
     {
       "description": "Undeploy service",
       "resource": "undeploy1.yml",
-      "as": "deployments/sava",
       "condition": "deployments/sava",
       "await": [
         "deployments:sava",

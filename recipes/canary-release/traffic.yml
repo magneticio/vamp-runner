@@ -6,8 +6,8 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
     var vamp = require('vamp-node-client');
+    var http = require('request-promise');
     var api = new vamp.Api();
 
     var $period = Number(process.env.PERIOD); // ms
@@ -17,18 +17,16 @@ deployable:
 
     var run = function() {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else {
         count++;
-        http('http://' + vga + ':' + process.env.PORT, function (error, response, body) {
-          if (!error) {
-            if (count % (10000 / $period) == 0)
-              api.event(['workflows:traffic', 'response:ok'], count);
-          } else {
-            api.event(['workflows:traffic', 'response:error'], error);
-          }
+        http('http://' + vga + ':' + process.env.PORT).promise().then(function () {
+          if (count % (10000 / $period) == 0)
+            api.event(['workflows:traffic', 'response:ok'], count);
+        }).catch(function (error) {
+          api.event(['workflows:traffic', 'response:error'], error);
         });
       }
     };

@@ -1,6 +1,6 @@
 ---
-kind: deployment
 name: sava
+kind: deployment
 
 gateways:
   9061: sava/port

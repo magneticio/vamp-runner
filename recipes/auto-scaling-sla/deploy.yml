@@ -1,6 +1,6 @@
 ---
 name: sava
-kind: blueprint
+kind: deployment
 
 gateways:
   9060: sava/port

@@ -49,7 +49,7 @@
       ]
     },
     {
-      "description": "Undeploy service and gateway",
+      "description": "Undeploy service",
       "resource": "undeploy1.yml",
       "condition": "deployments/sava",
       "await": [
@@ -60,14 +60,14 @@
       ]
     },
     {
-      "description": "Delete breed",
+      "description": "Delete breed and gateway",
       "resource": "undeploy2.yml",
-      "condition": "breeds/sava:1.0.0",
+      "condition": "gateways/sava/9061",
       "await": [
-        "breeds:sava:1.0.0",
-        "archive:delete"
-      ],
-      "timeout": "short"
+        "gateways",
+        "gateways:sava/9060",
+        "undeployed"
+      ]
     }
   ]
 }

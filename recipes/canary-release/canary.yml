@@ -6,10 +6,15 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
+    var _ = require('highland');
     var vamp = require('vamp-node-client');
+    var request = require('request-promise');
+
     var api = new vamp.Api();
     var metrics = new vamp.Metrics(api);
+    var http = request.defaults({
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
 
     var $gateway  = process.env.GATEWAY;
     var $service1 = process.env.SERVICE1;
@@ -18,12 +23,9 @@ deployable:
     var $period = Number(process.env.PERIOD); // seconds
     var $window = Number(process.env.WINDOW); // seconds
 
-    var run = function() {
-
-      api.api('gateways/' + $gateway, function(gateway) {
-
-        metrics.count({ ft: gateway.lookup_name }, { ST: { gte: 500 } }, $window, function (errorCount) {
-
+    var run = function () {
+      api.api('gateways/' + $gateway).each(function (gateway) {
+        metrics.count({ft: gateway.lookup_name}, {ST: {gte: 500}}, $window).each(function (errorCount) {
           if (errorCount > 0)
             rollback(gateway);
           else
@@ -32,35 +34,34 @@ deployable:
       });
     };
 
-    var increase = function(gateway, oldWeight) {
-
-      var newWeight = oldWeight.substring(0, oldWeight.length - 1) - 5;
-
-      gateway['routes'][$service1]['weight'] = newWeight < 0 ? '0%' : newWeight + '%';
-      gateway['routes'][$service2]['weight'] = newWeight < 0 ? '100%' : (100 - newWeight) + '%';
-
-      update(gateway);
+    var increase = function (gateway, oldWeight) {
+      oldWeight = oldWeight.substring(0, oldWeight.length - 1);
+      if (oldWeight > 0) {
+        var newWeight = oldWeight - 5;
+        gateway['routes'][$service1]['weight'] = newWeight < 0 ? '0%' : newWeight + '%';
+        gateway['routes'][$service2]['weight'] = newWeight < 0 ? '100%' : (100 - newWeight) + '%';
+        update(gateway);
+      }
     };
 
-    var rollback = function(gateway) {
-
-      gateway['routes'][$service1]['weight'] = '100%';
-      gateway['routes'][$service2]['weight'] = '0%';
-
-      update(gateway);
+    var rollback = function (gateway) {
+      if ( gateway['routes'][$service1]['weight'] !== '100%') {
+        gateway['routes'][$service1]['weight'] = '100%';
+        gateway['routes'][$service2]['weight'] = '0%';
+        update(gateway);
+      }
     };
 
-    var update = function(gateway) {
+    var update = function (gateway) {
       http({
         url: api.url + 'gateways/' + $gateway,
         method: 'PUT',
         json: gateway
-        }, function (error, response, body) {
-          if (!error)
-            api.event(['workflows:canary', 'updated'],
-              gateway['routes'][$service1]['weight'] + '/' + gateway['routes'][$service2]['weight']);
-          else
-            api.event(['workflows:canary', 'error'], error);
+      }).promise().then(function () {
+        api.event(['workflows:canary', 'updated'],
+          gateway['routes'][$service1]['weight'] + '/' + gateway['routes'][$service2]['weight']);
+      }).catch(function (error) {
+        api.event(['workflows:canary', 'error'], error);
       });
     };
 

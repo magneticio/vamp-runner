@@ -1,9 +1,8 @@
 ---
 name: sava
-kind: blueprint
+kind: deployment
 
 clusters:
   sava:
     services:
       breed: runner
-
