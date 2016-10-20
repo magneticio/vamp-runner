@@ -6,8 +6,9 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
+    var _ = require('highland');
     var vamp = require('vamp-node-client');
+    var http = require('request-promise');
 
     var api = new vamp.Api();
 
@@ -15,50 +16,51 @@ deployable:
 
     var process = function () {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else burst();
     };
 
+    var sampleSize = 50;
     var interval = setInterval(process, 1000);
 
     function burst() {
-
       var count = 0;
       var count1 = 0;
       var count2 = 0;
 
       clearTimeout(interval);
 
-      for (var i = 0; i < 50; i++) {
-
-        http('http://' + vga + ':9056/2', function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            count++;
-            var result = JSON.parse(body);
-            if (result['id'] === '1.0.0' || result['id'] === '2.0.0') {
-              if (result['id'] === '1.0.0') count1++;
-              if (result['id'] === '2.0.0') count2++;
-
-              if (count === 50) {
-                var p1 = 100.0 * count1 / count;
-                var p2 = 100.0 * count2 / count;
-                if (p1 > 41 || p1 < 39 || p2 > 61 || p2 < 59)
-                  api.event(['workflows:runner-requester', 'response:error'], p1 + '% / ' + p2 + '%');
-                else
-                  api.event(['workflows:runner-requester', 'response:ok'], p1 + '% / ' + p2 + '%');
-              }
-
-            } else {
-              api.event(['workflows:runner-requester', 'response:failed'], body);
-            }
+      _(function (push, next) {
+        if (count < sampleSize) {
+          push(null, ++count);
+          next();
+        }
+        else push(null, _.nil)
+      }).flatMap(function () {
+        return _(http('http://' + vga + ':9056/2').promise().then(function (response) {
+          var result = JSON.parse(response);
+          if (result['id'] === '1.0.0' || result['id'] === '2.0.0') {
+            if (result['id'] === '1.0.0') count1++;
+            if (result['id'] === '2.0.0') count2++;
           }
-        });
-      }
+          return result;
+        }));
+      }).last().each(function () {
+        if (count) {
+          var p1 = 100.0 * count1 / count;
+          var p2 = 100.0 * count2 / count;
+          if (p1 > 41 || p1 < 39 || p2 > 61 || p2 < 59)
+            api.event(['workflows:runner-requester', 'response:error'], p1 + '% / ' + p2 + '%');
+          else
+            api.event(['workflows:runner-requester', 'response:ok'], p1 + '% / ' + p2 + '%');
+        } else api.event(['workflows:runner-requester', 'response:error'], 'no response');
+      });
 
       interval = setInterval(process, 5000);
     }
+
 
 ---
 kind: workflow
