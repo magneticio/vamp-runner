@@ -10,9 +10,8 @@ deployable:
     var vamp = require('vamp-node-client');
     var http = require('request-promise');
 
-    var api = new vamp.Api();
-
     var vga;
+    var api = new vamp.Api();
 
     var process = function () {
       if (!vga) {

@@ -6,27 +6,26 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
+    var _ = require('highland');
     var vamp = require('vamp-node-client');
-
-    var api = new vamp.Api();
+    var http = require('request-promise');
 
     var vga;
+    var api = new vamp.Api();
 
     var process = function () {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else {
-        http('http://' + vga + ':9052/***', function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            if (result['id'] === 'backend' && result['port'] === 8085 && result['path'] === '***') {
-              api.event(['workflows:runner-requester', 'response:ok'], body);
-            } else {
-              api.event(['workflows:runner-requester', 'response:failed'], body);
-            }
+        http('http://' + vga + ':9052/***').promise().then(function (body) {
+          var result = JSON.parse(body);
+          var result = JSON.parse(body);
+          if (result['id'] === 'backend' && result['port'] === 8085 && result['path'] === '***') {
+            api.event(['workflows:runner-requester', 'response:ok'], body);
+          } else {
+            api.event(['workflows:runner-requester', 'response:failed'], body);
           }
         });
       }
