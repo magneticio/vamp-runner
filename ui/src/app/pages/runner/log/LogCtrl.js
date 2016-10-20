@@ -5,7 +5,7 @@
     .controller('LogCtrl', LogCtrl);
 
   /** @ngInject */
-  function LogCtrl($rootScope, $scope, api, log) {
+  function LogCtrl($scope, log) {
 
     $scope.logs = log.logs;
 
@@ -27,7 +27,7 @@
       return log.level;
     };
 
-    $rootScope.$on('log', function () {
+    $scope.$on('log', function () {
       $scope.logs = log.logs;
     });
 

@@ -2,11 +2,11 @@
   'use strict';
 
   angular.module('VampRunner.pages.runner')
-    .service('log', ["$rootScope", "api", "toastr", function ($rootScope, api, toastr) {
-      return new Log($rootScope, api, toastr);
+    .service('log', ["$rootScope", "$runner", "toastr", function ($rootScope, $runner, toastr) {
+      return new Log($rootScope, $runner, toastr);
     }]);
 
-  function Log($rootScope, api, toastr) {
+  function Log($rootScope, $runner, toastr) {
 
     var logs = this.logs = [];
 
@@ -25,13 +25,13 @@
       else if (level === 'error')
         toastr.error(message, level.toUpperCase());
 
-      $rootScope.$emit('log', log);
+      $rootScope.$broadcast('log', log);
     };
 
     $rootScope.$on('recipes:run', function () {
       var selected = [];
-      for (var i = 0; i < api.recipes.length; i++) {
-        var recipe = api.recipes[i];
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        var recipe = $runner.recipes[i];
         if (recipe.selected) selected.push('\'' + recipe.name + '\'');
       }
       push('info', 'user', 'Run recipes: ' + selected.join(', ') + '.');

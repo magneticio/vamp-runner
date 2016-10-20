@@ -5,15 +5,15 @@
     .controller('CleanupCtrl', CleanupCtrl);
 
   /** @ngInject */
-  function CleanupCtrl($rootScope, $scope, $uibModal, baConfig, api) {
+  function CleanupCtrl($scope, baConfig, $runner) {
 
     $scope.transparent = baConfig.theme.blur;
 
-    $scope.recipe = api.recipes[0];
+    $scope.recipe = $runner.recipes[0];
 
     $scope.isRunning = function () {
-      for (var i = 0; i < api.recipes.length; i++) {
-        if (api.recipes[i].state === 'running') {
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        if ($runner.recipes[i].state === 'running') {
           return true;
         }
       }
@@ -21,16 +21,16 @@
     };
 
     $scope.cleanup = function (recipe) {
-      api.cleanup(recipe);
+      $runner.cleanup(recipe);
     };
 
-    $rootScope.$on('recipe:details', function (event, recipe) {
+    $scope.$on('recipe:details', function (event, recipe) {
       $scope.recipe = recipe;
     });
 
-    $rootScope.$on('recipes:update', function () {
-      for (var i = 0; i < api.recipes.length; i++) {
-        var recipe = api.recipes[i];
+    $scope.$on('recipes:update', function () {
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        var recipe = $runner.recipes[i];
         if (recipe.state === 'running') {
           $scope.recipe = recipe;
           return;
@@ -39,7 +39,7 @@
         }
       }
 
-      if (!$scope.recipe) $scope.recipe = api.recipes[0];
+      if (!$scope.recipe) $scope.recipe = $runner.recipes[0];
     });
   }
 })();

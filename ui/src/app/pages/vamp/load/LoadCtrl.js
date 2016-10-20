@@ -5,7 +5,7 @@
     .controller('LoadCtrl', LoadCtrl);
 
   /** @ngInject */
-  function LoadCtrl($rootScope, $scope, $filter, api) {
+  function LoadCtrl($scope, $filter, $runner) {
 
     $scope.labels = [];
     $scope.data = [
@@ -32,11 +32,11 @@
     tail($scope.data[0], 0, 0);
     tail($scope.data[1], 0, 0);
 
-    api.loads.forEach(function (load) {
+    $runner.loads.forEach(function (load) {
       onLoad(load);
     });
 
-    $rootScope.$on('vamp:load', function (event, load) {
+    $scope.$on('vamp:load', function (event, load) {
       onLoad(load);
     });
   }

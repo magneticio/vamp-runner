@@ -5,7 +5,7 @@
     .controller('InfoCtrl', InfoCtrl);
 
   /** @ngInject */
-  function InfoCtrl($rootScope, $scope, api) {
+  function InfoCtrl($scope, $runner) {
 
     function refresh() {
       function get(obj) {
@@ -15,32 +15,32 @@
       $scope.items = [
         {
           'name': 'version',
-          'value': get(api.info.version)
+          'value': get($runner.info.version)
         },
         {
           'name': 'persistence',
-          'value': get(api.info.persistence)
+          'value': get($runner.info.persistence)
         },
         {
           'name': 'key-value store',
-          'value': get(api.info.key_value_store)
+          'value': get($runner.info.key_value_store)
         },
         {
           'name': 'gateway driver',
-          'value': get(api.info.gateway_driver)
+          'value': get($runner.info.gateway_driver)
         },
         {
           'name': 'container driver',
-          'value': get(api.info.container_driver)
+          'value': get($runner.info.container_driver)
         },
         {
           'name': 'workflow driver',
-          'value': get(api.info.workflow_driver)
+          'value': get($runner.info.workflow_driver)
         }
       ];
     }
 
-    var cancel = $rootScope.$on('vamp:info', function () {
+    var cancel = $scope.$on('vamp:info', function () {
       refresh();
       cancel();
     });

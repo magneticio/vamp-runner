@@ -5,7 +5,7 @@
     .controller('PageTopCtrl', PageTopCtrl);
 
   /** @ngInject */
-  function PageTopCtrl($rootScope, $scope) {
+  function PageTopCtrl($scope) {
 
     $scope.error = false;
     $scope.connected = false;
@@ -19,13 +19,13 @@
       }
     };
 
-    $rootScope.$on('vamp:load', function (event, data) {
+    $scope.$on('vamp:load', function (event, data) {
       $scope.error = false;
       if (!$scope.connected) $scope.connected = true;
       $scope.load = data;
     });
 
-    $rootScope.$on('vamp:error', function (event, data) {
+    $scope.$on('vamp:error', function (event, data) {
       $scope.connected = false;
       $scope.error = true;
     });

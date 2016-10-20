@@ -5,15 +5,15 @@
     .controller('StepsCtrl', StepsCtrl);
 
   /** @ngInject */
-  function StepsCtrl($rootScope, $scope, $uibModal, baConfig, api) {
+  function StepsCtrl($scope, $uibModal, baConfig, $runner) {
 
     $scope.transparent = baConfig.theme.blur;
 
-    $scope.recipe = api.recipes[0];
+    $scope.recipe = $runner.recipes[0];
 
     $scope.isRunning = function () {
-      for (var i = 0; i < api.recipes.length; i++) {
-        if (api.recipes[i].state === 'running') {
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        if ($runner.recipes[i].state === 'running') {
           return true;
         }
       }
@@ -21,7 +21,7 @@
     };
 
     $scope.run = function (recipe, step) {
-      api.run(recipe, step);
+      $runner.run(recipe, step);
     };
 
     $scope.isRunnable = function (recipe, step) {
@@ -54,14 +54,14 @@
       });
     };
 
-    $rootScope.$on('recipe:details', function (event, recipe) {
+    $scope.$on('recipe:details', function (event, recipe) {
       $scope.recipe = recipe;
     });
 
 
-    $rootScope.$on('recipes:update', function () {
-      for (var i = 0; i < api.recipes.length; i++) {
-        var recipe = api.recipes[i];
+    $scope.$on('recipes:update', function () {
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        var recipe = $runner.recipes[i];
         if (recipe.state === 'running') {
           $scope.recipe = recipe;
           return;
@@ -70,7 +70,7 @@
         }
       }
 
-      if (!$scope.recipe) $scope.recipe = api.recipes[0];
+      if (!$scope.recipe) $scope.recipe = $runner.recipes[0];
     });
   }
 })();

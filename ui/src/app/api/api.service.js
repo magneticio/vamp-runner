@@ -2,11 +2,11 @@
   'use strict';
 
   angular.module('VampRunner.api')
-    .service('api', ["$rootScope", "$websocket", "$timeout", function ($rootScope, $websocket, $timeout) {
-      return new Api($rootScope, $websocket, $timeout);
+    .service('$runner', ["$rootScope", "$websocket", "$timeout", function ($rootScope, $websocket, $timeout) {
+      return new Runner($rootScope, $websocket, $timeout);
     }]);
 
-  function Api($rootScope, $websocket, $timeout) {
+  function Runner($rootScope, $websocket, $timeout) {
 
     var info = this.info = {};
     var config = this.config = {};
@@ -23,7 +23,7 @@
         command: cmd,
         arguments: args
       });
-      $rootScope.$emit(emit, event);
+      $rootScope.$broadcast(emit, event);
     };
 
     var process = function (message) {
@@ -38,7 +38,7 @@
           }
         }
 
-        $rootScope.$emit('vamp:info', info);
+        $rootScope.$broadcast('vamp:info', info);
 
       } else if (data['type'] === 'config') {
 
@@ -48,7 +48,7 @@
           }
         }
 
-        $rootScope.$emit('vamp:config', config);
+        $rootScope.$broadcast('vamp:config', config);
 
       } else if (data['type'] === 'load') {
 
@@ -64,7 +64,7 @@
         loads.push(load);
         while (loads.length > 100) loads.shift();
 
-        $rootScope.$emit('vamp:load', load);
+        $rootScope.$broadcast('vamp:load', load);
 
       } else if (data['type'] === 'recipes') {
 
@@ -106,7 +106,7 @@
           recipes.push(recipe);
         }
 
-        $rootScope.$emit('recipes:update', '');
+        $rootScope.$broadcast('recipes:update', '');
 
       } else if (data['type'] === 'event') {
         var e = {
@@ -116,12 +116,12 @@
         };
         events.push(e);
         while (events.length > 100) events.shift();
-        $rootScope.$emit('vamp:event', e);
+        $rootScope.$broadcast('vamp:event', e);
 
       } else if (data['type'] === 'busy') {
-        $rootScope.$emit('vamp:busy', 'busy');
+        $rootScope.$broadcast('vamp:busy', 'busy');
       } else if (data['type'] === 'vamp-connection-error') {
-         $rootScope.$emit('vamp:error');
+         $rootScope.$broadcast('vamp:error');
       }
     };
 

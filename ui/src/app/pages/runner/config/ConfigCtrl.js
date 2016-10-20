@@ -5,7 +5,7 @@
     .controller('ConfigCtrl', ConfigCtrl);
 
   /** @ngInject */
-  function ConfigCtrl($scope, api) {
-    $scope.config = api.config;
+  function ConfigCtrl($scope, $runner) {
+    $scope.config = $runner.config;
   }
 })();

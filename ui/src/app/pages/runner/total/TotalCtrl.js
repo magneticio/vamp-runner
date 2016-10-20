@@ -5,20 +5,20 @@
     .controller('TotalCtrl', TotalCtrl);
 
   /** @ngInject */
-  function TotalCtrl($rootScope, $scope, baConfig, colorHelper, api) {
+  function TotalCtrl($scope, baConfig, colorHelper, $runner) {
 
     $scope.transparent = baConfig.theme.blur;
 
     var refresh = function () {
-      var count = $scope.count = api.recipes.length;
+      var count = $scope.count = $runner.recipes.length;
 
       var succeeded = 0;
       var failed = 0;
       var running = 0;
       var idle = 0;
 
-      for (var i = 0; i < api.recipes.length; i++) {
-        var recipe = api.recipes[i];
+      for (var i = 0; i < $runner.recipes.length; i++) {
+        var recipe = $runner.recipes[i];
         if (recipe.state === 'succeeded')
           succeeded++;
         else if (recipe.state === 'failed')
@@ -76,7 +76,7 @@
 
     refresh();
 
-    $rootScope.$on('recipes:update', function () {
+    $scope.$on('recipes:update', function () {
       refresh();
     });
   }
