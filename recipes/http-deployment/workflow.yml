@@ -6,8 +6,9 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
+    var _ = require('highland');
     var vamp = require('vamp-node-client');
+    var http = require('request-promise');
 
     var api = new vamp.Api();
 
@@ -15,18 +16,16 @@ deployable:
 
     var process = function () {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else {
-        http('http://' + vga + ':9050', function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            var response = JSON.parse(body);
-            if (response.id == "runner" && response.port == 8085)
-              api.event(['workflows:sava-requester', 'response:ok'], body);
-            else
-              api.event(['workflows:sava-requester', 'response:failed'], body);
-          }
+        http('http://' + vga + ':9050').promise().then(function (body) {
+          var response = JSON.parse(body);
+          if (response.id == "runner" && response.port == 8085)
+            api.event(['workflows:sava-requester', 'response:ok'], body);
+          else
+            api.event(['workflows:sava-requester', 'response:failed'], body);
         });
       }
     };
