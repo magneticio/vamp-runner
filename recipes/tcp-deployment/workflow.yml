@@ -10,21 +10,18 @@ deployable:
     var client = new net.Socket();
     var vamp = require('vamp-node-client');
 
-    var api = new vamp.Api();
-
     var vga;
+    var api = new vamp.Api();
 
     var process = function () {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else {
-
         client.connect(9057, vga, function() {
           client.write('*');
         });
-
         client.on('data', function(data) {
           api.event(['workflows:sava-requester', 'response:ok'], JSON.parse(data));
         });
