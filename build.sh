@@ -7,7 +7,8 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 
-vamp_version=`git describe --tags`
+version='katana'
+
 target=${dir}'/target'
 target_docker=${target}'/docker'
 
@@ -117,13 +118,11 @@ EOF
 
 function docker_build {
     cd ${target_docker}
-    version=`git describe --abbrev=0`
     echo "${green}building docker image: ${yellow}magneticio/vamp-runner:${version}${reset}"
     docker build -t magneticio/vamp-runner:${version} .
 }
 
 function process() {
-
     sbt_make
     gulp_make
     docker_make
@@ -144,8 +143,7 @@ echo "${green}
 ╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝     ██╔══██╗██║   ██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
  ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║         ██║  ██║╚██████╔╝██║ ╚████║██║ ╚████║███████╗██║  ██║
   ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝         ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
-                                                                    version ${vamp_version}
-                                                                    by magnetic.io
+                                                                               by magnetic.io
 ${reset}"
 
 if [ ${flag_help} -eq 1 ] || [[ $# -eq 0 ]]; then
