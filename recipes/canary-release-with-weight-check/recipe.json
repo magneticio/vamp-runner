@@ -26,7 +26,7 @@
       "resource": "workflow.yml",
       "await": [
         "workflows:runner-requester",
-        "response:ok"
+        "action:weight"
       ]
     }
   ],

@@ -6,89 +6,88 @@ deployable:
   definition: |
     'use strict';
 
-    var http = require('request');
+    var _ = require('highland');
     var vamp = require('vamp-node-client');
+    var request = require('request-promise');
 
     var api = new vamp.Api();
+    var http = request.defaults({
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
 
     var vga;
 
     var process = function () {
       if (!vga) {
-        api.config(function (config) {
+        api.config().each(function (config) {
           vga = config['vamp.gateway-driver.host'];
         });
       } else burst();
     };
 
+    var step = 20;
+    var sampleSize = 50;
     var interval = setInterval(process, 1000);
 
-    var target = 0;
+    function emit(tags, value) {
+      _.log(JSON.stringify(tags) + ' :: ' + value);
+      api.event(tags, value);
+    }
 
     function burst() {
-
       var count = 0;
       var count1 = 0;
       var count2 = 0;
 
       clearTimeout(interval);
 
-      for (var i = 0; i < 50; i++) {
-
-        http('http://' + vga + ':9059', function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            count++;
-            var result = JSON.parse(body);
-            if (result['id'] === '1.0.0' || result['id'] === '2.0.0') {
-              if (result['id'] === '1.0.0') count1++;
-              if (result['id'] === '2.0.0') count2++;
-
-              if (count === 50) {
-                var p1 = 100.0 * count1 / count;
-                var p2 = 100.0 * count2 / count;
-
-                if (p2 < target + 1 && p2 > target -1) {
-                  api.event(['workflows:runner-requester', 'response:ok'], p1 + '% / ' + p2 + '%');
-
-                  target += 20;
-
-                  if (target <= 100) {
-
-                    api.event(['workflows:runner-requester', 'action:weight'],
-                      (120 - target) + '% / ' + (target - 20) +
-                        '% => ' + (100 - target) + '% / ' + target + '%');
-
-                    http({
-                      url: api.url + 'gateways/runner/runner/port',
-                      method: 'GET',
-                      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-                    }, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
-                          var gateway = JSON.parse(body);
-
-                          gateway['routes']['runner/runner/runner:1/port']['weight'] = (100 - target) + '%';
-                          gateway['routes']['runner/runner/runner:2/port']['weight'] = target + '%';
-
-                          http({
-                            url: api.url + 'gateways/runner/runner/port',
-                            method: 'PUT',
-                            json: gateway
-                            }, function (error, response, body) {
-                              if (error) api.event(['workflows:runner-requester', 'response:failed'], body);
-                          });
-                        } else api.event(['workflows:runner-requester', 'response:failed'], body);
-                    });
-                  } else target = 100;
-                }
-              }
-
-            } else {
-              // TODO reverting weights back
-              api.event(['workflows:runner-requester', 'response:failed'], body);
-            }
+      _(function (push, next) {
+        if (count < sampleSize) {
+          push(null, ++count);
+          next();
+        }
+        else push(null, _.nil)
+      }).flatMap(function () {
+        return _(http('http://' + vga + ':9059').promise().then(function (response) {
+          var result = JSON.parse(response);
+          if (result['id'] === '1.0.0' || result['id'] === '2.0.0') {
+            if (result['id'] === '1.0.0') count1++;
+            if (result['id'] === '2.0.0') count2++;
           }
-        });
-      }
+          return result;
+        }));
+      }).last().each(function () {
+        if (count) {
+          var p1 = 100.0 * count1 / count;
+          var p2 = 100.0 * count2 / count;
+
+          emit(['workflows:runner-requester', 'response:ratio'], p1 + '% / ' + p2 + '%');
+
+          var target1 = (Math.round(p1 / step) - 1) * step;
+          target1 = target1 < 0 ? 0 : target1;
+          var target2 = 100 - target1;
+
+          if (target1 !== p1 && target2 !== p2) {
+            emit(['workflows:runner-requester', 'action:weight'],
+              p1 + '% / ' + p2 + '% => ' + target1 + '% / ' + target2 + '%');
+
+            http(api.url + 'gateways/runner/runner/port').promise().then(function (response) {
+              var gateway = JSON.parse(response);
+              gateway['routes']['runner/runner/runner:1/port']['weight'] = target1 + '%';
+              gateway['routes']['runner/runner/runner:2/port']['weight'] = target2 + '%';
+              http({
+                url: api.url + 'gateways/runner/runner/port',
+                method: 'PUT',
+                json: gateway
+              }).promise().catch(function (error) {
+                emit(['workflows:runner-requester', 'response:failed'], error);
+              });
+            }).catch(function (error) {
+              emit(['workflows:runner-requester', 'response:failed'], error);
+            });
+          }
+        }
+      });
 
       interval = setInterval(process, 5000);
     }
