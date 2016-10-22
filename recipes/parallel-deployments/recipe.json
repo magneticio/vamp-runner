@@ -1,6 +1,6 @@
 {
   "name": "Parallel Deployments",
-  "description": "Deploying 5 services in parallel",
+  "description": "Deploying 3 services in parallel",
   "run": [
     {
       "description": "Create scale and breeds",
