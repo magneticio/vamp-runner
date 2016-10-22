@@ -3,10 +3,10 @@
   "description": "Deploying 5 services in parallel",
   "run": [
     {
-      "description": "Create breed",
-      "resource": "breed.yml",
+      "description": "Create scale and breeds",
+      "resource": "artifacts.yml",
       "await": [
-        "breeds:runner",
+        "scales:small",
         "archive:update"
       ],
       "timeout": "short"
@@ -15,9 +15,9 @@
       "description": "Deploy services",
       "resource": "deploy.yml",
       "await": [
-        "deployments:sava5",
-        "clusters:sava",
-        "services:runner",
+        "deployments:runner1",
+        "clusters:frontend",
+        "services:frontend",
         "synchronization:deployed"
       ]
     },
@@ -25,7 +25,7 @@
       "description": "Send requests to services and validate responses",
       "resource": "workflow.yml",
       "await": [
-        "workflows:sava-requester",
+        "workflows:runner-requester",
         "response:ok"
       ]
     }
@@ -34,38 +34,38 @@
     {
       "description": "Unschedule workflow",
       "resource": "workflow.yml",
-      "condition": "workflows/sava-requester",
+      "condition": "workflows/runner-requester",
       "await": [
-        "workflows:sava-requester",
+        "workflows:runner-requester",
         "unscheduled"
       ]
     },
     {
       "description": "Undeploy services",
       "resource": "undeploy1.yml",
-      "condition": "deployments/sava5",
+      "condition": "deployments/runner1",
       "await": [
-        "deployments:sava5",
-        "clusters:sava",
-        "services:runner",
+        "deployments:runner1",
+        "clusters:backend",
+        "services:backend",
         "synchronization:undeployed"
       ]
     },
     {
       "description": "Remove gateways",
       "resource": "undeploy2.yml",
-      "condition": "gateways/sava1/9062",
+      "condition": "gateways/runner1/9062",
       "await": [
-        "gateways:sava1/9062",
+        "gateways:runner1/9062",
         "undeployed"
       ]
     },
     {
-      "description": "Delete breed",
+      "description": "Delete scale and breeds",
       "resource": "undeploy3.yml",
-      "condition": "breeds/runner",
+      "condition": "scales/small",
       "await": [
-        "breeds:runner",
+        "scales:small",
         "archive:delete"
       ],
       "timeout": "short"

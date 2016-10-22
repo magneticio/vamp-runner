@@ -1,6 +1,6 @@
 ---
 kind: breed
-name: sava-requester
+name: runner-requester
 deployable:
   type: application/javascript
   definition: |
@@ -21,19 +21,19 @@ deployable:
       } else {
         var count = 0;
         _(function (push, next) {
-          if (count < 5) {
+          if (count < 3) {
             push(null, count++);
             next();
           }
           else push(null, _.nil)
         }).flatMap(function (index) {
           return _(http('http://' + vga + ':' + (9062 + index)).promise().then(function (response) {
-            return JSON.parse(response).id === "runner:" + (index + 1);
+            return JSON.parse(response).id === "backend:" + (index + 1);
           }));
         }).reduce1(function (a, b) {
           return a && b;
         }).each(function (result) {
-          api.event(['workflows:sava-requester', result ? 'response:ok' : 'response:failed']);
+          api.event(['workflows:runner-requester', result ? 'response:ok' : 'response:failed']);
         });
       }
     };
@@ -42,6 +42,6 @@ deployable:
 
 ---
 kind: workflow
-name: sava-requester
-breed: sava-requester
+name: runner-requester
+breed: runner-requester
 schedule: daemon

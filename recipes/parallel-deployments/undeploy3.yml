@@ -1,3 +1,9 @@
 ---
+kind: scale
+name: small
+---
 kind: breed
-name: runner
+name: frontend
+---
+kind: breed
+name: backend

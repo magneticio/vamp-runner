@@ -1,35 +1,30 @@
 ---
 kind: deployment
-name: sava1
+name: runner1
 clusters:
-  sava:
+  frontend:
     services:
-      breed: runner
+      breed: frontend
+  backend:
+    services:
+      breed: backend
 ---
 kind: deployment
-name: sava2
+name: runner2
 clusters:
-  sava:
+  frontend:
     services:
-      breed: runner
+      breed: frontend
+  backend:
+    services:
+      breed: backend
 ---
 kind: deployment
-name: sava3
+name: runner3
 clusters:
-  sava:
+  frontend:
     services:
-      breed: runner
----
-kind: deployment
-name: sava4
-clusters:
-  sava:
+      breed: frontend
+  backend:
     services:
-      breed: runner
----
-kind: deployment
-name: sava5
-clusters:
-  sava:
-    services:
-      breed: runner
+      breed: backend

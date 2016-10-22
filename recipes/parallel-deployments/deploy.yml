@@ -1,69 +1,48 @@
 ---
-kind: breed
-name: runner
-deployable: magneticio/sava:runner_1.0
-ports:
-  port: 8081/http
-environment_variables:
-  SAVA_RUNNER_ID: runner_1.0
-  SAVA_RUNNER_HTTP_PORT1: 8081
+kind: deployment
+name: runner1
+gateways:
+  9062: frontend/port
+clusters:
+  frontend:
+    services:
+      breed: frontend
+      scale: small
+  backend:
+    services:
+      breed: backend
+      environment_variables:
+        SAVA_RUNNER_ID: backend:1
+      scale: small
 ---
 kind: deployment
-name: sava1
+name: runner2
 gateways:
-  9062: sava/port
+  9063: frontend/port
 clusters:
-  sava:
+  frontend:
     services:
-    -
-      breed: runner
+      breed: frontend
+      scale: small
+  backend:
+    services:
+      breed: backend
       environment_variables:
-        SAVA_RUNNER_ID: runner:1
+        SAVA_RUNNER_ID: backend:2
+      scale: small
 ---
 kind: deployment
-name: sava2
+name: runner3
 gateways:
-  9063: sava/port
+  9064: frontend/port
 clusters:
-  sava:
+  frontend:
     services:
-    -
-      breed: runner
-      environment_variables:
-        SAVA_RUNNER_ID: runner:2
----
-kind: deployment
-name: sava3
-gateways:
-  9064: sava/port
-clusters:
-  sava:
+      breed: frontend
+      scale: small
+  backend:
     services:
-    -
-      breed: runner
+      breed: backend
       environment_variables:
-        SAVA_RUNNER_ID: runner:3
----
-kind: deployment
-name: sava4
-gateways:
-  9065: sava/port
-clusters:
-  sava:
-    services:
-    -
-      breed: runner
-      environment_variables:
-        SAVA_RUNNER_ID: runner:4
----
-kind: deployment
-name: sava5
-gateways:
-  9066: sava/port
-clusters:
-  sava:
-    services:
-    -
-      breed: runner
-      environment_variables:
-        SAVA_RUNNER_ID: runner:5
+        SAVA_RUNNER_ID: backend:3
+      scale: small
