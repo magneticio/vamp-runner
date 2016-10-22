@@ -1,0 +1,47 @@
+---
+kind: breed
+name: sava-requester
+deployable:
+  type: application/javascript
+  definition: |
+    'use strict';
+
+    var _ = require('highland');
+    var vamp = require('vamp-node-client');
+    var http = require('request-promise');
+
+    var vga;
+    var api = new vamp.Api();
+
+    var process = function () {
+      if (!vga) {
+        api.config().each(function (config) {
+          vga = config['vamp.gateway-driver.host'];
+        });
+      } else {
+        var count = 0;
+        _(function (push, next) {
+          if (count < 5) {
+            push(null, count++);
+            next();
+          }
+          else push(null, _.nil)
+        }).flatMap(function (index) {
+          return _(http('http://' + vga + ':' + (9062 + index)).promise().then(function (response) {
+            return JSON.parse(response).id === "runner:" + (index + 1);
+          }));
+        }).reduce1(function (a, b) {
+          return a && b;
+        }).each(function (result) {
+          api.event(['workflows:sava-requester', result ? 'response:ok' : 'response:failed']);
+        });
+      }
+    };
+
+    setInterval(process, 1000);
+
+---
+kind: workflow
+name: sava-requester
+breed: sava-requester
+schedule: daemon

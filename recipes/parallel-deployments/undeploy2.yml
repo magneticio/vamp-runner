@@ -1,0 +1,15 @@
+---
+kind: gateway
+name: sava1/9062
+---
+kind: gateway
+name: sava2/9063
+---
+kind: gateway
+name: sava3/9064
+---
+kind: gateway
+name: sava4/9065
+---
+kind: gateway
+name: sava5/9066

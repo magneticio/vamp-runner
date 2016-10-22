@@ -1,0 +1,73 @@
+{
+  "name": "Parallel Deployments",
+  "description": "Deploying 5 services in parallel",
+  "run": [
+    {
+      "description": "Create breed",
+      "resource": "breed.yml",
+      "await": [
+        "breeds:runner",
+        "archive:update"
+      ]
+    },
+    {
+      "description": "Deploy services",
+      "resource": "deploy.yml",
+      "await": [
+        "deployments:sava5",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:deployed"
+      ]
+    },
+    {
+      "description": "Send requests to services and validate responses",
+      "resource": "workflow.yml",
+      "await": [
+        "workflows:sava-requester",
+        "response:ok"
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "description": "Unschedule workflow",
+      "resource": "workflow.yml",
+      "condition": "workflows/sava-requester",
+      "await": [
+        "workflows:sava-requester",
+        "unscheduled"
+      ]
+    },
+    {
+      "description": "Undeploy services",
+      "resource": "undeploy1.yml",
+      "condition": "deployments/sava5",
+      "await": [
+        "deployments:sava5",
+        "clusters:sava",
+        "services:runner",
+        "synchronization:undeployed"
+      ]
+    },
+    {
+      "description": "Remove gateways",
+      "resource": "undeploy2.yml",
+      "condition": "gateways/sava1/9062",
+      "await": [
+        "gateways:sava1/9062",
+        "undeployed"
+      ]
+    },
+    {
+      "description": "Delete breed",
+      "resource": "undeploy3.yml",
+      "condition": "breeds/runner",
+      "await": [
+        "breeds:runner",
+        "archive:delete"
+      ],
+      "timeout": "short"
+    }
+  ]
+}

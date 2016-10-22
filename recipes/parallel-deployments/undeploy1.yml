@@ -1,0 +1,35 @@
+---
+kind: deployment
+name: sava1
+clusters:
+  sava:
+    services:
+      breed: runner
+---
+kind: deployment
+name: sava2
+clusters:
+  sava:
+    services:
+      breed: runner
+---
+kind: deployment
+name: sava3
+clusters:
+  sava:
+    services:
+      breed: runner
+---
+kind: deployment
+name: sava4
+clusters:
+  sava:
+    services:
+      breed: runner
+---
+kind: deployment
+name: sava5
+clusters:
+  sava:
+    services:
+      breed: runner
