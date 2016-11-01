@@ -7,7 +7,11 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 
-version='katana'
+if [ "$(git describe --tags)" = "$(git describe --abbrev=0)" ]; then
+    version=`git describe --tags`
+else
+    version="katana"
+fi
 
 target=${dir}'/target'
 target_docker=${target}'/docker'
