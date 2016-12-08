@@ -25,7 +25,7 @@ deployable:
 
     var process = function () {
 
-      var events = _(http(api.url + 'events?tag=gateways:sava/sava/port&tag=metrics:responseTime').promise().then(JSON.parse));
+      var events = _(http(api.url + '/events?tag=gateways:sava/sava/port&tag=metrics:responseTime').promise().then(JSON.parse));
 
       events.flatMap(_).head().each(function (response) {
         var responseTime = response.value;
@@ -39,7 +39,7 @@ deployable:
 
         if (current !== scale.instances) {
           http({
-            url: api.url + 'deployments/sava/clusters/sava/services/runner/scale',
+            url: api.url + '/deployments/sava/clusters/sava/services/runner/scale',
             method: 'PUT',
             json: scale
           }, function (error) {

@@ -71,12 +71,12 @@ deployable:
             emit(['workflows:runner-requester', 'action:weight'],
               p1 + '% / ' + p2 + '% => ' + target1 + '% / ' + target2 + '%');
 
-            http(api.url + 'gateways/runner/runner/port').promise().then(function (response) {
+            http(api.url + '/gateways/runner/runner/port').promise().then(function (response) {
               var gateway = JSON.parse(response);
               gateway['routes']['runner/runner/runner:1/port']['weight'] = target1 + '%';
               gateway['routes']['runner/runner/runner:2/port']['weight'] = target2 + '%';
               http({
-                url: api.url + 'gateways/runner/runner/port',
+                url: api.url + '/gateways/runner/runner/port',
                 method: 'PUT',
                 json: gateway
               }).promise().catch(function (error) {

@@ -54,7 +54,7 @@ deployable:
 
     var update = function (gateway) {
       http({
-        url: api.url + 'gateways/' + $gateway,
+        url: api.url + '/gateways/' + $gateway,
         method: 'PUT',
         json: gateway
       }).promise().then(function () {

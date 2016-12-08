@@ -68,7 +68,7 @@ deployable:
 
     var updateScale = function (service, scale) {
       http({
-        url: api.url + service + '/scale',
+        url: api.url + '/' + service + '/scale',
         method: 'PUT',
         json: scale
       }).promise().then(function () {

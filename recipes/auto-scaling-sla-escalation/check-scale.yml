@@ -20,7 +20,7 @@ deployable:
 
     var process = function() {
       http({
-        url: api.url + 'deployments/sava/clusters/sava/services/runner/scale'
+        url: api.url + '/deployments/sava/clusters/sava/services/runner/scale'
       }).promise().then(function (response) {
         if (response) {
           var scale = JSON.parse(response);
