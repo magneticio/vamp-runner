@@ -6,53 +6,48 @@ deployable:
   definition: |
     'use strict';
 
-    var vamp = require('vamp-node-client');
-    var _ = require('highland');
-    var request = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
 
-    var http = request.defaults({
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    });
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let logger = new vamp.Log();
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
-    var api = new vamp.Api();
-
-    var period = 5;
-    var scale = {
+    let scale = {
       instances: 1,
       cpu: 0.1,
       memory: '64MB'
     };
 
-    var process = function () {
+    let events = _(http.get(api.url + '/events?tag=gateways:sava/sava/port&tag=metrics:responseTime', {headers: headers}).then(JSON.parse));
 
-      var events = _(http(api.url + '/events?tag=gateways:sava/sava/port&tag=metrics:responseTime').promise().then(JSON.parse));
+    events.flatMap(_).head().each(function (response) {
+      let responseTime = response.value;
+      let current = scale.instances;
 
-      events.flatMap(_).head().each(function (response) {
-        var responseTime = response.value;
-        var current = scale.instances;
+      if (responseTime > 1000 && scale.instances < 3)
+        scale.instances++;
+      else if (responseTime < 100 && scale.instances > 1) scale.instances--;
 
-        if (responseTime > 1000 && scale.instances < 3)
-          scale.instances++;
-        else if (responseTime < 100 && scale.instances > 1) scale.instances--;
+      logger.log(JSON.stringify(scale));
 
-        console.log(JSON.stringify(scale));
-
-        if (current !== scale.instances) {
-          http({
-            url: api.url + '/deployments/sava/clusters/sava/services/runner/scale',
-            method: 'PUT',
-            json: scale
-          }, function (error) {
-            if (!error) api.event(['workflows:auto-scaling', 'scale'], scale.instances);
+      if (current !== scale.instances) {
+        http.request(api.url + '/deployments/sava/clusters/sava/services/runner/scale', {
+          headers: headers,
+          method: 'PUT'
+        }, JSON.stringify(scale)).then(
+          function () {
+            api.event(['workflows:auto-scaling', 'scale'], scale.instances);
           });
-        }
-      });
-    };
-
-    setInterval(process, period * 1000);
+      }
+    });
 
 ---
 kind: workflow
 name: auto-scaling
 breed: auto-scaling
 schedule: daemon
+environment_variables:
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  5
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 9
