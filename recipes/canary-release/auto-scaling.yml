@@ -6,14 +6,13 @@ deployable:
   definition: |
     'use strict';
 
-    var _ = require('highland');
-    var vamp = require('vamp-node-client');
-    var request = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
 
-    var api = new vamp.Api();
-    var http = request.defaults({
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    });
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let logger = new vamp.Log();
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
     var $gateway = process.env.GATEWAY;
 
@@ -32,16 +31,16 @@ deployable:
     var route2RatePath = 'metrics/gateways/' + encodeURIComponent($gateway) + '/routes/' + encodeURIComponent($route2) + '/rate';
 
     var run = function () {
-      api.api(route1RatePath).each(function (rate1) {
-        api.api(route2RatePath).each(function (rate2) {
+      api.get(route1RatePath).each(function (rate1) {
+        api.get(route2RatePath).each(function (rate2) {
           rate1 = Number(rate1);
           rate2 = Number(rate2);
 
-          _.log('rate \'' + $route1 + '\': ' + rate1);
-          _.log('rate \'' + $route2 + '\': ' + rate2);
+          logger.log('rate \'' + $route1 + '\': ' + rate1);
+          logger.log('rate \'' + $route2 + '\': ' + rate2);
 
-          api.api($service1 + '/scale').each(function (scale1) {
-            api.api($service2 + '/scale').each(function (scale2) {
+          api.get($service1 + '/scale').each(function (scale1) {
+            api.get($service2 + '/scale').each(function (scale2) {
               var instances1 = Math.round(($scaleMax + $scaleMin) / 2);
               var instances2 = instances1;
 
@@ -50,8 +49,8 @@ deployable:
                 instances2 = Math.round((rate2 / (rate1 + rate2)) * ($scaleMax - $scaleMin) + $scaleMin);
               }
 
-              _.log('instances1 \'' + $service1 + '\': ' + instances1);
-              _.log('instances2 \'' + $service2 + '\': ' + instances2);
+              logger.log('instances1 \'' + $service1 + '\': ' + instances1);
+              logger.log('instances2 \'' + $service2 + '\': ' + instances2);
 
               if (scale1.instances != instances1 || scale2.instances != instances2) {
                 scale1.instances = instances1;
@@ -67,11 +66,7 @@ deployable:
     };
 
     var updateScale = function (service, scale) {
-      http({
-        url: api.url + '/' + service + '/scale',
-        method: 'PUT',
-        json: scale
-      }).promise().then(function () {
+      http.request(api.url + '/' + service + '/scale', {method: 'PUT', headers: headers}, JSON.stringify(scale)).then(function () {
         api.event(['workflows:auto-scaling', 'scale', 'services:' + service], scale.instances);
       }).catch(function (error) {
         api.event(['workflows:auto-scaling', 'error', 'services:' + service], error);
@@ -95,3 +90,5 @@ environment_variables:
   SERVICE2 : "deployments/sava/clusters/sava/services/sava:1.1"
   SCALE_MAX: 4
   SCALE_MIN: 2
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

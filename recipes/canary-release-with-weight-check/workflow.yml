@@ -6,14 +6,13 @@ deployable:
   definition: |
     'use strict';
 
-    var _ = require('highland');
-    var vamp = require('vamp-node-client');
-    var request = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
 
-    var api = new vamp.Api();
-    var http = request.defaults({
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    });
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let logger = new vamp.Log();
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
     var vga;
 
@@ -30,7 +29,7 @@ deployable:
     var interval = setInterval(process, 1000);
 
     function emit(tags, value) {
-      _.log(JSON.stringify(tags) + ' :: ' + value);
+      logger.log(JSON.stringify(tags) + ' :: ' + value);
       api.event(tags, value);
     }
 
@@ -48,7 +47,7 @@ deployable:
         }
         else push(null, _.nil)
       }).flatMap(function () {
-        return _(http('http://' + vga + ':9059').promise().then(function (response) {
+        return _(http.get('http://' + vga + ':9059').then(function (response) {
           var result = JSON.parse(response);
           if (result['id'] === '1.0.0' || result['id'] === '2.0.0') {
             if (result['id'] === '1.0.0') count1++;
@@ -71,15 +70,11 @@ deployable:
             emit(['workflows:runner-requester', 'action:weight'],
               p1 + '% / ' + p2 + '% => ' + target1 + '% / ' + target2 + '%');
 
-            http(api.url + '/gateways/runner/runner/port').promise().then(function (response) {
+            http.get(api.url + '/gateways/runner/runner/port', {headers: headers}).then(function (response) {
               var gateway = JSON.parse(response);
               gateway['routes']['runner/runner/runner:1/port']['weight'] = target1 + '%';
               gateway['routes']['runner/runner/runner:2/port']['weight'] = target2 + '%';
-              http({
-                url: api.url + '/gateways/runner/runner/port',
-                method: 'PUT',
-                json: gateway
-              }).promise().catch(function (error) {
+              http.request(api.url + '/gateways/runner/runner/port', {method: 'PUT', headers: headers}, JSON.stringify(gateway)).catch(function (error) {
                 emit(['workflows:runner-requester', 'response:failed'], error);
               });
             }).catch(function (error) {
@@ -97,3 +92,6 @@ kind: workflow
 name: runner-requester
 breed: runner-requester
 schedule: daemon
+environment_variables:
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

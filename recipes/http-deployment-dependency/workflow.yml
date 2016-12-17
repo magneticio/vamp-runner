@@ -6,12 +6,13 @@ deployable:
   definition: |
     'use strict';
 
-    var _ = require('highland');
-    var vamp = require('vamp-node-client');
-    var http = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
+
+    let api = new vamp.Api();
+    let http = new vamp.Http();
 
     var vga;
-    var api = new vamp.Api();
 
     var process = function () {
       if (!vga) {
@@ -19,7 +20,7 @@ deployable:
           vga = config['vamp.gateway-driver.host'];
         });
       } else {
-        http('http://' + vga + ':9052/***').promise().then(function (body) {
+        http.get('http://' + vga + ':9052/***').then(function (body) {
           var result = JSON.parse(body);
           var result = JSON.parse(body);
           if (result['id'] === 'backend' && result['port'] === 8085 && result['path'] === '***') {
@@ -38,3 +39,6 @@ kind: workflow
 name: runner-requester
 breed: runner-requester
 schedule: daemon
+environment_variables:
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

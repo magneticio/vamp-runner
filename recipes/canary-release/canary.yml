@@ -6,15 +6,13 @@ deployable:
   definition: |
     'use strict';
 
-    var _ = require('highland');
-    var vamp = require('vamp-node-client');
-    var request = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
 
-    var api = new vamp.Api();
-    var metrics = new vamp.Metrics(api);
-    var http = request.defaults({
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    });
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let metrics = new vamp.ElasticsearchMetrics(api);
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
     var $gateway  = process.env.GATEWAY;
     var $service1 = process.env.SERVICE1;
@@ -24,7 +22,7 @@ deployable:
     var $window = Number(process.env.WINDOW); // seconds
 
     var run = function () {
-      api.api('gateways/' + $gateway).each(function (gateway) {
+      api.get('gateways/' + $gateway).each(function (gateway) {
         metrics.count({ft: gateway.lookup_name}, {ST: {gte: 500}}, $window).each(function (errorCount) {
           if (errorCount > 0)
             rollback(gateway);
@@ -53,11 +51,7 @@ deployable:
     };
 
     var update = function (gateway) {
-      http({
-        url: api.url + '/gateways/' + $gateway,
-        method: 'PUT',
-        json: gateway
-      }).promise().then(function () {
+      http.request(api.url + '/gateways/' + $gateway, {method: 'PUT', headers: headers}, JSON.stringify(gateway)).then(function () {
         api.event(['workflows:canary', 'updated'],
           gateway['routes'][$service1]['weight'] + '/' + gateway['routes'][$service2]['weight']);
       }).catch(function (error) {
@@ -79,3 +73,5 @@ environment_variables:
   GATEWAY : "sava/sava/web"
   SERVICE1: "sava/sava/sava:1.0/web"
   SERVICE2: "sava/sava/sava:1.1/web"
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

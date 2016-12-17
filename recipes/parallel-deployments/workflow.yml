@@ -6,12 +6,13 @@ deployable:
   definition: |
     'use strict';
 
-    var _ = require('highland');
-    var vamp = require('vamp-node-client');
-    var http = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
+
+    let api = new vamp.Api();
+    let http = new vamp.Http();
 
     var vga;
-    var api = new vamp.Api();
 
     var process = function () {
       if (!vga) {
@@ -27,7 +28,7 @@ deployable:
           }
           else push(null, _.nil)
         }).flatMap(function (index) {
-          return _(http('http://' + vga + ':' + (9062 + index)).promise().then(function (response) {
+          return _(http.get('http://' + vga + ':' + (9062 + index)).then(function (response) {
             return JSON.parse(response).id === "backend:" + (index + 1);
           }));
         }).reduce1(function (a, b) {
@@ -45,3 +46,6 @@ kind: workflow
 name: runner-requester
 breed: runner-requester
 schedule: daemon
+environment_variables:
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

@@ -6,9 +6,12 @@ deployable:
   definition: |
     'use strict';
 
-    var vamp = require('vamp-node-client');
-    var http = require('request-promise');
-    var api = new vamp.Api();
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
+
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
     var $period = Number(process.env.PERIOD); // ms
 
@@ -22,7 +25,7 @@ deployable:
         });
       } else {
         count++;
-        http('http://' + vga + ':' + process.env.PORT).promise().then(function () {
+        http.get('http://' + vga + ':' + process.env.PORT).then(function () {
           if (count % (10000 / $period) == 0)
             api.event(['workflows:traffic', 'response:ok'], count);
         }).catch(function (error) {
@@ -41,3 +44,5 @@ schedule: daemon
 environment_variables:
   PERIOD: 500
   PORT  : 9050
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0

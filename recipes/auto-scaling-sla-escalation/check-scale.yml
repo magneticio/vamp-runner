@@ -6,35 +6,27 @@ deployable:
   definition: |
     'use strict';
 
-    var vamp = require('vamp-node-client');
-    var _ = require('highland');
-    var request = require('request-promise');
+    let _ = require('highland');
+    let vamp = require('vamp-node-client');
 
-    var http = request.defaults({
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    let api = new vamp.Api();
+    let http = new vamp.Http();
+    let logger = new vamp.Log();
+    let headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
+
+    http.get(api.url + '/deployments/sava/clusters/sava/services/runner/scale', {headers: headers}).then(function (response) {
+      if (response) {
+        var scale = JSON.parse(response);
+        api.event(['workflows:check-scale', 'scale'], scale.instances);
+        if (scale.instances != 1) api.event(['workflows:check-scale', 'response:ok'], 'ok');
+      }
     });
-
-    var api = new vamp.Api();
-
-    var period = 5;
-
-    var process = function() {
-      http({
-        url: api.url + '/deployments/sava/clusters/sava/services/runner/scale'
-      }).promise().then(function (response) {
-        if (response) {
-          var scale = JSON.parse(response);
-          api.event(['workflows:check-scale', 'scale'], scale.instances);
-          if (scale.instances != 1) api.event(['workflows:check-scale', 'response:ok'], 'ok');
-        }
-      });
-    };
-
-    process();
-    setInterval(process, period * 1000);
 
 ---
 kind: workflow
 name: check-scale
 breed: check-scale
 schedule: daemon
+environment_variables:
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  5
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 9
