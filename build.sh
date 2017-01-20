@@ -53,8 +53,9 @@ function print_help() {
 
 function sbt_make {
     cd ${dir}
-    echo "${green}building jar: ${yellow}sbt test assembly${reset}"
-    sbt test assembly
+    echo "${green}building jar: ${yellow}sbt clean test assembly${reset}"
+    sbt clean test assembly
+    mkdir -p ${target_docker}
     cp $(find "${target}/scala-2.11" -name 'vamp-runner-assembly-*.jar' | sort | tail -1) ${target_docker}/vamp-runner.jar
 }
 
@@ -155,6 +156,6 @@ if [ ${flag_help} -eq 1 ] || [[ $# -eq 0 ]]; then
 fi
 
 if [ ${flag_make} -eq 1 ] || [ ${flag_build} -eq 1 ]; then
-    rm -Rf ${target} 2> /dev/null && mkdir -p ${target_docker}
+    rm -Rf ${target} 2> /dev/null
     process
 fi

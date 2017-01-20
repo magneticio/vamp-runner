@@ -96,7 +96,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
       version = <<[String](json \ "version"),
       persistence = <<[String](json \ "persistence" \ "database" \ "type"),
       keyValueStore = <<[String](json \ "key_value" \ "type"),
-      gatewayDriver = s"haproxy ${<<[String](json \ "gateway_driver" \ "marshaller" \ "haproxy")}",
+      gatewayDriver = <<[String](json \ "gateway_driver" \ "marshallers" \\ "type").split(' ').distinct.mkString(","),
       containerDriver = <<[String](json \ "container_driver" \ "type"),
       workflowDriver =
         <<[Any](json \ "workflow_driver") match {
