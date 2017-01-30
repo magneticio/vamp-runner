@@ -4,6 +4,7 @@ import akka.actor.{ Actor, ActorLogging, ActorSystem, Props }
 import akka.agent.Agent
 import akka.stream.ActorMaterializer
 import io.vamp.runner.Hub.Broadcast
+import org.json4s.JString
 import org.json4s.JsonAST.JValue
 
 import scala.concurrent.duration._
@@ -96,7 +97,7 @@ class InfoActor(implicit val materializer: ActorMaterializer) extends Actor with
       version = <<[String](json \ "version"),
       persistence = <<[String](json \ "persistence" \ "database" \ "type"),
       keyValueStore = <<[String](json \ "key_value" \ "type"),
-      gatewayDriver = <<[String](json \ "gateway_driver" \ "marshallers" \\ "type").split(' ').distinct.mkString(","),
+      gatewayDriver = (json \ "gateway_driver" \ "marshallers" \\ "type" \\ classOf[JString]).distinct.mkString(","),
       containerDriver = <<[String](json \ "container_driver" \ "type"),
       workflowDriver =
         <<[Any](json \ "workflow_driver") match {
