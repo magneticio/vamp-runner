@@ -90,5 +90,6 @@ environment_variables:
   SERVICE2 : "deployments/sava/clusters/sava/services/sava:1.1"
   SCALE_MAX: 4
   SCALE_MIN: 2
+  VAMP_API_CACHE: false
   VAMP_WORKFLOW_EXECUTION_PERIOD:  0
   VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0
