@@ -20,28 +20,35 @@ deployable:
       memory: '64MB'
     };
 
-    let events = _(http.get(api.url + '/events?tag=gateways:sava/sava/port&tag=metrics:responseTime', {headers: headers}).then(JSON.parse));
+    let $period = Number(process.env.PERIOD); // seconds
 
-    events.flatMap(_).head().each(function (response) {
-      let responseTime = response.value;
-      let current = scale.instances;
+    let run = function () {
+      let events = _(http.get(api.url + '/events?tag=gateways:sava/sava/port&tag=metrics:responseTime', {headers: headers}).then(JSON.parse));
 
-      if (responseTime > 1000 && scale.instances < 3)
-        scale.instances++;
-      else if (responseTime < 100 && scale.instances > 1) scale.instances--;
+      events.flatMap(_).head().each(function (response) {
+        let responseTime = response.value;
+        let current = scale.instances;
 
-      logger.log(JSON.stringify(scale));
+        if (responseTime > 1000 && scale.instances < 3)
+          scale.instances++;
+        else if (responseTime < 100 && scale.instances > 1) scale.instances--;
 
-      if (current !== scale.instances) {
-        http.request(api.url + '/deployments/sava/clusters/sava/services/runner/scale', {
-          headers: headers,
-          method: 'PUT'
-        }, JSON.stringify(scale)).then(
-          function () {
-            api.event(['workflows:auto-scaling', 'scale'], scale.instances);
-          });
-      }
-    });
+        logger.log(JSON.stringify(scale));
+
+        if (current !== scale.instances) {
+          http.request(api.url + '/deployments/sava/clusters/sava/services/runner/scale', {
+            headers: headers,
+            method: 'PUT'
+          }, JSON.stringify(scale)).then(
+            function () {
+              api.event(['workflows:auto-scaling', 'scale'], scale.instances);
+            });
+        }
+      });
+    };
+
+    run();
+    setInterval(run, $period * 1000);
 
 ---
 kind: workflow
@@ -49,5 +56,7 @@ name: auto-scaling
 breed: auto-scaling
 schedule: daemon
 environment_variables:
-  VAMP_WORKFLOW_EXECUTION_PERIOD:  5
-  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 9
+  PERIOD  : 5
+  VAMP_API_CACHE: false
+  VAMP_WORKFLOW_EXECUTION_PERIOD:  0
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: 0
