@@ -8,6 +8,10 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 trait WebServer {
 
   implicit def system: ActorSystem
@@ -37,8 +41,9 @@ trait WebServer {
     } ~ path("channel") {
       handleWebSocketMessages {
         Flow[Message].collect {
-          case TextMessage.Strict(message) ⇒ message
-        } via messenger.channel map (message ⇒ TextMessage.Strict(message))
+          case TextMessage.Strict(message)  ⇒ Future.successful(message)
+          case TextMessage.Streamed(stream) ⇒ stream.limit(100).completionTimeout(5 seconds).runFold("")(_ + _)
+        }.mapAsync(parallelism = 3)(identity) via messenger.channel map (message ⇒ TextMessage.Strict(message))
       }
     }
   }, config.string("interface"), config.int("port"))
