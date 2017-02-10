@@ -8,7 +8,7 @@
   function routeConfig($stateProvider) {
     $stateProvider
       .state('recipes', {
-        url: '/recipes',
+        url: '/',
         templateUrl: 'app/pages/recipes/recipes.html',
         title: 'Recipes',
         sidebarMeta: {

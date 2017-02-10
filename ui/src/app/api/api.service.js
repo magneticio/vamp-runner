@@ -8,10 +8,6 @@
 
   function Runner($rootScope, $websocket, $timeout) {
 
-    var info = this.info = {};
-    var config = this.config = {};
-    var events = this.events = [];
-    var loads = this.loads = [];
     var recipes = this.recipes = [];
 
     var dataStream;
@@ -30,47 +26,7 @@
 
       var data = JSON.parse(message);
 
-      if (data['type'] === 'info') {
-
-        for (var key in data) {
-          if (data.hasOwnProperty(key)) {
-            info[key] = data[key];
-          }
-        }
-
-        $rootScope.$broadcast('vamp:info', info);
-
-      } else if (data['type'] === 'config') {
-
-        for (var key in data) {
-          if (data.hasOwnProperty(key)) {
-            config[key] = data[key];
-          }
-        }
-
-        $rootScope.$broadcast('vamp:config', config);
-
-      } else if (data['type'] === 'load') {
-
-        var load = {
-          cpu: data['cpu'],
-          heap: {
-            max: data['heap']['max'] / (1024 * 1024),
-            used: data['heap']['used'] / (1024 * 1024)
-          }
-        };
-        load.heap.percentage = 100 * load.heap.used / load.heap.max;
-
-        loads.push(load);
-        while (loads.length > 100) loads.shift();
-
-        $rootScope.$broadcast('vamp:load', load);
-
-      } else if (data['type'] === 'recipes') {
-
-        var select = recipes.length === 0;
-
-        var old = recipes.slice(0);
+      if (data['type'] === 'recipes') {
 
         recipes.length = 0;
 
@@ -86,7 +42,6 @@
 
           for (var j = 0; j < recipe["run"].length; j++) {
             var step = recipe["run"][j];
-            step.state = step.state;
 
             if (step.state === 'succeeded')
               succeeded++;
@@ -107,16 +62,6 @@
         }
 
         $rootScope.$broadcast('recipes:update', '');
-
-      } else if (data['type'] === 'event') {
-        var e = {
-          timestamp: new Date(),
-          tags: data['tags'].join(', '),
-          value: data['value']
-        };
-        events.push(e);
-        while (events.length > 100) events.shift();
-        $rootScope.$broadcast('vamp:event', e);
 
       } else if (data['type'] === 'busy') {
         $rootScope.$broadcast('vamp:busy', 'busy');
@@ -145,11 +90,9 @@
 
       var channel = function () {
 
-        dataStream = $websocket('ws://' + window.location.host + '/channel');
+        dataStream = $websocket('ws://localhost:8088/channel');
 
         dataStream.onOpen(function () {
-          command('info');
-          command('config');
           command('recipes');
         });
 

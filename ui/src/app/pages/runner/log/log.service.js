@@ -8,23 +8,11 @@
 
   function Log($rootScope, $runner, toastr) {
 
-    var logs = this.logs = [];
-
     var push = function (level, source, message) {
-      var log = {
-        level: level,
-        source: source,
-        message: message,
-        timestamp: Date.now()
-      };
-      logs.unshift(log);
-      while (logs.length > 100) logs.pop();
-
       if (level === 'info')
         toastr.success(message, level.toUpperCase());
       else if (level === 'error')
         toastr.error(message, level.toUpperCase());
-
       $rootScope.$broadcast('log', log);
     };
 

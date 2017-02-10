@@ -3,7 +3,6 @@
 
   angular.module('VampRunner.pages', [
     'ui.router',
-    'VampRunner.pages.vamp',
     'VampRunner.pages.recipes',
     'VampRunner.pages.runner'
   ])
@@ -11,7 +10,7 @@
 
   /** @ngInject */
   function routeConfig($urlRouterProvider) {
-    $urlRouterProvider.otherwise('/vamp');
+    $urlRouterProvider.otherwise('/');
   }
 
 })();

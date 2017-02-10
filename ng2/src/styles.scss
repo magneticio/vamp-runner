@@ -1,0 +1,47 @@
+@import '~@angular/material/core/theming/all-theme';
+
+@include md-core();
+
+$vamp-primary: md-palette($md-pink);
+$vamp-accent : md-palette($md-amber, A200, A100, A400);
+$vamp-warn   : md-palette($md-deep-orange);
+
+$vamp-foreground: (
+  base:            #c3d2dc,
+  divider:         rgba(#c3d2dc, 0.12),
+  dividers:        rgba(#c3d2dc, 0.12),
+  disabled:        rgba(#c3d2dc, 0.3),
+  disabled-button: rgba(#c3d2dc, 0.3),
+  disabled-text:   rgba(#c3d2dc, 0.3),
+  hint-text:       rgba(#c3d2dc, 0.3),
+  secondary-text:  rgba(#c3d2dc, 0.7),
+  icon:            #c3d2dc,
+  icons:           #c3d2dc,
+  text:            #c3d2dc
+);
+
+$vamp-background: (
+  status-bar: black,
+  app-bar:    map_get($md-grey, 900),
+  background: #0d1e26,
+  hover:      rgba(#c3d2dc, 0.04),
+  card:       rgba(#0f2735, 0.8),
+  dialog:     #0d1e26,
+  disabled-button: rgba(#c3d2dc, 0.12)
+);
+
+$vamp-theme: (
+  primary    : $vamp-primary,
+  accent     : $vamp-accent,
+  warn       : $vamp-warn,
+  isDark     : true,
+  foreground : $vamp-foreground,
+  background : $vamp-background
+);
+
+@include angular-material-theme($vamp-theme);
+
+body {
+  margin: 0;
+  background: #0d1e26;
+}

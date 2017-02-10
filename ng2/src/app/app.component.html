@@ -1,0 +1,49 @@
+<md-sidenav-layout>
+
+  <md-sidenav #sidenav mode="push" opened="true" class="app-sidenav">
+    <md-list>
+      <md-list-item> Pepper </md-list-item>
+      <md-list-item> Salt </md-list-item>
+      <md-list-item> Paprika </md-list-item>
+    </md-list>
+  </md-sidenav>
+
+  <md-toolbar color="primary">
+    RECIPE BLA
+    <span class="app-toolbar-filler"></span>
+    <button class="app-icon-button" (click)="sidenav.toggle()">
+      <i class="material-icons app-toolbar-menu">menu</i>
+    </button>
+  </md-toolbar>
+
+  <div class="app-content">
+
+    <md-tab-group>
+      <md-tab label="RUN">
+        <p>EARTH</p>
+      </md-tab>
+      <md-tab label="CLEAN">
+        <p>FIRE</p>
+      </md-tab>
+    </md-tab-group>
+
+    <button md-button>FLAT</button>
+    <button md-raised-button md-tooltip="This is a tooltip!">RAISED</button>
+    <button md-raised-button color="primary">PRIMARY RAISED</button>
+    <button md-raised-button color="accent">ACCENT RAISED</button>
+
+    <md-spinner color="accent" mode="indeterminate" class="app-spinner"></md-spinner>
+
+    <label>
+      Progress: {{progress}}%
+      <md-progress-bar
+        class="app-progress"
+        color="accent"
+        mode="determinate"
+        [value]="progress"
+        aria-label="Determinate progress-bar example"></md-progress-bar>
+    </label>
+
+  </div>
+
+</md-sidenav-layout>
