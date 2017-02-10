@@ -63,7 +63,16 @@ function gulp_make {
     cd ${dir}/ui
     echo "${green}building ui${reset}"
     rm -Rf bower_components node_modules release ui ui.tar.bz2 2> /dev/null
-    npm install -g gulp gulp-cli && npm install && bower install && gulp build
+
+    npm install \
+    bower \
+      gulp \
+      gulp-cli
+
+    npm install
+    ./node_modules/.bin/bower --allow-root install
+    ./node_modules/.bin/gulp build
+
     mv release ui && tar -cvjSf ui.tar.bz2 ui
     mv ui release && mv ui.tar.bz2 ${target_docker}/
 }
