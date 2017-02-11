@@ -1,49 +1,93 @@
-<md-sidenav-layout>
-
-  <md-sidenav #sidenav mode="push" opened="true" class="app-sidenav">
-    <md-list>
-      <md-list-item> Pepper </md-list-item>
-      <md-list-item> Salt </md-list-item>
-      <md-list-item> Paprika </md-list-item>
-    </md-list>
+<md-sidenav-layout fullscreen="true">
+  <md-sidenav mode="push" #sidenav opened="open" class="app-sidenav">
+    <md-nav-list>
+      <a md-list-item *ngFor="let recipe of recipes" (click)="sidenav.toggle();showRecipe(recipe)"> {{ recipe.name }} </a>
+    </md-nav-list>
   </md-sidenav>
-
   <md-toolbar color="primary">
-    RECIPE BLA
+    {{recipe ? recipe.name : ''}}
     <span class="app-toolbar-filler"></span>
     <button class="app-icon-button" (click)="sidenav.toggle()">
       <i class="material-icons app-toolbar-menu">menu</i>
     </button>
   </md-toolbar>
+  <div class="app-content" [ngSwitch]="!source">
 
-  <div class="app-content">
-
-    <md-tab-group>
+    <md-tab-group *ngSwitchCase="true">
       <md-tab label="RUN">
-        <p>EARTH</p>
+        <md-list-item>
+          <md-card class="app-card">
+            <p>{{recipe ? recipe.description : ''}}</p>
+          </md-card>
+        </md-list-item>
+        <md-list-item *ngFor="let step of (recipe ? recipe.run : [])">
+          <md-card class="app-card">
+            <table>
+              <tr>
+                <td>
+                  <md-icon
+                    [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed','running': step.state == 'running','idle': step.state == 'idle'}">
+                    fiber_manual_record
+                  </md-icon>
+                </td>
+                <td width="100%">
+                  <p class="step-description">{{step.description}}</p>
+                </td>
+                <td>
+                  <button md-raised-button color="primary">RUN</button>
+                </td>
+                <td>
+                  <button md-raised-button (click)="showSource(step)" color="accent">INFO</button>
+                </td>
+              </tr>
+            </table>
+          </md-card>
+        </md-list-item>
       </md-tab>
-      <md-tab label="CLEAN">
-        <p>FIRE</p>
+      <md-tab label="RESET">
+        <md-list-item>
+          <md-card class="app-card">
+            <label>
+              <table>
+                <tr>
+                  <td>{{progress}}%</td>
+                  <td width="100%"><p></p></td>
+                  <td>
+                    <button md-raised-button color="primary">RESET ALL</button>
+                  </td>
+                </tr>
+              </table>
+              <md-progress-bar class="app-progress" color="accent" mode="determinate" [value]="progress">
+              </md-progress-bar>
+            </label>
+          </md-card>
+        </md-list-item>
+        <md-list-item *ngFor="let step of (recipe ? recipe.cleanup : [])">
+          <md-card>
+            <table>
+              <tr>
+                <td>
+                  <md-icon
+                    [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed','running': step.state == 'running','idle': step.state == 'idle'}">
+                    fiber_manual_record
+                  </md-icon>
+                </td>
+                <td width="100%">
+                  <p class="step-description">{{step.description}}</p>
+                </td>
+              </tr>
+            </table>
+          </md-card>
+        </md-list-item>
       </md-tab>
     </md-tab-group>
 
-    <button md-button>FLAT</button>
-    <button md-raised-button md-tooltip="This is a tooltip!">RAISED</button>
-    <button md-raised-button color="primary">PRIMARY RAISED</button>
-    <button md-raised-button color="accent">ACCENT RAISED</button>
-
-    <md-spinner color="accent" mode="indeterminate" class="app-spinner"></md-spinner>
-
-    <label>
-      Progress: {{progress}}%
-      <md-progress-bar
-        class="app-progress"
-        color="accent"
-        mode="determinate"
-        [value]="progress"
-        aria-label="Determinate progress-bar example"></md-progress-bar>
-    </label>
+    <div *ngSwitchDefault>
+      <pre>{{source}}</pre>
+      <span class="app-action">
+        <button md-fab (click)="showRecipe(recipe)"><md-icon>check circle</md-icon></button>
+      </span>
+    </div>
 
   </div>
-
 </md-sidenav-layout>
