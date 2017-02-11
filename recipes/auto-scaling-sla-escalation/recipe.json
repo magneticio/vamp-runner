@@ -1,5 +1,5 @@
 {
-  "name": "Auto Scaling with SLA and escalation events",
+  "name": "Auto Scaling with SLA and Escalation Events",
   "description": "Auto scaling number of instances using escalation events",
   "run": [
     {

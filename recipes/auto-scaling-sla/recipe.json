@@ -1,5 +1,5 @@
 {
-  "name": "Auto Scaling with built-in SLA",
+  "name": "Auto Scaling with Built-in SLA",
   "description": "Auto scaling number of instances using built-in SLA",
   "run": [
     {
