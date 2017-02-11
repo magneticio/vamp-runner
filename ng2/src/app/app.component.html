@@ -1,7 +1,8 @@
 <md-sidenav-layout fullscreen="true">
   <md-sidenav mode="push" #sidenav opened="open" class="app-sidenav">
     <md-nav-list>
-      <a md-list-item *ngFor="let recipe of recipes" (click)="sidenav.toggle();showRecipe(recipe)"> {{ recipe.name }} </a>
+      <a md-list-item *ngFor="let recipe of recipes" (click)="sidenav.toggle();showRecipe(recipe)"> {{ recipe.name
+        }} </a>
     </md-nav-list>
   </md-sidenav>
   <md-toolbar color="primary">
@@ -83,11 +84,12 @@
     </md-tab-group>
 
     <div *ngSwitchDefault>
-      <pre>{{source}}</pre>
-      <span class="app-action">
-        <button md-fab (click)="showRecipe(recipe)"><md-icon>check circle</md-icon></button>
-      </span>
+      <pre class="app-source">{{source}}</pre>
     </div>
 
   </div>
 </md-sidenav-layout>
+
+<span class="app-action" *ngIf="source">
+  <button md-fab (click)="showRecipe(recipe)"><md-icon>check circle</md-icon></button>
+</span>

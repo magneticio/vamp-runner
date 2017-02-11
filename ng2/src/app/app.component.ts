@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
-import {AppService, Recipe, RecipeStep} from './app.service';
+import {RunnerService, Recipe, RecipeStep} from './runner.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [AppService]
+  providers: [RunnerService]
 })
 export class AppComponent {
   progress: number = 50;
@@ -13,8 +13,8 @@ export class AppComponent {
   recipe: Recipe = null;
   recipes: Recipe[] = [];
 
-  constructor(private appService: AppService) {
-    appService.recipes$.subscribe(recipes => {
+  constructor(private runner: RunnerService) {
+    runner.recipes$.subscribe(recipes => {
       this.recipes = recipes ? recipes : [];
       if (this.recipe == null && this.recipes && this.recipes.length > 0) {
         this.recipe = recipes[0];

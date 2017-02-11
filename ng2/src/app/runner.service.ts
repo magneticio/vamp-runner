@@ -1,16 +1,16 @@
 import {Injectable, EventEmitter} from '@angular/core';
 import {environment} from '../environments/environment';
-import {$WebSocket, WebSocketSendMode} from 'angular2-websocket/angular2-websocket';
+import {$WebSocket, WebSocketSendMode} from './websocket.service';
 
 @Injectable()
-export class AppService {
+export class RunnerService {
 
   private websocket;
   public recipes$: EventEmitter<Recipe[]>;
 
   constructor() {
     this.recipes$ = new EventEmitter();
-    this.websocket = new $WebSocket(AppService.url(), null, {
+    this.websocket = new $WebSocket(RunnerService.url(), null, {
       initialTimeout: 100,
       maxTimeout: 3000,
       reconnectIfNotNormalClose: true

@@ -18,8 +18,14 @@
   display: inline-block;
   color: black;
   position: fixed;
-  top: 70px;
+  bottom: 20px;
   right: 20px;
+}
+
+.app-source {
+  margin: 10px;
+  height: auto;
+  overflow: auto;
 }
 
 .app-icon-button {
