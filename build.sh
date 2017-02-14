@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o errexit
+
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 reset=`tput sgr0`
@@ -62,19 +64,13 @@ function sbt_make {
 function gulp_make {
     cd ${dir}/ui
     echo "${green}building ui${reset}"
-    rm -Rf bower_components node_modules release ui ui.tar.bz2 2> /dev/null
-
-    npm install \
-    bower \
-      gulp \
-      gulp-cli
+    rm -Rf bower_components node_modules dist ui ui.tar.bz2 2> /dev/null
 
     npm install
-    ./node_modules/.bin/bower --allow-root install
-    ./node_modules/.bin/gulp build
+    ng build --env=prod
 
-    mv release ui && tar -cvjSf ui.tar.bz2 ui
-    mv ui release && mv ui.tar.bz2 ${target_docker}/
+    mv dist ui && tar -cvjSf ui.tar.bz2 ui
+    rm -Rf ui 2> /dev/null && mv ui.tar.bz2 ${target_docker}/
 }
 
 function docker_make {
