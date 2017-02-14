@@ -23,17 +23,15 @@ before_install: |
   cd ~/.nvm && \
   git checkout `git describe --abbrev=0 --tags` && \
   source ~/.nvm/nvm.sh && \
-  nvm install 6.2.2 && \
+  nvm install 7.5.0 && \
   cd $TRAVIS_BUILD_DIR
 before_script: |
   mkdir -p $HOME/.sbt/launchers/0.13.9/ && \
   curl -L -o $HOME/.sbt/launchers/0.13.9/sbt-launch.jar http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.9/sbt-launch.jar
 script: |
   cd $TRAVIS_BUILD_DIR/ui && \
-  npm install -g gulp gulp-cli bower && \
   npm install && \
-  bower install && \
-  gulp build && \
+  ng build --env=prod && \
   cd $TRAVIS_BUILD_DIR && \
   sbt ++$TRAVIS_SCALA_VERSION -J-XX:ReservedCodeCacheSize=256M clean test && \
   find $HOME/.sbt -name "*.lock" | xargs rm
