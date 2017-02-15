@@ -1,21 +1,35 @@
 import {Component} from '@angular/core';
-import {RunnerService, Recipe, RecipeStep} from './runner.service';
+import {AppService, Recipe, RecipeStep} from "./app.service";
+import {MdSnackBar, MdSnackBarRef} from '@angular/material';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [RunnerService]
+  providers: [AppService]
 })
 export class AppComponent {
   source: string = null;
   selected: number = -1;
   recipes: Recipe[] = [];
 
-  constructor(private runner: RunnerService) {
-    runner.recipes$.subscribe(recipes => {
+  private snackBar: MdSnackBarRef<any> = null;
+
+  constructor(private service: AppService, private snackBarService: MdSnackBar) {
+    this.service.recipes.subscribe(recipes => {
       this.updateRecipes(recipes ? recipes : []);
     });
+    this.service.events.subscribe(event => {
+      if (event.type == 'busy') {
+        this.alert('Already busy with previous action.');
+      } else if (event.type == 'connection-error') {
+        this.alert('Cannot connect to Vamp.');
+      }
+    });
+  }
+
+  wide() {
+    return window.screen.width >= 768;
   }
 
   updateRecipes(recipes: Recipe[]) {
@@ -61,15 +75,17 @@ export class AppComponent {
     this.source = step ? step.resource : null;
   }
 
-  run(step) {
+  run(step: RecipeStep) {
     if (this.selected >= 0) {
-      this.runner.run(this.recipes[this.selected], step);
+      this.service.run(this.recipes[this.selected], step);
+      this.alert('Running: "' + step.description.toLocaleLowerCase() + '".');
     }
   }
 
-  cleanup() {
+  reset() {
     if (this.selected >= 0) {
-      this.runner.cleanup(this.recipes[this.selected]);
+      this.service.cleanup(this.recipes[this.selected]);
+      this.alert('Resetting: "' + this.recipes[this.selected].name.toLocaleLowerCase() + '".');
     }
   }
 
@@ -101,5 +117,22 @@ export class AppComponent {
     }
 
     return total == 0 ? 0 : Math.ceil(count / total * 100);
+  }
+
+  private alert(message: string) {
+    let $this = this;
+    if (this.snackBar) {
+      this.snackBar.dismiss();
+      this.snackBar.afterDismissed().subscribe(() => {
+          $this.snackBar = this.snackBarService.open(message, null, {
+            duration: 3000,
+          });
+        }
+      );
+    } else {
+      this.snackBar = this.snackBarService.open(message, null, {
+        duration: 3000,
+      });
+    }
   }
 }

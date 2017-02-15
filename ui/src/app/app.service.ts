@@ -3,16 +3,19 @@ import {environment} from '../environments/environment';
 import {$WebSocket, WebSocketSendMode} from './websocket.service';
 
 @Injectable()
-export class RunnerService {
+export class AppService {
 
   private websocket;
-  public recipes$: EventEmitter<Recipe[]>;
+
+  public events: EventEmitter<Event>;
+  public recipes: EventEmitter<Recipe[]>;
 
   constructor() {
-    this.recipes$ = new EventEmitter();
-    this.websocket = new $WebSocket(RunnerService.url(), null, {
+    this.events = new EventEmitter();
+    this.recipes = new EventEmitter();
+    this.websocket = new $WebSocket(AppService.url(), null, {
       initialTimeout: 1000,
-      maxTimeout: 3600000,
+      maxTimeout: 3000,
       reconnectIfNotNormalClose: true
     });
     this.websocket.getDataStream().subscribe((message: MessageEvent) => {
@@ -47,7 +50,11 @@ export class RunnerService {
       for (let recipe of payload.recipes) {
         recipes.push(recipe);
       }
-      this.recipes$.emit(recipes);
+      this.recipes.emit(recipes);
+    } else if (payload.type == 'busy') {
+      this.events.emit({type: 'busy'});
+    } else if (payload.type == 'vamp-connection-error') {
+      this.events.emit({type: 'connection-error'});
     }
   }
 
@@ -63,6 +70,10 @@ export class RunnerService {
       return url;
     }
   }
+}
+
+export class Event {
+  public type: string;
 }
 
 export class Recipe {

@@ -1,17 +1,26 @@
 <md-sidenav-layout fullscreen="true">
-  <md-sidenav mode="push" #sidenav opened="open" class="app-sidenav">
+
+  <md-sidenav [mode]="wide() ? 'side' : 'push'" #sidenav opened="open" class="app-sidenav">
     <md-nav-list>
-      <a md-list-item *ngFor="let recipe of recipes, let index = index" (click)="sidenav.toggle();showRecipe(index)">
+      <md-toolbar color="primary">
+        <button class="app-icon-button" (click)="sidenav.toggle()">
+          <i class="material-icons app-toolbar-menu">menu</i>
+        </button>
+        RECIPES
+        <span class="app-toolbar-filler"></span>
+      </md-toolbar>
+      <a md-list-item *ngFor="let recipe of recipes, let index = index" (click)="wide() || sidenav.toggle(); showRecipe(index)">
         {{ recipe.name }}
       </a>
     </md-nav-list>
   </md-sidenav>
+
   <md-toolbar color="primary">
-    {{ selected >= 0 ? recipes[selected].name : ''}}
-    <span class="app-toolbar-filler"></span>
-    <button class="app-icon-button" (click)="sidenav.toggle()">
+    <button class="app-icon-button" *ngIf="!sidenav.opened" (click)="sidenav.toggle()">
       <i class="material-icons app-toolbar-menu">menu</i>
     </button>
+    {{ selected >= 0 ? recipes[selected].name : ''}}
+    <span class="app-toolbar-filler"></span>
   </md-toolbar>
   <div class="app-content" [ngSwitch]="!source">
 
@@ -57,7 +66,7 @@
                   <td>{{progress()}}%</td>
                   <td width="100%"><p></p></td>
                   <td>
-                    <button md-raised-button color="primary" (click)="cleanup()">RESET ALL</button>
+                    <button md-raised-button color="primary" (click)="reset()">RESET ALL</button>
                   </td>
                 </tr>
               </table>
