@@ -76,6 +76,8 @@ clusters:
 
 Note: override `VAMP_RUNNER_API_URL` value if needed. On Kubernetes you can use `vamp` as the URL for the vamp location. On DC/OS it's `http://10.20.0.100:8080` or `vamp.marathon.mesos`.
 
+Note: replace `katana` references with the version tag of the running Vamp version.
+
 ### From command line without web UI
 
 Main class: `io.vamp.runner.VampConsoleRunner`
