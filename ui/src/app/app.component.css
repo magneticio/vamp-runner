@@ -65,6 +65,14 @@ md-nav-list {
   margin-right: 20px;
 }
 
+.app-running {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
 .succeeded {
   color: #0e8174;
 }

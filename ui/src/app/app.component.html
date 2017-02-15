@@ -35,9 +35,10 @@
           <md-card class="app-card">
             <table>
               <tr>
-                <td>
-                  <md-icon
-                    [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed','running': step.state == 'running','idle': step.state == 'idle'}">
+                <td [ngSwitch]="step.state">
+                  <md-progress-circle *ngSwitchCase="'running'" mode="indeterminate" color="accent" class="app-running"></md-progress-circle>
+                  <md-icon *ngSwitchDefault
+                    [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed', 'idle': step.state == 'idle'}">
                     fiber_manual_record
                   </md-icon>
                 </td>
@@ -79,9 +80,10 @@
           <md-card>
             <table>
               <tr>
-                <td>
-                  <md-icon
-                    [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed','running': step.state == 'running','idle': step.state == 'idle'}">
+                <td [ngSwitch]="step.state">
+                  <md-progress-circle *ngSwitchCase="'running'" mode="indeterminate" color="accent" class="app-running"></md-progress-circle>
+                  <md-icon *ngSwitchDefault
+                           [ngClass]="{'succeeded': step.state == 'succeeded', 'failed': step.state == 'failed', 'idle': step.state == 'idle'}">
                     fiber_manual_record
                   </md-icon>
                 </td>
