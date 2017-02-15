@@ -29,7 +29,7 @@ export class AppComponent {
   }
 
   wide() {
-    return window.screen.width >= 768;
+    return Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 768;
   }
 
   updateRecipes(recipes: Recipe[]) {
