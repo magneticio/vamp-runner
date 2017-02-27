@@ -84,13 +84,11 @@ function docker_make {
 
     recipes=()
 
-    for file in `find recipes | grep recipe.json`
-    do
-      [[ ${file} != *"/"* ]]
+    for file in $( find "recipes" -type f -name "recipe.json" ) ; do
         recipes+=(\""/usr/local/vamp-runner/${file}\"")
     done
 
-    recipe_list=`join , "${recipes[@]}"`
+    recipe_list=$( join , "${recipes[@]}" )
 
     cat > ${target_docker}/application.conf << EOF
 vamp.runner {
