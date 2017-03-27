@@ -4,10 +4,18 @@ set -o errexit
 
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-reset=`tput sgr0`
-red=`tput setaf 1`
-green=`tput setaf 2`
-yellow=`tput setaf 3`
+# Only set colors if we're writing output to a terminal
+if tty -s ; then
+  reset="$( tput sgr0 )"
+  red="$( tput setaf 1 )"
+  green="$( tput setaf 2 )"
+  yellow="$( tput setaf 3 )"
+else
+  reset=''
+  red=''
+  green=''
+  yellow=''
+fi
 
 if [ "$(git describe --tags)" = "$(git describe --abbrev=0)" ]; then
     version=`git describe --tags`
