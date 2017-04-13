@@ -66,7 +66,7 @@ function sbt_make {
     echo "${green}building jar: ${yellow}sbt clean test assembly${reset}"
     sbt clean test assembly
     mkdir -p ${target_docker}
-    cp $(find "${target}/scala-2.11" -name "src-assembly-*.jar" | sort | tail -1) ${target_docker}/vamp-runner.jar
+    cp $(find "${target}/scala-2.11" -name "vamp-runner-*.jar" | sort | tail -1) ${target_docker}/vamp-runner.jar
 }
 
 function gulp_make {
