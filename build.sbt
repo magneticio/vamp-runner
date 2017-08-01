@@ -33,6 +33,7 @@ libraryDependencies ++= {
 }
 
 mainClass in assembly := Some("io.vamp.runner.VampWebRunner")
+assemblyJarName in assembly := s"vamp-runner-${version.value}.jar"
 
 scalariformSettings ++ Seq(ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(AlignParameters, true)
