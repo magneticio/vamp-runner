@@ -17,10 +17,14 @@ else
   yellow=''
 fi
 
-if [ "$(git describe --tags)" = "$(git describe --abbrev=0)" ]; then
-    version=`git describe --tags`
+if [[ $( git describe --tags --abbrev=0 ) = $( git describe --tags ) ]] ; then
+  version="$( git describe --tags )"
 else
+  if [[ "$VAMP_GIT_BRANCH" != "" && "$VAMP_GIT_BRANCH" != "master" ]]; then
+    version=$VAMP_GIT_BRANCH
+  else
     version="katana"
+  fi
 fi
 
 target=${dir}'/target'
