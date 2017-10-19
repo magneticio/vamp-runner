@@ -6,7 +6,8 @@ SHELL             := bash
 .SUFFIXES:
 
 # Constants, these can be overwritten in your Makefile.local
-CONTAINER := magneticio/buildserver:latest
+CONTAINER     := magneticio/buildserver:latest
+DOCKER_BINARY := docker
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -25,7 +26,7 @@ default:
 		--rm \
 		-e VAMP_GIT_BRANCH=${VAMP_GIT_BRANCH} \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
-		--volume $(shell command -v docker):/usr/bin/docker \
+		--volume $(shell command -v $(DOCKER_BINARY)):/usr/bin/docker \
 		--volume $(CURDIR):/srv/src \
 		--volume $(HOME)/.sbt:/root/.sbt \
 		--volume $(HOME)/.ivy2:/root/.ivy2 \
