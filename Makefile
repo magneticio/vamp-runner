@@ -24,7 +24,7 @@ all: default
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
-default:
+default: clean-check
 	docker pull $(BUILD_SERVER)
 	docker run \
 		--name buildrunner \
@@ -45,3 +45,20 @@ default:
 .PHONY: build
 build:
 	./build.sh --build
+
+.PHONY: clean
+clean:
+	rm -rf target project/project project/target
+	rm -rf ui/node_modules
+
+.PHONY: clean-check
+clean-check:
+	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
+		docker run \
+		--name buildrunner \
+		--rm \
+		--volume $(CURDIR):/srv/src \
+		--workdir=/srv/src \
+		$(BUILD_SERVER) \
+			make clean; \
+	fi
