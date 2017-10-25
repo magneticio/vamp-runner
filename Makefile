@@ -6,7 +6,12 @@ SHELL             := bash
 .SUFFIXES:
 
 # Constants, these can be overwritten in your Makefile.local
-CONTAINER := magneticio/buildserver:latest
+BUILD_SERVER     := magneticio/buildserver:latest
+DIR_SBT       := $(HOME)/.sbt/boot
+DIR_IVY       := $(HOME)/.ivy2
+DIR_NPM       := $(HOME)/.npm
+DIR_GYP       := $(HOME)/.node-gyp
+DOCKER_BINARY := docker
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -19,26 +24,41 @@ all: default
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
-default:
-	docker pull $(CONTAINER)
+default: clean-check
+	docker pull $(BUILD_SERVER)
 	docker run \
+		--name buildrunner \
 		--rm \
-		-e VAMP_GIT_BRANCH=${VAMP_GIT_BRANCH} \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
-		--volume $(shell command -v docker):/usr/bin/docker \
+		--volume $(shell command -v $(DOCKER_BINARY)):/usr/bin/docker \
+		--volume $(DIR_SBT):/home/vamp/.sbt/boot \
+		--volume $(DIR_IVY):/home/vamp/.ivy2 \
+		--volume $(DIR_NPM):/home/vamp/.npm \
+		--volume $(DIR_GYP):/home/vamp/.node-gyp \
 		--volume $(CURDIR):/srv/src \
-		--volume $(HOME)/.sbt:/root/.sbt \
-		--volume $(HOME)/.ivy2:/root/.ivy2 \
 		--workdir=/srv/src \
-		$(CONTAINER) \
-			make build
-
+		--env BUILD_UID=$(shell id -u) \
+		--env BUILD_GID=$(shell stat -c '%g' /var/run/docker.sock) \
+		$(BUILD_SERVER) \
+			make VAMP_GIT_BRANCH=${VAMP_GIT_BRANCH} build
 
 .PHONY: build
 build:
 	./build.sh --build
 
-
 .PHONY: clean
 clean:
-	./build.sh --remove
+	rm -rf target project/project project/target
+	rm -rf ui/node_modules
+
+.PHONY: clean-check
+clean-check:
+	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
+		docker run \
+		--name buildrunner \
+		--rm \
+		--volume $(CURDIR):/srv/src \
+		--workdir=/srv/src \
+		$(BUILD_SERVER) \
+			make clean; \
+	fi

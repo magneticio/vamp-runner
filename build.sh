@@ -79,7 +79,7 @@ function gulp_make {
     rm -Rf bower_components node_modules dist ui ui.tar.bz2 2> /dev/null
 
     npm install
-    ng build --env=prod
+    npm run ng -- build --env=prod
 
     mv dist ui && tar -cvjSf ui.tar.bz2 ui
     rm -Rf ui 2> /dev/null && mv ui.tar.bz2 ${target_docker}/

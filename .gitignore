@@ -40,3 +40,4 @@ ehthumbs.db
 Thumbs.db
 .idea
 */target/**
+/Makefile.local
