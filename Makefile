@@ -27,7 +27,6 @@ all: default
 default: clean-check
 	docker pull $(BUILD_SERVER)
 	docker run \
-		--name buildrunner \
 		--rm \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
 		--volume $(shell command -v $(DOCKER_BINARY)):/usr/bin/docker \
@@ -55,7 +54,6 @@ clean:
 clean-check:
 	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
 		docker run \
-		--name buildrunner \
 		--rm \
 		--volume $(CURDIR):/srv/src \
 		--workdir=/srv/src \
