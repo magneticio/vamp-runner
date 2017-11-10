@@ -139,7 +139,7 @@ EOF
 function docker_build {
     cd ${target_docker}
     echo "${green}building docker image: ${yellow}magneticio/vamp-runner:${version}${reset}"
-    docker build -t magneticio/vamp-runner:${version} .
+    docker build -t magneticio/vamp-runner:${VAMP_TAG_PREFIX}${version} .
 }
 
 function process() {
