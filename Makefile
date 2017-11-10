@@ -39,7 +39,7 @@ default: clean-check
 		--env BUILD_UID=$(shell id -u) \
 		--env BUILD_GID=$(shell stat -c '%g' /var/run/docker.sock) \
 		$(BUILD_SERVER) \
-			make VAMP_GIT_BRANCH=${VAMP_GIT_BRANCH} build
+			make VAMP_GIT_BRANCH=${VAMP_GIT_BRANCH} VAMP_TAG_PREFIX=${VAMP_TAG_PREFIX} build
 
 .PHONY: build
 build:
