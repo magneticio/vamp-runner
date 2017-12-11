@@ -11,7 +11,6 @@ DIR_SBT       := $(HOME)/.sbt/boot
 DIR_IVY       := $(HOME)/.ivy2
 DIR_NPM       := $(HOME)/.npm
 DIR_GYP       := $(HOME)/.node-gyp
-DOCKER_BINARY := docker
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -29,7 +28,6 @@ default: clean-check
 	docker run \
 		--rm \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
-		--volume $(shell command -v $(DOCKER_BINARY)):/usr/bin/docker \
 		--volume $(DIR_SBT):/home/vamp/.sbt/boot \
 		--volume $(DIR_IVY):/home/vamp/.ivy2 \
 		--volume $(DIR_NPM):/home/vamp/.npm \
