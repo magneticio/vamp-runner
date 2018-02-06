@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: sava
 
 clusters:
@@ -8,5 +8,5 @@ clusters:
     - breed: sava:1.0
     - breed: sava:1.1
 ---
-kind: gateway
+kind: gateways
 name: sava

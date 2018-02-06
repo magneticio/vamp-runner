@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: auto-scaling
 deployable:
   type: application/javascript
@@ -51,7 +51,7 @@ deployable:
     setInterval(run, $period * 1000);
 
 ---
-kind: workflow
+kind: workflows
 name: auto-scaling
 breed: auto-scaling
 schedule: daemon

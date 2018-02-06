@@ -64,7 +64,8 @@ trait VampApiClient {
       .recover {
         case failure ⇒ failure
       }.mapAsync(1) {
-        case HttpResponse(status, _, entity, _) if status.isSuccess() ⇒ entity.toStrict(timeout).map(_.data.decodeString("UTF-8"))
+        case HttpResponse(status, _, entity, _) if status.isSuccess() || uri.contains("/info") ⇒
+          entity.toStrict(timeout).map(_.data.decodeString("UTF-8"))
         case failure ⇒ Future(recoverWith(failure))
       }.map {
         case response: String ⇒ Left(parse(response))

@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: runner
 clusters:
   frontend:
@@ -9,5 +9,5 @@ clusters:
     services:
       breed: backend
 ---
-kind: gateway
+kind: gateways
 name: runner/9052

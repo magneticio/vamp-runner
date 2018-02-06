@@ -1,6 +1,6 @@
 ---
 name: sava
-kind: deployment
+kind: deployments
 
 clusters:
   sava:

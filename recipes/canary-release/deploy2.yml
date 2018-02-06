@@ -1,11 +1,11 @@
 ---
-kind: blueprint
+kind: blueprints
 name: sava:1.1
 clusters:
   sava:
     services: sava:1.1
 ---
-kind: deployment
+kind: deployments
 name: sava
 
 clusters:

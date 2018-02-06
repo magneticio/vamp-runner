@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: runner1
 gateways:
   9062: frontend/port
@@ -15,7 +15,7 @@ clusters:
         SAVA_RUNNER_ID: backend:1
       scale: small
 ---
-kind: deployment
+kind: deployments
 name: runner2
 gateways:
   9063: frontend/port
@@ -31,7 +31,7 @@ clusters:
         SAVA_RUNNER_ID: backend:2
       scale: small
 ---
-kind: deployment
+kind: deployments
 name: runner3
 gateways:
   9064: frontend/port

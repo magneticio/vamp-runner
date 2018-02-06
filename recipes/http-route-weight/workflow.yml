@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: runner-requester
 deployable:
   type: application/javascript
@@ -62,7 +62,7 @@ deployable:
     }
 
 ---
-kind: workflow
+kind: workflows
 name: runner-requester
 breed: runner-requester
 schedule: daemon

@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: sava-requester
 deployable:
   type: application/javascript
@@ -31,7 +31,7 @@ deployable:
     setInterval(process, 1000);
 
 ---
-kind: workflow
+kind: workflows
 name: sava-requester
 breed: sava-requester
 schedule: daemon

@@ -1,15 +1,15 @@
 ---
-kind: blueprint
+kind: blueprints
 name: sava:1.0
 ---
-kind: blueprint
+kind: blueprints
 name: sava:1.1
 ---
-kind: breed
+kind: breeds
 name: sava:1.0
 ---
-kind: breed
+kind: breeds
 name: sava:1.1
 ---
-kind: scale
+kind: scales
 name: large

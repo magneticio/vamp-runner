@@ -1,9 +1,9 @@
 ---
-kind: gateway
+kind: gateways
 name: runner1/9062
 ---
-kind: gateway
+kind: gateways
 name: runner2/9063
 ---
-kind: gateway
+kind: gateways
 name: runner3/9064

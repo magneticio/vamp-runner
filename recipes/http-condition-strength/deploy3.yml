@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: runner2
 gateways:
   9055: runner/port

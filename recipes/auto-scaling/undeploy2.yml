@@ -1,6 +1,6 @@
 ---
-kind: breed
+kind: breeds
 name: runner
 ---
 name: sava/9051
-kind: gateway
+kind: gateways

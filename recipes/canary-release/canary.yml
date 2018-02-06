@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: canary
 deployable:
   type: application/javascript
@@ -63,7 +63,7 @@ deployable:
     setInterval(run, $period * 1000);
 
 ---
-kind: workflow
+kind: workflows
 name: canary
 breed: canary
 schedule: daemon

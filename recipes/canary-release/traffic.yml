@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: traffic
 deployable:
   type: application/javascript
@@ -37,7 +37,7 @@ deployable:
     setInterval(run, $period);
 
 ---
-kind: workflow
+kind: workflows
 name: traffic
 breed: traffic
 schedule: daemon

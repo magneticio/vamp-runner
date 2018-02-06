@@ -1,5 +1,5 @@
 ---
-kind: gateway
+kind: gateways
 name: runner
 port: 9053
 routes:

@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: sava
 
 clusters:
@@ -8,5 +8,5 @@ clusters:
       breed: tcp:1.0.0
 
 ---
-kind: gateway
+kind: gateways
 name: sava/9057

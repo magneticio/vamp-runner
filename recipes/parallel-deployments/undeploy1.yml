@@ -1,5 +1,5 @@
 ---
-kind: deployment
+kind: deployments
 name: runner1
 clusters:
   frontend:
@@ -9,7 +9,7 @@ clusters:
     services:
       breed: backend
 ---
-kind: deployment
+kind: deployments
 name: runner2
 clusters:
   frontend:
@@ -19,7 +19,7 @@ clusters:
     services:
       breed: backend
 ---
-kind: deployment
+kind: deployments
 name: runner3
 clusters:
   frontend:

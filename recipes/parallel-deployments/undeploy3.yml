@@ -1,9 +1,9 @@
 ---
-kind: scale
+kind: scales
 name: small
 ---
-kind: breed
+kind: breeds
 name: frontend
 ---
-kind: breed
+kind: breeds
 name: backend

@@ -1,6 +1,6 @@
 ---
-kind: breed
+kind: breeds
 name: frontend
 ---
-kind: breed
+kind: breeds
 name: backend

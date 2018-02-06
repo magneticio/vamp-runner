@@ -1,8 +1,8 @@
 ---
-kind: gateway
+kind: gateways
 name: runner1/9054
 ---
-kind: deployment
+kind: deployments
 name: runner1
 clusters:
   runner:

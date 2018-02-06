@@ -1,5 +1,5 @@
 ---
-kind: breed
+kind: breeds
 name: mock-metrics
 deployable:
   type: application/javascript
@@ -34,7 +34,7 @@ deployable:
     setInterval(process, period * 1000);
 
 ---
-kind: workflow
+kind: workflows
 name: mock-metrics
 breed: mock-metrics
 schedule: daemon

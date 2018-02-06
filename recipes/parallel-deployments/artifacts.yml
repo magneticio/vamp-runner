@@ -1,11 +1,11 @@
 ---
-kind: scale
+kind: scales
 name: small
 cpu: 0.1
 memory: 64MB
 instances: 1
 ---
-kind: breed
+kind: breeds
 name: frontend
 deployable: magneticio/sava:runner_1.0
 ports:
@@ -16,7 +16,7 @@ environment_variables:
 dependencies:
   backend: backend
 ---
-kind: breed
+kind: breeds
 name: backend
 deployable: magneticio/sava:runner_1.0
 ports:
