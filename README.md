@@ -78,6 +78,82 @@ Note: override `VAMP_RUNNER_API_URL` value if needed. On Kubernetes you can use 
 
 Note: replace `katana` references with the version tag of the running Vamp version. 
 
+### DC/OS
+
+Example configuration:
+
+```json
+{
+  "id": "/vamp-runner",
+  "backoffFactor": 1.15,
+  "backoffSeconds": 1,
+  "container": {
+    "portMappings": [
+      {
+        "containerPort": 8088,
+        "hostPort": 0,
+        "labels": {
+          "VIP_0": "10.20.0.100:8088"
+        },
+        "protocol": "tcp",
+        "servicePort": 10001,
+        "name": "vip0"
+      }
+    ],
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "magneticio/vamp-runner:katana",
+      "forcePullImage": true,
+      "privileged": false,
+      "parameters": []
+    }
+  },
+  "cpus": 0.5,
+  "disk": 0,
+  "env": {
+    "VAMP_RUNNER_API_URL": "http://10.20.0.100:8080"
+  },
+  "healthChecks": [
+    {
+      "gracePeriodSeconds": 30,
+      "intervalSeconds": 10,
+      "maxConsecutiveFailures": 0,
+      "portIndex": 0,
+      "timeoutSeconds": 5,
+      "delaySeconds": 15,
+      "protocol": "TCP"
+    }
+  ],
+  "instances": 1,
+  "labels": {
+    "DCOS_SERVICE_NAME": "runner",
+    "DCOS_SERVICE_SCHEME": "http",
+    "DCOS_SERVICE_PORT_INDEX": "0"
+  },
+  "maxLaunchDelaySeconds": 3600,
+  "mem": 1024,
+  "gpus": 0,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "requirePorts": false,
+  "upgradeStrategy": {
+    "maximumOverCapacity": 1,
+    "minimumHealthCapacity": 1
+  },
+  "killSelection": "YOUNGEST_FIRST",
+  "unreachableStrategy": {
+    "inactiveAfterSeconds": 0,
+    "expungeAfterSeconds": 0
+  },
+  "fetch": [],
+  "constraints": []
+}
+```
+
 ### From command line without web UI
 
 Main class: `io.vamp.runner.VampConsoleRunner`
